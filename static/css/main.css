@@ -1,16 +1,16 @@
 :root {
-  --lightGrey: #F2F2F2;
-  --fylePink: #FF3366;
-  --pink: #F36;
-  --white: #FFFFFF;
-  --black: #000000;
+  --lightGrey: #f2f2f2;
+  --primaryColor: #f36;
+  --secondaryColor: #ff0040;
+  --tertiaryColor: #f5003d;
+  --white: #fff;
   --darkGrey: #464d57;
-  --lightGrey: #e0e0e0;
-  --pageBackground: #FAFAFA;
-  --lightGreen: #50E3C2;
-  --red: #DB0000;
-  --fontGrey: #ABABAB;
-  --fontDarkGrey: #4A4A4A;
+  --pageBackground: #fafafa;
+  --lightGreen: #50e3c2;
+  --red: #db0000;
+  --fontGrey: #ababab;
+  --fontDarkGrey: #4a4a4a;
+  --mainHeading: #333333;
 }
 
 body {
@@ -55,8 +55,8 @@ a, a:hover {
 
 .user-icon {
   padding-right: 10px;
-  font-size: 30px;
-  color: #ababab;
+  font-size: 34px;
+  color: var(--fontGrey);
 }
 
 .arrow-down {
@@ -64,11 +64,11 @@ a, a:hover {
 }
 
 .user-name {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .org-name {
-  font-size: 10px;
+  font-size: 12px;
   margin: 0;
 }
 
@@ -144,7 +144,8 @@ button:focus{
 }
 
 .main-btn {
-  background-color: var(--fylePink);
+  background-color: var(--primaryColor);
+  border-color: var(--primaryColor);
   color: var(--white);
   text-transform: uppercase;
   font-weight: 700;
@@ -156,10 +157,17 @@ button:focus{
   transition: all .2s ease-in-out;
   vertical-align: middle;
 }
+
+.main-btn:hover {
+    color: var(--white);
+    background-color: var(--secondaryColor);
+    border-color: var(--tertiaryColor);
+}
+
 .main-btn-outline {
-  background-color: var(--white);
-  border: 1px solid var(--fylePink);
-  color: var(--fylePink);
+  background-color: transparent;
+  border: 1px solid var(--primaryColor);
+  color: var(--primaryColor);
   text-transform: uppercase;
   font-weight: 700;
   line-height: 1.25;
@@ -171,7 +179,13 @@ button:focus{
   vertical-align: middle;
 }
 
-@media only screen and (max-width: 768px) { 
+.main-btn-outline:hover {
+    color: var(--white);
+    background-color: var(--primaryColor);
+    border-color: var(--primaryColor);
+}
+
+@media only screen and (max-width: 768px) {
   .profile-content {
     width:300px;
     position:absolute;
@@ -180,4 +194,88 @@ button:focus{
     padding:0px;
     padding-top:10px;
   }
+}
+
+input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--lightGrey);
+  box-shadow: none;
+  color: #111;
+}
+
+input:focus,
+input:valid {
+  border-color: var(--primaryColor);
+}
+
+input:focus~label,
+input:valid~label {
+  font-size: 14px;
+  color: var(--primaryColor);
+}
+
+.navbar-light
+.navbar-brand {
+  color: var(--mainHeading);
+}
+
+.checkbox-label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+  background-color: var(--primaryColor);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-label .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }

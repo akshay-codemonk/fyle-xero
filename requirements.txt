@@ -36,3 +36,5 @@ mock==3.0.5
 fyle-django-allauth==0.1.0
 pyxero==0.9.1
 django-decorator-include==2.1
+fylesdk==0.8.1
+openpyxl==2.6.3
