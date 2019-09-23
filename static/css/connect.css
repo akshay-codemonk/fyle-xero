@@ -1,8 +1,5 @@
-:root {
-    --fylePink: #FF3366;
-}
 body {
-    background-color: #FAFAFA;
+    background-color: var(--pageBackground);
 }
 .center-div {
     position: fixed;
@@ -24,11 +21,11 @@ input {
 
 input:focus,
 input:valid {
-  border-color: var(--fylePink);
+  border-color: var(--primaryColor);
 }
 
 input:focus~label,
 input:valid~label {
   font-size: 14px;
-  color: var(--fylePink);
+  color: var(--primaryColor);
 }

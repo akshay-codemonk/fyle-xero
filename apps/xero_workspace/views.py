@@ -56,12 +56,12 @@ class XeroConnect(LoginRequiredMixin, View):
         value = request.POST.get('type')
         if value == "connect":
             form = XeroCredentialsForm(request.POST, request.FILES)
-        if form.is_valid:
-            refresh_token = FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.refresh_token
-            consumer_key = request.POST['consumer_key']
-            file_id = upload_file_to_aws(request.FILES, refresh_token)
-            XeroCredential.objects.create(file_id=file_id, consumer_key=consumer_key,
-                                          workspace=Workspace.objects.get(id=workspace_id))
+            if form.is_valid:
+                refresh_token = FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.refresh_token
+                consumer_key = request.POST['consumer_key']
+                file_id = upload_file_to_aws(request.FILES, refresh_token)
+                XeroCredential.objects.create(file_id=file_id, consumer_key=consumer_key,
+                                              workspace=Workspace.objects.get(id=workspace_id))
         elif value == "disconnect":
             XeroCredential.objects.get(workspace__id=workspace_id).delete()
 

@@ -1,3 +1,8 @@
+:root {
+  --primaryColor: #f36;
+  --white: #fff;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -39,7 +44,7 @@ a {
 .app-name {
   margin-bottom: 0;
   margin-left: 15px;
-  color: #fff;
+  color: var(--white);
 }
 
 .login {
@@ -54,6 +59,6 @@ a {
 }
 
 button {
-  background-color: #f36;
-  color: #fff;
+  background-color: var(--primaryColor);
+  color: var(--white);
 }

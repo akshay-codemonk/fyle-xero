@@ -185,7 +185,7 @@ button:focus{
     border-color: var(--primaryColor);
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 768px) { 
   .profile-content {
     width:300px;
     position:absolute;

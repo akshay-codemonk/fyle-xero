@@ -10,8 +10,7 @@
 }
 
 .cardMainText {
-  color: #333;
-  font-weight: 700;
+  color: var(--mainHeading);
   font-size: 18px;
 }
 
@@ -27,11 +26,11 @@ input {
 
 input:focus,
 input:valid {
-  border-color: var(--fylePink);
+  border-color: var(--primaryColor);
 }
 
 input:focus~label,
 input:valid~label {
   font-size: 14px;
-  color: var(--fylePink);
+  color: var(--primaryColor);
 }

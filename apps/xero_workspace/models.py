@@ -7,6 +7,10 @@ from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
 
 
+def default_for_json_field():
+    return {"mappings": []}
+
+
 class Workspace(models.Model):
     """
     Workspace for Fyle Xero integration
@@ -14,9 +18,9 @@ class Workspace(models.Model):
     id = models.AutoField(primary_key=True, )
     name = models.CharField(max_length=20, help_text='Name of this workspace')
     user = models.ManyToManyField(UserProfile, help_text='Users belonging to this workspace')
-    employee_contact = JSONField(null=True, blank=True,
+    employee_contact = JSONField(default=default_for_json_field,
                                  help_text='Fyle Employee email to Xero Contact email mapping')
-    category_account = JSONField(null=True, blank=True,
+    category_account = JSONField(default=default_for_json_field,
                                  help_text='Fyle Category to Xero Account mapping')
     transform_sql = models.TextField(null=True, blank=True, help_text='Transform SQL')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
@@ -31,7 +35,7 @@ class XeroCredential(models.Model):
     Xero credentials
     """
     id = models.AutoField(primary_key=True, help_text='id')
-    pem_file = models.FileField(help_text='Xero pem file')
+    file_id = models.CharField(max_length=32, help_text='File upload id')
     consumer_key = models.CharField(max_length=256, help_text='Xero Consumer key')
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE, help_text='Workspace')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
