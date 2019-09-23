@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+  <link rel="stylesheet" href="{% static 'css/table.css' %}">
+  <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+  <link rel="stylesheet" href="{% static 'css/xero_workspace/workspace.css' %}">
+{% endblock %}
+
+{% block title %}Workspace{% endblock %}
+
+{% block navbar-header %}Xero Integration Dashboard{% endblock %}
+
+{% block content %}
+  <div class="dashboard-content">
+    <div class="d-flex dashboard-content-header">
+      {% if workspaces|length <= 1 %}
+        <h5 class="cardMainText">{{ workspaces|length }} Workspace</h5>
+      {% else %}
+        <h5 class="cardMainText">{{ workspaces|length }} Workspaces</h5>
+      {% endif %}
+      <button class="ml-auto btn main-btn" type="button" data-toggle="modal" data-target="#createWorkspaceModal">New Workspace</button>
+    </div>
+    <div class="table-layout">
+      <div class="table-responsive">
+        <table class="table">
+          <thead class="table-head">
+            <tr class="colHeadings">
+              <th scope="col" style="width: 75%">Workspace Name</th>
+              <th>Last Sync</th>
+              <th class="actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for workspace in workspaces %}
+            <tr>
+              <td>
+                <a href="{{workspace.id}}/activity">
+                  <div>
+                    {{ workspace.name }}
+                  </div>
+                </a>
+              </td>
+              <td>{{ workspace.last_sync }}</td>
+              <td class="actions">
+                <btn><i class="material-icons">autorenew</i></btn>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="createWorkspaceModal" tabindex="-1" role="dialog" aria-labelledby="createWorkspaceModalTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="createWorkspaceModalTitle">Create New Workspace</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="" method="post">
+              <div class="modal-body">
+                  {% csrf_token %}
+                  <input name="new-workspace-name" placeholder="Workspace Name" type="text" required />
+              </div>
+              <div class="modal-footer">
+                <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btnInline saveBtn" type="submit">Create</button>
+              </div>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

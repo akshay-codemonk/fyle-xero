@@ -1,0 +1,23 @@
+<ul class="nav nav-tabs" class="tabSection">
+    <li class="nav-item">
+        <a class="nav-link {{ activity }}" href="{% url 'xero_workspace:activity' workspace_id %}">Activity</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ source }}" href="{% url 'xero_workspace:source' workspace_id %}">Source</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ destination }}" href="{% url 'xero_workspace:destination' workspace_id %}">Destination</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ category_mapping }}" href="{% url 'xero_workspace:category_mapping' workspace_id %}">Category Mapping</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ employee_mapping }}" href="{% url 'xero_workspace:employee_mapping' workspace_id %}">Employee Mapping</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ transform }}" href="{% url 'xero_workspace:transform' workspace_id %}">Transform</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ schedule }}" href="{% url 'xero_workspace:schedule' workspace_id %}">Schedule</a>
+    </li>
+</ul>

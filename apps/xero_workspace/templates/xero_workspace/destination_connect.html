@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load socialaccount %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/connect.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+{% endblock %}
+
+{% block title %}Destination{% endblock %}
+
+{% block navbar-header %}{{workspace_name}}{% endblock %}
+
+{% block content %}
+    {% include 'layouts/navtab.html' %}
+
+    <div class="login center-div">
+        {% if is_connected %}
+            <p>Connected to your Xero account</p>
+            <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#XeroDisconnectModal">Disconnect</button>
+        {% else %}
+            <p>Connect to your Xero account</p>
+            <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#XeroCredentialsModal">Connect</button>
+
+        {% endif %}
+    </div>
+    <div class="modal fade" id="XeroCredentialsModal" tabindex="-1" role="dialog" aria-labelledby="XeroCredentialsModalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="XeroCredentialsModalTitle">Enter Xero Credentials</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="" method="post" enctype="multipart/form-data">
+              <div class="modal-body">
+                  {% csrf_token %}
+                    {{ form.pem_file }}
+                    {{ form.consumer_key }}
+              </div>
+              <div class="modal-footer">
+                <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btnInline saveBtn" type="submit" name="type" value="connect">Save & Connect</button>
+              </div>
+        </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="XeroDisconnectModal" tabindex="-1" role="dialog" aria-labelledby="XeroDisconnectModalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="XeroDisconnectModalTitle">Warning!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="" method="post">
+              {% csrf_token %}
+              <div class="modal-body">
+                  <p>Are you sure you want to disconnect your Xero account from this workspace?</p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">No</button>
+                <button class="btn btnInline saveBtn" type="submit"  name="type" value="disconnect">Yes</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}

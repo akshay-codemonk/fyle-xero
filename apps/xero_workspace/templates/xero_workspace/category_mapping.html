@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+{% endblock %}
+
+{% block title %}Category Mapping{% endblock %}
+
+{% block navbar-header %}{{workspace_name}}{% endblock %}
+
+{% block content %}
+    {% include 'layouts/navtab.html' %}
+
+    <div class="dashboard-content">
+        <div class="d-flex dashboard-content-header">
+            <p>Category Mapping</p>
+          <button class="ml-auto btn main-btn" type="button">New Mapping</button>
+        </div>
+        <div class="table-layout">
+          <div class="table-responsive"> 
+            <table class="table">
+              <thead class="table-head">
+                <tr class="colHeadings">
+                  <th style="width: 75%">category_name(Fyle)</th>
+                  <th class="actions">AccountCode(Xero)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bus</td>
+                  <td class="actions">449</td>
+                </tr>
+                <tr>
+                  <td>Courier</td>
+                  <td class="actions">82</td>
+                </tr>
+                <tr>
+                  <td>Entertainment</td>
+                  <td class="actions">420</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+{% endblock %}

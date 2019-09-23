@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load socialaccount %}
+<html>
+<head>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/user/login.css">
+    <title>Sign In</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="main-layout">
+        <header class="header">
+            <a href="#">
+                <img class="app-logo"
+                     src="https://accounts.staging.fyle.in/app/router/assets/images/logo/fyle_logo_light.png"
+                     alt="Fyle">
+            </a>
+            <h3 class="app-name">Fyle-Xero Integration</h3>
+        </header>
+        <div class="login">
+            <a href="{% provider_login_url 'fyle' %}">
+                <button class="btn btn-lg" type="button">Sign in with FYLE</button>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

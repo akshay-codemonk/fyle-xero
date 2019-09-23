@@ -1,0 +1,17 @@
+:root {
+    --fylePink: #FF3366;
+}
+
+.transform-content {
+    margin: 20px 20px 0px;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border: 1px solid #ccc;;
+    box-shadow: none;
+}
+
+.align-right {
+    float: right;
+}
