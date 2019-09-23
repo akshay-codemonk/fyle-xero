@@ -1,0 +1,31 @@
+body {
+    background-color: var(--pageBackground);
+}
+.center-div {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--lightGrey);
+  box-shadow: none;
+  color: #111;
+}
+
+input:focus,
+input:valid {
+  border-color: var(--primaryColor);
+}
+
+input:focus~label,
+input:valid~label {
+  font-size: 14px;
+  color: var(--primaryColor);
+}

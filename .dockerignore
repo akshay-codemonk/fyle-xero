@@ -1,0 +1,5 @@
+# Python environment
+env/*
+
+# Pycharm files
+.idea/*
