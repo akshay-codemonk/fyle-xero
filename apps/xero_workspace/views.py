@@ -92,15 +92,15 @@ class CategoryMappingView(LoginRequiredMixin, View):
             workspace.save()
         elif value == 'upload':
             file = request.FILES['bulk_upload_file']
-            wb = openpyxl.load_workbook(file)
-            worksheet = wb.active
-            for c1, c2 in worksheet.iter_rows(min_row=2):
+            work_book = openpyxl.load_workbook(file)
+            worksheet = work_book.active
+            for column_1, column_2 in worksheet.iter_rows(min_row=2):
                 new_mapping = {
-                    "category_name": str(c1.value),
-                    "account_code": str(c2.value).split('.')[0],
+                    "category_name": str(column_1.value),
+                    "account_code": str(column_2.value).split('.')[0],
                 }
                 workspace.category_account['mappings'] = [i for i in workspace.category_account['mappings'] if
-                                                          not (i["category_name"] == new_mapping["category_name"])]
+                                                          not i["category_name"] == new_mapping["category_name"]]
                 workspace.category_account['mappings'].append(new_mapping)
             workspace.save()
         else:
@@ -140,15 +140,15 @@ class EmployeeMappingView(LoginRequiredMixin, View):
             workspace.save()
         elif value == 'upload':
             file = request.FILES['bulk_upload_file']
-            wb = openpyxl.load_workbook(file)
-            worksheet = wb.active
-            for c1, c2 in worksheet.iter_rows(min_row=2):
+            work_book = openpyxl.load_workbook(file)
+            worksheet = work_book.active
+            for column_1, column_2 in worksheet.iter_rows(min_row=2):
                 new_mapping = {
-                    "employee_name": str(c1.value),
-                    "contact_email": str(c2.value),
+                    "employee_name": str(column_1.value),
+                    "contact_email": str(column_2.value),
                 }
                 workspace.employee_contact['mappings'] = [i for i in workspace.employee_contact['mappings'] if
-                                                          not (i["employee_name"] == new_mapping["employee_name"])]
+                                                          not i["employee_name"] == new_mapping["employee_name"]]
                 workspace.employee_contact['mappings'].append(new_mapping)
             workspace.save()
         else:
