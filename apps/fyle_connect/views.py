@@ -49,4 +49,4 @@ class FyleTokenView(View, LoginRequiredMixin):
             if access_token is not None and refresh_token is not None:
                 fyle_auth = FyleAuth.objects.create(url=FYLE_BASE_URL, refresh_token=refresh_token)
                 FyleCredential.objects.create(fyle_auth=fyle_auth, workspace=Workspace.objects.get(id=workspace_id))
-        return redirect('/workspace/{}/source'.format(workspace_id))
+        return redirect(f'/workspace/{workspace_id}/source')
