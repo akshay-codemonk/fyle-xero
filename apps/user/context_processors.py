@@ -9,7 +9,7 @@ def user_data(request):
     """
     if request.user.is_authenticated:
         try:
-            user_details = SocialAccount.objects.get(user=request.user).extra_data['data'][0]
+            user_details = SocialAccount.objects.get(user=request.user).extra_data['data']
             return {'username': user_details.get('full_name'), 'org': user_details.get('org_name')}
         except SocialAccount.DoesNotExist:
             return {}
