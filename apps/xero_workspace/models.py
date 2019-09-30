@@ -35,7 +35,7 @@ class XeroCredential(models.Model):
     Xero credentials
     """
     id = models.AutoField(primary_key=True, help_text='id')
-    file_id = models.CharField(max_length=32, help_text='File upload id')
+    private_key = models.TextField(help_text='Xero Application Private Key')
     consumer_key = models.CharField(max_length=256, help_text='Xero Consumer key')
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE, help_text='Workspace')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')

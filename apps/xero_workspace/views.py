@@ -9,7 +9,6 @@ from django.views import View
 
 from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm
 from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, FyleCredential
-from apps.xero_workspace.utils import upload_file_to_aws
 
 
 class WorkspaceView(View):
@@ -57,10 +56,9 @@ class XeroConnect(LoginRequiredMixin, View):
         if value == "connect":
             form = XeroCredentialsForm(request.POST, request.FILES)
             if form.is_valid:
-                refresh_token = FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.refresh_token
                 consumer_key = request.POST['consumer_key']
-                file_id = upload_file_to_aws(request.FILES, refresh_token)
-                XeroCredential.objects.create(file_id=file_id, consumer_key=consumer_key,
+                private_key = str(request.FILES['pem_file'].read(),'utf-8')
+                XeroCredential.objects.create(private_key=private_key, consumer_key=consumer_key,
                                               workspace=Workspace.objects.get(id=workspace_id))
         elif value == "disconnect":
             XeroCredential.objects.get(workspace__id=workspace_id).delete()
