@@ -23,9 +23,9 @@
             <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#FyleDisconnectModal">Disconnect</button>
         {% else %}
             <p>Connect to your Fyle account</p>
-            <form action="" method="post">
+            <form action="{% url 'xero_workspace:fyle_connect' workspace_id %}" method="post">
             {% csrf_token %}
-                <button class="btn btn-lg main-btn" type="submit" name="type" value="connect">Connect</button>
+                <button class="btn btn-lg main-btn" type="submit">Connect</button>
             </form>
 
         {% endif %}
@@ -40,14 +40,14 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form action="" method="post">
+          <form action="{% url 'xero_workspace:fyle_disconnect' workspace_id %}" method="post">
               {% csrf_token %}
               <div class="modal-body">
                   <p>Are you sure you want to disconnect your Fyle account from this workspace?</p>
               </div>
               <div class="modal-footer">
                 <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">No</button>
-                <button class="btn btnInline saveBtn" type="submit" name="type" value="disconnect">Yes</button>
+                <button class="btn btnInline saveBtn" type="submit">Yes</button>
               </div>
           </form>
         </div>

@@ -25,13 +25,11 @@
                           {% csrf_token %}
                           {{ form.transform_sql }}
                           {% if save_button %}
-                            <button class="btn main-btn mt-2 align-right" type="submit" name="submit"
-                                    value="edit" disabled>EDIT</button>
-                            <button class="btn main-btn-outline mt-2 align-right save-btn" type="submit"
-                                    name="submit" value="save">SAVE</button>
+                            <button class="btn main-btn mt-2 align-right" type="submit" disabled>EDIT</button>
+                            <button class="btn main-btn-outline mt-2 align-right save-btn" type="submit">SAVE</button>
                           {% else %}
-                            <button class="btn main-btn mt-2 align-right" type="submit" name="submit"
-                                  value="edit">EDIT</button>
+                            <button class="btn main-btn mt-2 align-right" type="submit" name="method"
+                                    value="update">EDIT</button>
                           {% endif %}
                       </form>
                   </div>
