@@ -23,7 +23,7 @@
           <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
                   data-target="#bulkAddMappingModal">Bulk Add/Update</button>
           <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
-                  name="submit" value="delete">Delete</button>
+                  name="method" value="delete">Delete</button>
         </div>
         {% if employee_contact.mappings|length == 0 %}
             <p style="text-align:center;color:red;">Looks like you don't have any Employee Mappings</p>
@@ -94,14 +94,15 @@
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
-                  <form action="" method="post" enctype="multipart/form-data">
+                  <form action="{% url 'xero_workspace:employee_mapping_bulk_upload' workspace_id %}"
+                        method="post" enctype="multipart/form-data">
                       <div class="modal-body">
                           {% csrf_token %}
                           {{ form.bulk_upload_file }}
                       </div>
                       <div class="modal-footer">
                         <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                        <button class="btn btnInline saveBtn" type="submit" name="submit" value="upload">Upload</button>
+                        <button class="btn btnInline saveBtn" type="submit">Upload</button>
                       </div>
                 </form>
                 </div>

@@ -7,7 +7,8 @@ class XeroCredentialsForm(forms.Form):
     """
     consumer_key = forms.CharField(max_length=256, label='', help_text=None,
                                    widget=forms.TextInput(attrs={'placeholder': 'Consumer Key'}))
-    pem_file = forms.FileField(label='', help_text=None)
+    pem_file = forms.FileField(label='', help_text=None,
+                               widget=forms.FileInput(attrs={'accept': '.pem'}))
 
 
 class CategoryMappingForm(forms.Form):
@@ -18,7 +19,8 @@ class CategoryMappingForm(forms.Form):
                                     widget=forms.TextInput(attrs={'placeholder': 'Category Name (Fyle)'}))
     account_code = forms.IntegerField(label='', help_text=None,
                                       widget=forms.NumberInput(attrs={'placeholder': 'Account Code (Xero)'}))
-    bulk_upload_file = forms.FileField(label='', help_text=None)
+    bulk_upload_file = forms.FileField(label='', help_text=None,
+                                       widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
 
 class EmployeeMappingForm(forms.Form):
@@ -29,7 +31,8 @@ class EmployeeMappingForm(forms.Form):
                                     widget=forms.TextInput(attrs={'placeholder': 'Employee Name (Fyle)'}))
     contact_email = forms.CharField(label='', help_text=None,
                                     widget=forms.TextInput(attrs={'placeholder': 'Contact Email (Xero)'}))
-    bulk_upload_file = forms.FileField(label='', help_text=None)
+    bulk_upload_file = forms.FileField(label='', help_text=None,
+                                       widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
 
 class TransformForm(forms.Form):

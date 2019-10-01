@@ -5,17 +5,24 @@ xero_workspace app URL Configuration
 from django.urls import path, include
 
 from apps.fyle_connect.views import FyleTokenView
-from apps.xero_workspace.views import WorkspaceView, XeroConnect, EmployeeMappingView, \
-    CategoryMappingView, TransformView
+from apps.xero_workspace.views import WorkspaceView, XeroConnectView, EmployeeMappingView, \
+    CategoryMappingView, TransformView, CategoryMappingBulkUploadView, \
+    EmployeeMappingBulkUploadView, XeroDisconnectView, DestinationView
 
 app_name = 'xero_workspace'
 urlpatterns = [
     path('', WorkspaceView.as_view(), name="workspace"),
-    path('<int:workspace_id>/destination/', XeroConnect.as_view(), name="destination"),
+    path('<int:workspace_id>/destination/', DestinationView.as_view(), name="destination"),
+    path('<int:workspace_id>/destination/connect/', XeroConnectView.as_view(), name="xero_connect"),
+    path('<int:workspace_id>/destination/disconnect/', XeroDisconnectView.as_view(), name="xero_disconnect"),
     path('<int:workspace_id>/category_mapping/', CategoryMappingView.as_view(),
          name="category_mapping"),
+    path('<int:workspace_id>/category_mapping/upload/', CategoryMappingBulkUploadView.as_view(),
+         name="category_mapping_bulk_upload"),
     path('<int:workspace_id>/employee_mapping/', EmployeeMappingView.as_view(),
          name="employee_mapping"),
+    path('<int:workspace_id>/employee_mapping/upload/', EmployeeMappingBulkUploadView.as_view(),
+         name="employee_mapping_bulk_upload"),
     path('<int:workspace_id>/transform/', TransformView.as_view(),
          name="transform"),
     path('<int:workspace_id>/source/', include('apps.fyle_connect.urls')),
