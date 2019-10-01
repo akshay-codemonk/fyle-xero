@@ -1,6 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 
 from apps.fyle_connect.models import FyleAuth
@@ -9,31 +9,42 @@ from apps.xero_workspace.models import Workspace, FyleCredential
 from fyle_xero_integration_web_app.settings import FYLE_BASE_URL
 
 
-class FyleAuthoriseView(View, LoginRequiredMixin):
+class SourceView(View):
     """
-    Fyle Connect view
+    Fyle (source) connect view
     """
-    template_name = "fyle_connect/source_connect.html"
+    template_name = "fyle_connect/source.html"
 
     def get(self, request, workspace_id):
-        workspace_name = Workspace.objects.get(id=workspace_id).name
         is_connected = FyleCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"source": "active", "workspace_id": workspace_id,
-                   "workspace_name": workspace_name, "is_connected": is_connected}
+        context = {"source": "active", "is_connected": is_connected}
         return render(request, self.template_name, context)
 
-    def post(self, request, workspace_id):
-        value = request.POST.get('type')
-        if value == 'connect':
-            fyle_oauth = FyleOAuth2()
-            return redirect(fyle_oauth.authorise(str(workspace_id)))
-        if value == 'disconnect':
-            FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).id).delete()
-            return HttpResponseRedirect(self.request.path_info)
-        return HttpResponseRedirect(self.request.path_info)
+
+class FyleConnectView(View):
+    """
+    Fyle (source) connect view
+    """
+
+    @staticmethod
+    def post(request, workspace_id):
+        print(workspace_id)
+        fyle_oauth = FyleOAuth2()
+        return redirect(fyle_oauth.authorise(str(workspace_id)))
 
 
-class FyleTokenView(View, LoginRequiredMixin):
+class FyleDisconnectView(View):
+    """
+    Fyle (source) disconnect view
+    """
+
+    @staticmethod
+    def post(request, workspace_id):
+        FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).id).delete()
+        return HttpResponseRedirect(reverse('xero_workspace:source', args=[workspace_id]))
+
+
+class FyleTokenView(View):
     """
     Exchange code for token and redirect to workspace URL using state
     """
@@ -49,4 +60,4 @@ class FyleTokenView(View, LoginRequiredMixin):
             if access_token is not None and refresh_token is not None:
                 fyle_auth = FyleAuth.objects.create(url=FYLE_BASE_URL, refresh_token=refresh_token)
                 FyleCredential.objects.create(fyle_auth=fyle_auth, workspace=Workspace.objects.get(id=workspace_id))
-        return redirect(f'/workspace/{workspace_id}/source')
+        return HttpResponseRedirect(reverse('xero_workspace:source', args=[workspace_id]))

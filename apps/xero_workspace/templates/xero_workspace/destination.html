@@ -36,7 +36,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form action="" method="post" enctype="multipart/form-data">
+          <form action="{% url 'xero_workspace:xero_connect' workspace_id %}" method="post" enctype="multipart/form-data">
               <div class="modal-body">
                   {% csrf_token %}
                     {{ form.pem_file }}
@@ -44,7 +44,7 @@
               </div>
               <div class="modal-footer">
                 <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                <button class="btn btnInline saveBtn" type="submit" name="type" value="connect">Save & Connect</button>
+                <button class="btn btnInline saveBtn" type="submit">Save & Connect</button>
               </div>
         </form>
         </div>
@@ -59,14 +59,14 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form action="" method="post">
+          <form action="{% url 'xero_workspace:xero_disconnect' workspace_id %}" method="post">
               {% csrf_token %}
               <div class="modal-body">
                   <p>Are you sure you want to disconnect your Xero account from this workspace?</p>
               </div>
               <div class="modal-footer">
                 <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">No</button>
-                <button class="btn btnInline saveBtn" type="submit"  name="type" value="disconnect">Yes</button>
+                <button class="btn btnInline saveBtn" type="submit">Yes</button>
               </div>
           </form>
         </div>

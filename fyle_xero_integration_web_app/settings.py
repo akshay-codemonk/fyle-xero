@@ -76,6 +76,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'apps.user.context_processors.user_data',
+                'apps.xero_workspace.context_processors.workspace_data',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
