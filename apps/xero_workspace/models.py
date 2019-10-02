@@ -46,7 +46,7 @@ class CategoryMapping(models.Model):
     """
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=64, help_text='Fyle Expense Category')
-    sub_category = models.CharField(max_length=64, help_text='Fyle Expense Sub-Category')
+    sub_category = models.CharField(max_length=64, null=True, help_text='Fyle Expense Sub-Category')
     account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')

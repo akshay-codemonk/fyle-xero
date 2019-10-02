@@ -25,7 +25,7 @@
           <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
                   name="method" value="delete">Delete</button>
         </div>
-        {% if employee_contact.mappings|length == 0 %}
+        {% if mappings.count == 0 %}
             <p style="text-align:center;color:red;">Looks like you don't have any Employee Mappings</p>
         {% else %}
             <div class="table-layout">
@@ -33,22 +33,22 @@
                 <table class="table">
                   <thead class="table-head">
                     <tr class="colHeadings">
-                      <th style="width: 75%">Employee Name (Fyle)</th>
-                      <th class="actions">Contact Email (Xero)</th>
+                      <th style="width: 75%">Employee Email (Fyle)</th>
+                      <th class="actions">Contact Name (Xero)</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
                   <form id="delete-form" action="" method="post">
                       {% csrf_token %}
-                        {% for mapping in employee_contact.mappings %}
+                        {% for mapping in mappings %}
                             <tr>
-                              <td>{{mapping.employee_name}}</td>
-                              <td class="actions">{{mapping.contact_email}}</td>
+                              <td>{{mapping.employee_email}}</td>
+                              <td class="actions">{{mapping.contact_name}}</td>
                               <td>
                                   <label class="checkbox-label">
-                                  <input type="checkbox" name="selected-mappings"
-                                     value='{"employee_name": "{{mapping.employee_name}}", "contact_email": "{{mapping.contact_email}}"}' />
+                                  <input type="checkbox" name="mapping_ids"
+                                     value='"{{mapping.id}}"' />
                                   <span class="checkmark"></span>
                               </label>
                               </td>
@@ -73,9 +73,9 @@
                   <form action="" method="post">
                       <div class="modal-body">
                           {% csrf_token %}
-                          {{ form.employee_name }}
+                          {{ form.employee_email }}
                           <br>
-                          {{ form.contact_email }}
+                          {{ form.contact_name }}
                       </div>
                       <div class="modal-footer">
                         <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
@@ -109,4 +109,4 @@
               </div>
             </div>
     </div>
-{% endblock %}
+    {% endblock %}

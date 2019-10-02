@@ -40,11 +40,11 @@ td:hover {
 }
 
 td {
-  padding: 16px !important;
   font-size: 16px;
   color: rgba(0, 0, 0, 0.87);
 }
 
 th {
   color: var(--darkGrey) !important;
+  vertical-align: middle !important;
 }
