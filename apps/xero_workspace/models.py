@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from apps.fyle_connect.models import FyleAuth
@@ -18,16 +17,43 @@ class Workspace(models.Model):
     id = models.AutoField(primary_key=True, )
     name = models.CharField(max_length=20, help_text='Name of this workspace')
     user = models.ManyToManyField(UserProfile, help_text='Users belonging to this workspace')
-    employee_contact = JSONField(default=default_for_json_field,
-                                 help_text='Fyle Employee email to Xero Contact email mapping')
-    category_account = JSONField(default=default_for_json_field,
-                                 help_text='Fyle Category to Xero Account mapping')
     transform_sql = models.TextField(null=True, blank=True, help_text='Transform SQL')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return self.name
+
+
+class EmployeeMapping(models.Model):
+    """
+    Mapping table for Fyle Employee to Xero Contact
+    """
+    id = models.AutoField(primary_key=True)
+    employee_email = models.EmailField(max_length=255, unique=False, help_text='Email id of the Fyle employee')
+    contact_name = models.CharField(max_length=255, help_text='Name of the Xero contact')
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
+
+    def __str__(self):
+        return str(self.id)
+
+
+class CategoryMapping(models.Model):
+    """
+    Mapping table for Fyle Category, Sub-category and Xero Account Code
+    """
+    id = models.AutoField(primary_key=True)
+    category = models.CharField(max_length=64, help_text='Fyle Expense Category')
+    sub_category = models.CharField(max_length=64, help_text='Fyle Expense Sub-Category')
+    account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
+
+    def __str__(self):
+        return str(self.id)
 
 
 class XeroCredential(models.Model):
