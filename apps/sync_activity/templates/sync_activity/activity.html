@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+{% endblock %}
+
+{% block title %}Activity{% endblock %}
+
+{% block navbar-header %}{{workspace_name}}{% endblock %}
+
+{% block content %}
+    {% include 'layouts/navtab.html' %}
+
+    <div class="dashboard-content">
+        <div class="d-flex dashboard-content-header">
+          <button class="ml-auto btn main-btn" type="button">Sync Now</button>
+        </div>
+        <div class="table-layout">
+          <div class="table-responsive">
+            <table class="table">
+              <thead class="table-head">
+                <tr class="colHeadings">
+                  <th>Status</th>
+                  <th style="width: 75%">Activity</th>
+                  <th class="actions">Time & Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.</td>
+                  <td>Trying to sync all expenses...</td>
+                  <td class="actions">2:31 Aug 18, 2019</td>
+                </tr>
+                <tr>
+                  <td>/</td>
+                  <td>Synced all reports successfully.</td>
+                  <td class="actions">2:31 Aug 18, 2019</td>
+                </tr>
+                <tr>
+                  <td>?</td>
+                  <td>Sync failed due to mismatch in fields</td>
+                  <td class="actions">2:31 Aug 18, 2019</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+    <link rel="stylesheet" href="{% static 'css/schedule/schedule.css' %}">
+{% endblock %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block navbar-header %}{{workspace_name}}{% endblock %}
+
+{% block content %}
+    {% include 'layouts/navtab.html' %}
+
+    <div style="margin: 0px 10px 0px;">
+      <div class="float-right">
+        <input type="checkbox" id="schedule" name="schedule" class="switch-input">
+	      <label for="schedule" class="switch-label">Enable Schedule</label>
+      </div>
+    </div>
+    <br/><br/>
+    <div class="schedule-content">
+      
+      <p class="ml-4">Sync Schedule</p>
+      <div class="row scheduleInputContainer">
+        <div class="col-md-4">
+          <input placeholder="Repeat Frequency (Minutes)" type="text" required />
+        </div>
+        <div class="col-md-4">
+            <input type="date" />
+        </div>
+        <div class="col-md-4">
+            <input type="time" />
+        </div>
+      </div>
+      <button class="btn main-btn mt-2 ml-4">SAVE SCHEDULE</button>
+    </div>
+{% endblock %}

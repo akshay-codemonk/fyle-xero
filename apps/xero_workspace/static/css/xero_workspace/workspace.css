@@ -1,0 +1,36 @@
+.workspace-name-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 13.33px;
+  font-weight: 400;
+  margin: 18px 0;
+  padding: 2px;
+  vertical-align: middle;
+}
+
+.cardMainText {
+  color: var(--mainHeading);
+  font-size: 18px;
+}
+
+input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--lightGrey);
+  box-shadow: none;
+  color: #111;
+}
+
+input:focus,
+input:valid {
+  border-color: var(--primaryColor);
+}
+
+input:focus~label,
+input:valid~label {
+  font-size: 14px;
+  color: var(--primaryColor);
+}
