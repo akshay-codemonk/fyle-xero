@@ -11,8 +11,8 @@ class Activity(models.Model):
     TRIGGERS = Choices('user', 'schedule', 'api')
 
     id = models.AutoField(primary_key=True, )
-    transform_sql = models.FileField(help_text='Transform SQL')
-    sync_db = models.FileField(null=True, blank=True, help_text='SQLite database')
+    transform_sql = models.TextField(null=True, blank=True, help_text='Transform SQL')
+    sync_db_file_id = models.CharField(max_length=32, null=True, blank=True, help_text='SQLite database file Id')
     status = models.CharField(choices=STATUS, max_length=20, default=STATUS.in_progress,
                               help_text='Current status of the activity')
     triggered_by = models.CharField(choices=TRIGGERS, default=TRIGGERS.user, max_length=20,
