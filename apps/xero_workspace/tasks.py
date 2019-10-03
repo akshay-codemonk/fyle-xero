@@ -127,11 +127,6 @@ def load_exports_to_fyle(connection, conn):
     connection.connection.Exports.post(data)
 
 
-def myconverter(o):
-    if isinstance(o, datetime.datetime):
-        return o.__str__()
-
-
 def sync_fyle_to_xero(workspace_id, activity_id):
     """
     Synchronise data from Fyle to Xero    Synchronises the Fyle
@@ -159,7 +154,10 @@ def sync_fyle_to_xero(workspace_id, activity_id):
         if bills_exist:
             transform(conn, workspace_id)
             data = generate_invoice_request_data(conn)
+            activity.request_data = data
+            activity.save()
             created_records = create_invoice(data, xero)
+            activity.response_data = created_records
             # load_exports_to_fyle()
         conn.close()
         activity.error_msg = 'Synchronisation completed successfully'

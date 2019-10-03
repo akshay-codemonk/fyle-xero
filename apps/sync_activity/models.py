@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from model_utils import Choices
 
@@ -17,8 +16,8 @@ class Activity(models.Model):
                               help_text='Current status of the activity')
     triggered_by = models.CharField(choices=TRIGGERS, default=TRIGGERS.user, max_length=20,
                                     help_text='Activity triggered by')
-    request_data = JSONField(null=True, blank=True, help_text='API request data')
-    response_data = JSONField(null=True, blank=True, help_text='API response data')
+    request_data = models.TextField(null=True, blank=True, help_text='Request data')
+    response_data = models.TextField(null=True, blank=True, help_text='Response data')
     error_msg = models.TextField(null=True, blank=True, help_text='Error message for user')  # Rename to display message
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
