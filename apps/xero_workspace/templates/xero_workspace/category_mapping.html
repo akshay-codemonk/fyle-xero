@@ -39,7 +39,12 @@
                     <th style="width: 40%">category name (Fyle)</th>
                     <th style="width: 40%">Sub-category name (Fyle)</th>
                     <th class="actions">Account Code (Xero)</th>
-                    <th></th>
+                    <th>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="select-all"/>
+                            <span class="checkmark"></span>
+                        </label>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -52,7 +57,7 @@
                         <td class="actions">{{mapping.account_code}}</td>
                         <td>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="mapping_ids"
+                                <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                        value='"{{mapping.id}}"'/>
                                 <span class="checkmark"></span>
                             </label>
@@ -119,3 +124,13 @@
     </div>
 </div>
 {% endblock %}
+
+{% block script %}
+$(document).ready(function () {
+console.log('conming here');
+$("#select-all").click(function () {
+$(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
+});
+});
+{% endblock %}
+
