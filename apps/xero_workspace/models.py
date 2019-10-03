@@ -4,6 +4,7 @@ from apps.fyle_connect.models import FyleAuth
 from apps.schedule.models import Schedule
 from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
+from fyle_xero_integration_web_app.settings import BASE_DIR
 
 
 def default_for_json_field():
@@ -23,6 +24,16 @@ class Workspace(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.pk is None:
+            file_path = '{}/resources/transform.sql'.format(BASE_DIR)
+            with open(file_path, 'r') as myfile:
+                transform_sql = myfile.read()
+                self.transform_sql = transform_sql
+        super(Workspace, self).save(force_insert=False, force_update=False, using=None,
+                                    update_fields=None)
 
 
 class EmployeeMapping(models.Model):

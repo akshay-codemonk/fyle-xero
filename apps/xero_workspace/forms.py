@@ -42,10 +42,6 @@ class TransformForm(forms.Form):
     Form for writing sql queries
     """
 
-    def __init__(self, *args, **kwargs):
-        super(TransformForm, self).__init__(*args, **kwargs)
-        self.fields['transform_sql'].initial = 'This is default text.'
-
     transform_sql = forms.CharField(label=None, help_text=None,
                                     widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control",
                                                                  "disabled": "True"}))

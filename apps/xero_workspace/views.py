@@ -214,8 +214,7 @@ class TransformView(View):
         workspace_id = kwargs['workspace_id']
         self.form = TransformForm()
         self.workspace = Workspace.objects.get(id=workspace_id)
-        if self.workspace.transform_sql is not None:
-            self.form.fields['transform_sql'].initial = self.workspace.transform_sql
+        self.form.fields['transform_sql'].initial = self.workspace.transform_sql
         self.context = {"transform": "active", "form": self.form}
         super(TransformView, self).setup(request)
 
