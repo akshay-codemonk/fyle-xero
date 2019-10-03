@@ -279,3 +279,9 @@ input:valid~label {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.mapping-error {
+  text-align: center;
+  width: 30%;
+  margin-bottom: 5px;
+}

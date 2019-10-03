@@ -36,7 +36,7 @@ select s.id as InvoiceNumber,
   (s.employee_email || '-' || s.org_name || '-' || s.id) as Description
 from
   settlements s
-  LEFT JOIN employee_contact e on e.EmailAddress = s.employee_email;
+  LEFT JOIN employee_contact e on e.EmployeeEmail = s.employee_email;
 
 
 -- SQL query to transform expenses into invoice_line_items

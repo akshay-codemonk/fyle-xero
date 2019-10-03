@@ -207,7 +207,7 @@ class TransformView(View):
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
         if method == 'update':
-            return self.update(*args, **kwargs)
+            return self.update(request, *args, **kwargs)
         return super(TransformView, self).dispatch(request, *args, **kwargs)
 
     def setup(self, request, *args, **kwargs):
