@@ -52,7 +52,7 @@ class WorkspaceViewTest(TestCase):
         workspace = Workspace.objects.get(name='test workspace 1')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.context['workspaces']) == 1)
-        self.assertEqual(response.context['workspaces'][0]['name'], workspace.name)
+        self.assertEqual(response.context['workspaces'][0].name, workspace.name)
 
     def test_create_workspaces(self):
         """

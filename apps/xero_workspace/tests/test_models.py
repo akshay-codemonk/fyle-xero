@@ -1,16 +1,8 @@
-import tempfile
-import shutil
-
-import mock
-from django.core.files import File
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
 from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceActivity
-
-# Temporary media directory for tests
-MEDIA_ROOT = tempfile.mkdtemp()
 
 
 class WorkspaceTestCases(TestCase):
@@ -36,7 +28,6 @@ class WorkspaceTestCases(TestCase):
         self.assertEqual(workspace.name, 'workspace1')
 
 
-@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class XeroCredentialTestCases(TestCase):
     """
     Test cases for XeroCredential model
@@ -47,18 +38,16 @@ class XeroCredentialTestCases(TestCase):
         """
         Set up test data
         """
-        pem_file = mock.MagicMock(spec=File)
-        pem_file.name = 'file.pem'
         workspace = Workspace.objects.create(name='workspace1')
 
-        XeroCredential.objects.create(pem_file=pem_file, consumer_key='consumer_key', workspace=workspace)
+        XeroCredential.objects.create(private_key='private_key', consumer_key='consumer_key', workspace=workspace)
 
-    def test_pem_file_value(self):
+    def test_private_key_value(self):
         """
-        Test for pem_file value
+        Test for private_key value
         """
         xero_credential = XeroCredential.objects.get(id=1)
-        self.assertEqual(xero_credential.pem_file.name, 'file.pem')
+        self.assertEqual(xero_credential.private_key, 'private_key')
 
     def test_consumer_key_value(self):
         """
@@ -67,16 +56,7 @@ class XeroCredentialTestCases(TestCase):
         xero_credential = XeroCredential.objects.get(id=1)
         self.assertEqual(xero_credential.consumer_key, 'consumer_key')
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-        Delete temporary directory
-        """
-        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
-        super().tearDownClass()
 
-
-@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class WorkspaceActivityTestCases(TestCase):
     """
     Test cases for WorkspaceActivity model
@@ -87,9 +67,7 @@ class WorkspaceActivityTestCases(TestCase):
         """
         Set up test data
         """
-        transform_sql_file = mock.MagicMock(spec=File)
-        transform_sql_file.name = 'transform.sql'
-        activity = Activity.objects.create(transform_sql=transform_sql_file)
+        activity = Activity.objects.create(transform_sql='transform_sql')
         workspace = Workspace.objects.create(name='workspace1')
 
         WorkspaceActivity.objects.create(workspace=workspace, activity=activity)
@@ -99,12 +77,4 @@ class WorkspaceActivityTestCases(TestCase):
         Test creation
         """
         workspace_activity = WorkspaceActivity.objects.get(id=1)
-        self.assertEqual(workspace_activity.activity.transform_sql.name, 'transform.sql')
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        Delete temporary directory
-        """
-        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
-        super().tearDownClass()
+        self.assertEqual(workspace_activity.activity.transform_sql, 'transform_sql')
