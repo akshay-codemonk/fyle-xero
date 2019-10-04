@@ -10,14 +10,14 @@ from xero.exceptions import XeroUnauthorized
 
 from apps.fyle_connect.utils import extract_fyle
 from apps.sync_activity.models import Activity
+from apps.sync_activity.utils import upload_sqlite
 from apps.xero_workspace.models import XeroCredential, Workspace, FyleCredential, CategoryMapping, \
     EmployeeMapping
-from fyle_xero_integration_web_app.settings import MEDIA_ROOT, FYLE_BASE_URL, FYLE_CLIENT_ID, FYLE_CLIENT_SECRET
+from fyle_xero_integration_web_app.settings import FYLE_BASE_URL, FYLE_CLIENT_ID, FYLE_CLIENT_SECRET
 
 
-def connect_to_xero(workspace_id, refresh_token):
+def connect_to_xero(workspace_id, ):
     """ Returns verified instance of Xero object that can invoke private API calls.
-    :param refresh_token: refresh token for xero connect
     :param workspace_id: Id of the workspace containing rsa_key and consumer_key of Xero private application
     :return: verified instance of Xero object
     """
@@ -99,9 +99,9 @@ def transform(conn, workspace_id):
     :return:
     """
     qry = Workspace.objects.get(id=workspace_id).transform_sql
-    c = conn.cursor()
-    c.executescript(qry)
-    c.close()
+    cur = conn.cursor()
+    cur.executescript(qry)
+    cur.close()
     conn.commit()
 
 
@@ -135,7 +135,8 @@ def sync_fyle_to_xero(workspace_id, activity_id):
     :return:
     """
     try:
-        conn = sqlite3.connect('{}/{}_{}.db'.format(MEDIA_ROOT, workspace_id, activity_id))
+        sqlite_file_path = f'/tmp/{workspace_id}_{activity_id}.db'
+        conn = sqlite3.connect(sqlite_file_path)
         refresh_token = FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.refresh_token
         activity = Activity.objects.get(id=activity_id)
 
@@ -145,7 +146,7 @@ def sync_fyle_to_xero(workspace_id, activity_id):
             client_secret=FYLE_CLIENT_SECRET,
             refresh_token=refresh_token
         )
-        xero = connect_to_xero(workspace_id, refresh_token)
+        xero = connect_to_xero(workspace_id)
 
         load_mapping(workspace_id, conn, xero)
 
@@ -162,30 +163,35 @@ def sync_fyle_to_xero(workspace_id, activity_id):
         conn.close()
         activity.error_msg = 'Synchronisation completed successfully'
         activity.status = Activity.STATUS.success
+
+        with open(sqlite_file_path, "rb") as file:
+            file_content = file.read()
+        file_id = upload_sqlite(f'{workspace_id}_{activity_id}.db', file_content, refresh_token)
+        activity.sync_db_file_id = file_id
     except FyleCredential.DoesNotExist:
         activity.status = Activity.STATUS.failed
         activity.error_msg = "Please connect your Source (Fyle) Account"
     except XeroCredential.DoesNotExist:
         activity.status = Activity.STATUS.failed
         activity.error_msg = "Please connect your Destination (Xero) Account"
-    except XeroUnauthorized as e:
+    except XeroUnauthorized as error:
         activity.status = Activity.STATUS.failed
-        activity.error_msg = f"Unable to connect to your Xero account, {e}"
-    except sqlite3.OperationalError as e:
+        activity.error_msg = f"Unable to connect to your Xero account, {error}"
+    except sqlite3.OperationalError as error:
         activity.status = Activity.STATUS.failed
-        activity.error_msg = f"Error performing transform operation, {e}"
+        activity.error_msg = f"Error performing transform operation, {error}"
     except requests.exceptions.ConnectionError:
         activity.status = Activity.STATUS.timeout
         activity.error_msg = "Failed to establish a network connection, please try again later"
-    except NoPrivilegeError as e:
+    except NoPrivilegeError as error:
         activity.status = Activity.STATUS.failed
-        activity.error_msg = f"Please check your Fyle credentials, {e}"
-    except KeyError as e:
+        activity.error_msg = f"Please check your Fyle credentials, {error}"
+    except KeyError as error:
         activity.status = Activity.STATUS.failed
-        activity.error_msg = f"Please check your mapping tables, {e}"
-    except Exception as e:
+        activity.error_msg = f"Please check your mapping tables, {error}"
+    except Exception as error:
         activity.status = Activity.STATUS.failed
-        activity.error_msg = e
+        activity.error_msg = error
     finally:
         conn.close()
         activity.save()
