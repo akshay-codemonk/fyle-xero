@@ -5,7 +5,7 @@ from django_q.tasks import async_task
 from apps.sync_activity.models import Activity
 from apps.xero_workspace.hooks import update_activity_status
 from apps.xero_workspace.models import Workspace, WorkspaceActivity
-from apps.xero_workspace.tasks import sync_fyle_to_xero
+from apps.xero_workspace.tasks import sync_xero
 
 
 class SyncActivityView(View):
@@ -33,6 +33,6 @@ class SyncActivityView(View):
                                                error_msg='Synchronisation in progress')
             activity_id = activity.id
             WorkspaceActivity.objects.create(workspace=self.workspace, activity=activity)
-            async_task(sync_fyle_to_xero, workspace_id, activity_id, hook=update_activity_status)
+            async_task(sync_xero, workspace_id, activity_id, hook=update_activity_status)
             return render(request, self.template_name, self.context)
         return render(request, self.template_name, self.context)

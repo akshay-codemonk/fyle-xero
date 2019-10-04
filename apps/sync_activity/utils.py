@@ -1,23 +1,25 @@
-from fylesdk import FyleSDK
-
-from fyle_xero_integration_web_app.settings import FYLE_BASE_URL, FYLE_CLIENT_ID, FYLE_CLIENT_SECRET
-
-
-def upload_sqlite(file_name, file, refresh_token):
+def upload_sqlite(file_name, file, connection):
     """
     Uploads sqlite file to AWS using Fyle SDK
-    :param file_name:
-    :param file:
-    :param refresh_token:
+    :param file_name: Name of the file to be uploaded
+    :param file: file object
+    :param connection: Fyle connection
     :return: file_id
     """
-    connection = FyleSDK(
-        base_url=FYLE_BASE_URL,
-        client_id=FYLE_CLIENT_ID,
-        client_secret=FYLE_CLIENT_SECRET,
-        refresh_token=refresh_token
-    )
     file_id = connection.Files.post(file_name)['id']
     s3_upload_url = connection.Files.create_upload_url(file_id)['url']
     connection.Files.upload_file_to_aws('application/x-sqlite3', file, s3_upload_url)
     return file_id
+
+
+def update_activity_status(activity, message, status):
+    """
+    Update the Activity status
+    :param activity:
+    :param message:
+    :param status:
+    :return:
+    """
+    activity.error_msg = message
+    activity.status = status
+    activity.save()

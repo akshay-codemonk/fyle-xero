@@ -1,6 +1,7 @@
 import json
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 import requests
 
 from fyle_xero_integration_web_app import settings
@@ -48,7 +49,7 @@ class FyleOAuth2():
 def extract_fyle(connection, conn):
     """
     extracts data from fyle and store in SQLite database
-    :param connection:
+    :param connection: Fyle connection object
     :param conn: SQLite connection object
     :return:
     """
@@ -82,3 +83,15 @@ def extract_fyle(connection, conn):
         df_expenses.to_sql('expenses', conn, if_exists='replace', index=False)
         return True
     return False
+
+
+def load_exports_to_fyle(connection, conn):
+    """
+    Load the reference of exported expenses to Fyle
+    :param connection:
+    :param conn:
+    :return:
+    """
+    exports = pd.read_sql_query(sql="select * from fyle_load_tpa_exports", con=conn)
+    data = exports.to_dict(orient='records')
+    connection.connection.Exports.post(data)
