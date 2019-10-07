@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views import View
 
 from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm
-from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential
+from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, CategoryMapping, EmployeeMapping
 
 
 class WorkspaceView(View):
@@ -95,25 +95,23 @@ class CategoryMappingView(View):
     def get(self, request, workspace_id):
         form = CategoryMappingForm()
         context = {"category_mapping": "active", "form": form,
-                   "category_account": self.workspace.category_account}
+                   "mappings": CategoryMapping.objects.filter(workspace__id=workspace_id)}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
         form = CategoryMappingForm(request.POST)
         if form.is_valid:
-            new_mapping = {
-                "category_name": request.POST['category_name'],
-                "account_code": request.POST['account_code']
-            }
-            self.workspace.category_account["mappings"].append(new_mapping)
+            category = request.POST['category']
+            sub_category = request.POST['sub_category']
+            account_code = request.POST['account_code']
+            CategoryMapping.objects.create(workspace=self.workspace, category=category, sub_category=sub_category,
+                                           account_code=account_code)
             self.workspace.save()
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
-        selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('selected-mappings')]
-        self.workspace.category_account['mappings'] = [i for i in self.workspace.category_account['mappings'] if
-                                                       i not in selected_mappings]
-        self.workspace.save()
+        selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('mapping_ids')]
+        CategoryMapping.objects.filter(id__in=selected_mappings).delete()
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -128,15 +126,13 @@ class CategoryMappingBulkUploadView(View):
         file = request.FILES['bulk_upload_file']
         work_book = openpyxl.load_workbook(file)
         worksheet = work_book.active
-        for column_1, column_2 in worksheet.iter_rows(min_row=2):
-            new_mapping = {
-                "category_name": str(column_1.value),
-                "account_code": str(column_2.value).split('.')[0],
-            }
-            workspace.category_account['mappings'] = [i for i in workspace.category_account['mappings'] if
-                                                      not i["category_name"] == new_mapping["category_name"]]
-            workspace.category_account['mappings'].append(new_mapping)
-        workspace.save()
+        category_objects = []
+        for category, sub_category, account_code in worksheet.iter_rows(min_row=2):
+            sub_category.value = '' if sub_category.value is None else sub_category.value
+            category_objects.append(
+                CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
+                                account_code=account_code.value))
+        CategoryMapping.objects.bulk_create(category_objects)
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
 
 
@@ -161,25 +157,21 @@ class EmployeeMappingView(View):
     def get(self, request, workspace_id):
         form = EmployeeMappingForm()
         context = {"employee_mapping": "active", "form": form,
-                   "employee_contact": self.workspace.employee_contact}
+                   "mappings": EmployeeMapping.objects.filter(workspace__id=workspace_id)}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
         form = EmployeeMappingForm(request.POST)
         if form.is_valid:
-            new_mapping = {
-                "employee_name": request.POST['employee_name'],
-                "contact_email": request.POST['contact_email']
-            }
-            self.workspace.employee_contact["mappings"].append(new_mapping)
-            self.workspace.save()
+            employee_email = request.POST['employee_email']
+            contact_name = request.POST['contact_name']
+            EmployeeMapping.objects.create(workspace=self.workspace, employee_email=employee_email,
+                                           contact_name=contact_name)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
-        selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('selected-mappings')]
-        self.workspace.employee_contact['mappings'] = [i for i in self.workspace.employee_contact['mappings'] if
-                                                       i not in selected_mappings]
-        self.workspace.save()
+        selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('mapping_ids')]
+        EmployeeMapping.objects.filter(id__in=selected_mappings).delete()
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -194,15 +186,12 @@ class EmployeeMappingBulkUploadView(View):
         file = request.FILES['bulk_upload_file']
         work_book = openpyxl.load_workbook(file)
         worksheet = work_book.active
-        for column_1, column_2 in worksheet.iter_rows(min_row=2):
-            new_mapping = {
-                "employee_name": str(column_1.value),
-                "contact_email": str(column_2.value),
-            }
-            workspace.employee_contact['mappings'] = [i for i in workspace.employee_contact['mappings'] if
-                                                      not i["employee_name"] == new_mapping["employee_name"]]
-            workspace.employee_contact['mappings'].append(new_mapping)
-        workspace.save()
+        employee_mapping_objects = []
+        for employee_email, contact_name in worksheet.iter_rows(min_row=2):
+            employee_mapping_objects.append(
+                EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
+                                contact_name=contact_name.value))
+        EmployeeMapping.objects.bulk_create(employee_mapping_objects)
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
 
 

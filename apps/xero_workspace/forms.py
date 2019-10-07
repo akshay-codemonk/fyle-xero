@@ -15,8 +15,10 @@ class CategoryMappingForm(forms.Form):
     """
     Form for getting category mapping key and value
     """
-    category_name = forms.CharField(max_length=50, label='', help_text=None,
-                                    widget=forms.TextInput(attrs={'placeholder': 'Category Name (Fyle)'}))
+    category = forms.CharField(max_length=64, label='', help_text=None,
+                               widget=forms.TextInput(attrs={'placeholder': 'Category Name (Fyle)'}))
+    sub_category = forms.CharField(max_length=64, label='', help_text=None,
+                                   widget=forms.TextInput(attrs={'placeholder': 'Sub-Category Name (Fyle)'}))
     account_code = forms.IntegerField(label='', help_text=None,
                                       widget=forms.NumberInput(attrs={'placeholder': 'Account Code (Xero)'}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
@@ -27,10 +29,10 @@ class EmployeeMappingForm(forms.Form):
     """
     Form for getting employee mapping key and value
     """
-    employee_name = forms.CharField(max_length=50, label='', help_text=None,
-                                    widget=forms.TextInput(attrs={'placeholder': 'Employee Name (Fyle)'}))
-    contact_email = forms.CharField(label='', help_text=None,
-                                    widget=forms.TextInput(attrs={'placeholder': 'Contact Email (Xero)'}))
+    employee_email = forms.CharField(max_length=64, label='', help_text=None,
+                                     widget=forms.TextInput(attrs={'placeholder': 'Employee Email (Fyle)'}))
+    contact_name = forms.CharField(max_length=64, label='', help_text=None,
+                                   widget=forms.TextInput(attrs={'placeholder': 'Contact Name (Xero)'}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 

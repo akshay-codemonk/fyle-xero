@@ -3,9 +3,9 @@
 {% load static %}
 
 {% block link %}
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
-    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
 {% endblock %}
 
 {% block title %}Employee Mapping{% endblock %}
@@ -13,100 +13,118 @@
 {% block navbar-header %}{{workspace_name}}{% endblock %}
 
 {% block content %}
-    {% include 'layouts/navtab.html' %}
+{% include 'layouts/navtab.html' %}
 
-    <div class="dashboard-content">
-        <div class="d-flex dashboard-content-header">
-            <p>Employee Mapping</p>
-          <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                  data-target="#createEmployeeMappingModal">New Mapping</button>
-          <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
-                  data-target="#bulkAddMappingModal">Bulk Add/Update</button>
-          <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
-                  name="method" value="delete">Delete</button>
-        </div>
-        {% if employee_contact.mappings|length == 0 %}
-            <p style="text-align:center;color:red;">Looks like you don't have any Employee Mappings</p>
-        {% else %}
-            <div class="table-layout">
-              <div class="table-responsive">
-                <table class="table">
-                  <thead class="table-head">
-                    <tr class="colHeadings">
-                      <th style="width: 75%">Employee Name (Fyle)</th>
-                      <th class="actions">Contact Email (Xero)</th>
-                      <th></th>
+<div class="dashboard-content">
+    <div class="d-flex dashboard-content-header">
+        <p>Employee Mapping</p>
+        <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
+                data-target="#createEmployeeMappingModal">New Mapping
+        </button>
+        <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
+                data-target="#bulkAddMappingModal">Bulk Add/Update
+        </button>
+        <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
+                name="method" value="delete">Delete
+        </button>
+    </div>
+    {% if mappings.count == 0 %}
+    <p style="text-align:center;color:red;">Looks like you don't have any Employee Mappings</p>
+    {% else %}
+    <div class="table-layout">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="table-head">
+                <tr class="colHeadings">
+                    <th style="width: 75%">Employee Email (Fyle)</th>
+                    <th class="actions">Contact Name (Xero)</th>
+                    <th>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="select-all"/>
+                            <span class="checkmark"></span>
+                        </label>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <form id="delete-form" action="" method="post">
+                    {% csrf_token %}
+                    {% for mapping in mappings %}
+                    <tr>
+                        <td>{{mapping.employee_email}}</td>
+                        <td class="actions">{{mapping.contact_name}}</td>
+                        <td>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
+                                       value='"{{mapping.id}}"'/>
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                  <form id="delete-form" action="" method="post">
-                      {% csrf_token %}
-                        {% for mapping in employee_contact.mappings %}
-                            <tr>
-                              <td>{{mapping.employee_name}}</td>
-                              <td class="actions">{{mapping.contact_email}}</td>
-                              <td>
-                                  <label class="checkbox-label">
-                                  <input type="checkbox" name="selected-mappings"
-                                     value='{"employee_name": "{{mapping.employee_name}}", "contact_email": "{{mapping.contact_email}}"}' />
-                                  <span class="checkmark"></span>
-                              </label>
-                              </td>
-                            </tr>
-                        {% endfor %}
-                      </form>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-        {% endif %}
-          <!-- Modal -->
-          <div class="modal fade" id="createEmployeeMappingModal" tabindex="-1" role="dialog" aria-labelledby="createEmployeeMappingModalTitle" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
+                    {% endfor %}
+                </form>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Modal -->
+    <div class="modal fade" id="createEmployeeMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="createEmployeeMappingModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
                     <h5 class="modal-title" id="createEmployeeMappingModalTitle">Create New Mapping</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                  </div>
-                  <form action="" method="post">
-                      <div class="modal-body">
-                          {% csrf_token %}
-                          {{ form.employee_name }}
-                          <br>
-                          {{ form.contact_email }}
-                      </div>
-                      <div class="modal-footer">
+                </div>
+                <form action="" method="post">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{ form.employee_email }}
+                        <br>
+                        {{ form.contact_name }}
+                    </div>
+                    <div class="modal-footer">
                         <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
                         <button class="btn btnInline saveBtn" type="submit">Create</button>
-                      </div>
+                    </div>
                 </form>
-                </div>
-              </div>
             </div>
-            <div class="modal fade" id="bulkAddMappingModal" tabindex="-1" role="dialog" aria-labelledby="bulkAddMappingModalTitle" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
+        </div>
+    </div>
+    <div class="modal fade" id="bulkAddMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="bulkAddMappingModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
                     <h5 class="modal-title" id="bulkAddMappingModalTitle">Bulk Upload Mappings</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                  </div>
-                  <form action="{% url 'xero_workspace:employee_mapping_bulk_upload' workspace_id %}"
-                        method="post" enctype="multipart/form-data">
-                      <div class="modal-body">
-                          {% csrf_token %}
-                          {{ form.bulk_upload_file }}
-                      </div>
-                      <div class="modal-footer">
+                </div>
+                <form action="{% url 'xero_workspace:employee_mapping_bulk_upload' workspace_id %}"
+                      method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{ form.bulk_upload_file }}
+                    </div>
+                    <div class="modal-footer">
                         <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
                         <button class="btn btnInline saveBtn" type="submit">Upload</button>
-                      </div>
+                    </div>
                 </form>
-                </div>
-              </div>
             </div>
+        </div>
     </div>
+</div>
+{% endblock %}
+
+{% block script %}
+$(document).ready(function () {
+$("#select-all").click(function () {
+$(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
+});
+});
 {% endblock %}
