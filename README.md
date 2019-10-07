@@ -22,18 +22,17 @@ This repository is home to the **Fyle Xero Integration Web App**.
 
 Visit [http://localhost:8000](http://localhost:8000) to access the application
 
-### synchronization
+### Synchronization
 To perform synchronization [Redis](https://redis.io/) is required
 
 1. Start a Redis server by downloading and running it as mentioned [here](https://redis.io/topics/quickstart)
  or use the docker run command 
-
 ```Docker run -p 6379:6379 --name=redis redis```
 
-2. Once Redis is up and running, start a Django Q cluster with 
-```
-python manage.py qcluster
-```
+2. Once Redis is up and running, start a Django Q cluster by running ```
+python manage.py qcluster```
+
+Now click on the sync button to perform Fyle to Xero synchronization 
 
 
  
