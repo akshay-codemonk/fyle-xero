@@ -8,6 +8,7 @@ from django.views import View
 
 from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm
 from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, CategoryMapping, EmployeeMapping
+from apps.xero_workspace.utils import create_workspace
 
 
 class WorkspaceView(View):
@@ -27,10 +28,10 @@ class WorkspaceView(View):
         return render(request, self.template_name, {"workspaces": user_workspaces})
 
     def post(self, request):
-        new_workspace_name = request.POST.get('new-workspace-name')
-        instance = Workspace.objects.create(name=new_workspace_name)
-        instance.user.add(request.user)
-        instance.save()
+        workspace_name = request.POST.get('new-workspace-name')
+        workspace = create_workspace(workspace_name=workspace_name)
+        workspace.user.add(request.user)
+        workspace.save()
         return HttpResponseRedirect(self.request.path_info)
 
 
