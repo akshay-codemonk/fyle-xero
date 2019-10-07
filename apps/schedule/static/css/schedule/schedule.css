@@ -2,53 +2,41 @@ body {
     background-color: var(--lightGrey);
 }
 
-.schedule-content {
-    margin: 20px 20px 0px;
-    border: 1px solid var(--lightGrey);
-    padding: 10px;
-    background-color: var(--white) !important;
-}
-
 .scheduleInputContainer {
     margin: 2%;
 }
-input {
-    width: 60%;
-    border: 0;
-    outline: 0;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--lightGrey);
-    box-shadow: none;
-    color: #111;
-  }
-  
-  input:focus,
-  input:valid {
+
+input:focus,
+input:valid {
     border-color: var(--primaryColor);
-  }
-  input:focus~label,
-  input:valid~label {
+}
+input:focus~label,
+input:valid~label {
     font-size: 14px;
     color: var(--primaryColor);
-  }
+}
 
-  .marginLeft25 {
+.marginLeft25 {
     margin-left: 3%;
-  }
-  .switch-input {
+}
+.switch-input {
     display: none;
-  }
-  .switch-label {
+}
+
+label {
+    margin-bottom: 0;
+}
+
+.switch-label {
     position: relative;
     display: inline-block;
     min-width: 112px;
     cursor: pointer;
     font-weight: 500;
     text-align: left;
-    margin: 16px;
-    padding: 16px 0 16px 44px;
-  }
-  .switch-label:before, .switch-label:after {
+    padding: 0 0 0 44px;
+}
+.switch-label:before, .switch-label:after {
     content: "";
     position: absolute;
     margin: 0;
@@ -59,40 +47,64 @@ input {
     transform: translate(0, -50%);
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
-  }
-  .switch-label:before {
+}
+.switch-label:before {
     left: 1px;
     width: 34px;
     height: 14px;
     background-color: #9E9E9E;
     border-radius: 8px;
-  }
-  .switch-label:after {
+}
+.switch-label:after {
     left: 0;
     width: 20px;
     height: 20px;
     background-color: var(--pageBackground);
     border-radius: 50%;
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.14), 0 2px 2px 0 rgba(0, 0, 0, 0.098), 0 1px 5px 0 rgba(0, 0, 0, 0.084);
-  }
-  .switch-label .toggle--on {
-    display: none;
-  }
-  .switch-label .toggle--off {
-    display: inline-block;
-  }
-  .switch-input:checked + .switch-label:before {
-    background-color: #EB96BD;
-  }
-  .switch-input:checked + .switch-label:after {
-    background-color: var(--primaryColor);
-    -ms-transform: translate(80%, -50%);
-    -webkit-transform: translate(80%, -50%);
-    transform: translate(80%, -50%);
-  }
-  .switch-input:checked + .switch-label .toggle--on {
-    display: inline-block;
-  }
-  .switch-input:checked + .switch-label .toggle--off {
-    display: none;
-  }
+}
+.switch-label .toggle--on {
+  display: none;
+}
+.switch-label .toggle--off {
+  display: inline-block;
+}
+.switch-input:checked + .switch-label:before {
+  background-color: #7ed321;
+}
+.switch-input:checked + .switch-label:after {
+   background-color: #569413;
+  -ms-transform: translate(80%, -50%);
+  -webkit-transform: translate(80%, -50%);
+  transform: translate(80%, -50%);
+}
+.switch-input:checked + .switch-label .toggle--on {
+  display: inline-block;
+}
+.switch-input:checked + .switch-label .toggle--off {
+  display: none;
+}
+
+p {
+    text-align: center;
+    font-weight: 500;
+    margin: 0;
+}
+
+.form-control {
+    width: 35%;
+    margin-left: 5%;
+}
+
+.input-group-text {
+    height: 38px;
+}
+
+.input-group {
+    width: 65%;
+    margin-left: 5%;
+}
+
+.datetimepicker, .time-interval {
+    align-items: center;
+}

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.xero_workspace',
     'apps.schedule',
     'apps.sync_activity',
+    'tempus_dominus',
 
 ]
 

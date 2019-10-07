@@ -5,6 +5,7 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
     <link rel="stylesheet" href="{% static 'css/schedule/schedule.css' %}">
+    {{ form.media }}
 {% endblock %}
 
 {% block title %}Schedule{% endblock %}
@@ -13,28 +14,41 @@
 
 {% block content %}
     {% include 'layouts/navtab.html' %}
-
-    <div style="margin: 0px 10px 0px;">
-      <div class="float-right">
-        <input type="checkbox" id="schedule" name="schedule" class="switch-input">
-	      <label for="schedule" class="switch-label">Enable Schedule</label>
-      </div>
-    </div>
-    <br/><br/>
-    <div class="schedule-content">
-      
-      <p class="ml-4">Sync Schedule</p>
-      <div class="row scheduleInputContainer">
-        <div class="col-md-4">
-          <input placeholder="Repeat Frequency (Minutes)" type="text" required />
-        </div>
-        <div class="col-md-4">
-            <input type="date" />
-        </div>
-        <div class="col-md-4">
-            <input type="time" />
-        </div>
-      </div>
-      <button class="btn main-btn mt-2 ml-4">SAVE SCHEDULE</button>
+    <div class="dashboard-content">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex dashboard-content-header">
+                <h5 class="cardMainText">Sync Schedule</h5>
+                <div class="enable-schedule ml-auto">
+                    {% if enabled is True %}
+                    <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
+                           class="switch-input" checked>
+                    <label for="schedule-enabled" class="switch-label">Enable Schedule</label>
+                    {% else %}
+                        <input type="checkbox" id="schedule-disabled" name="schedule" value="enabled"
+                               class="switch-input">
+                        <label for="schedule-disabled" class="switch-label">Enable Schedule</label>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+            <div class="schedule-content d-flex justify-content-between">
+                <div class="col-md-4">
+                    <div class="d-flex time-interval">
+                        <p>Repeat Frequency</p>
+                        {{ form.time_interval }}
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="d-flex datetimepicker">
+                        <p>Start Date & Time</p>
+                        {{ form.start_at }}
+                </div>
+                </div>
+                <div class="d-flex justify-content-center col-md-3">
+                    <button class="main-btn btn save-btn" type="submit">Save Schedule</button>
+                </div>
+            </div>
+        </form>
     </div>
 {% endblock %}
