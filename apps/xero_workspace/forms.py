@@ -1,4 +1,5 @@
 from django import forms
+from tempus_dominus.widgets import DateTimePicker
 
 
 class XeroCredentialsForm(forms.Form):
@@ -47,3 +48,25 @@ class TransformForm(forms.Form):
                                                                  "disabled": "True"}))
     test_sql = forms.CharField(label=None, help_text=None,
                                widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control"}))
+
+
+class ScheduleForm(forms.Form):
+    """
+    Form to get schedule data
+    """
+
+    next_run = forms.DateTimeField(widget=DateTimePicker(
+        options={
+            'useCurrent': True,
+            'format': 'YYYY-MM-DD hh:mm a',
+        },
+        attrs={
+            'append': 'fa fa-calendar',
+            'icon_toggle': True,
+        }
+    ))
+
+    minutes = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
+        "class": "form-control",
+        "placeholder": "in minutes"
+    }))

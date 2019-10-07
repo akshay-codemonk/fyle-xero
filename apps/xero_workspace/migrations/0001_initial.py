@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('schedule', '0001_initial'),
+        # ('schedule', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('sync_activity', '0001_initial'),
         ('fyle_connect', '0001_initial'),
