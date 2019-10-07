@@ -19,7 +19,7 @@ class SyncActivityView(View):
     def setup(self, request, *args, **kwargs):
         workspace_id = kwargs['workspace_id']
         self.workspace = Workspace.objects.get(id=workspace_id)
-        workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id)
+        workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id).order_by('-updated_at')
         self.context = {"activity": "active", "workspace_activity": workspace_activity}
         super(SyncActivityView, self).setup(request)
 

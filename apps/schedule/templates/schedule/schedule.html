@@ -20,7 +20,7 @@
             <div class="d-flex dashboard-content-header">
                 <h5 class="cardMainText">Sync Schedule</h5>
                 <div class="enable-schedule ml-auto">
-                    {% if enabled is True %}
+                    {% if enabled != 0 %}
                     <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
                            class="switch-input" checked>
                     <label for="schedule-enabled" class="switch-label">Enable Schedule</label>
@@ -36,13 +36,13 @@
                 <div class="col-md-4">
                     <div class="d-flex time-interval">
                         <p>Repeat Frequency</p>
-                        {{ form.time_interval }}
+                        {{ form.minutes }}
                     </div>
                 </div>
                 <div class="col-md-5">
                     <div class="d-flex datetimepicker">
                         <p>Start Date & Time</p>
-                        {{ form.start_at }}
+                        {{ form.next_run }}
                 </div>
                 </div>
                 <div class="d-flex justify-content-center col-md-3">
