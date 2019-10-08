@@ -147,9 +147,9 @@ def transform(conn, workspace_id):
 
 def create_workspace(workspace_name):
     """
-    Create workspace and its required
+    Create workspace and it's dependencies
     :param workspace_name:
-    :return:
+    :return: workspace instance
     """
     workspace = Workspace.objects.create(name=workspace_name)
 

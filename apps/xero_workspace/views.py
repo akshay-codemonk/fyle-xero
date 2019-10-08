@@ -258,9 +258,9 @@ class ScheduleView(View):
 
     def post(self, request, workspace_id):
         schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
-        datetime_str = request.POST['next_run']
+        datetime_str = request.POST.get('next_run')
         datetime_object = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
-        minutes = request.POST['minutes']
+        minutes = request.POST.get('minutes')
         value = request.POST.get('schedule')
         schedule_enabled = 0
         if value == 'enabled':
