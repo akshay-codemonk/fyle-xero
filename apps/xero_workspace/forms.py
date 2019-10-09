@@ -7,7 +7,7 @@ class XeroCredentialsForm(forms.Form):
     Form for getting xero credentials
     """
     consumer_key = forms.CharField(max_length=256, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Consumer Key'}))
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     pem_file = forms.FileField(label='', help_text=None,
                                widget=forms.FileInput(attrs={'accept': '.pem'}))
 
@@ -17,11 +17,11 @@ class CategoryMappingForm(forms.Form):
     Form for getting category mapping key and value
     """
     category = forms.CharField(max_length=64, label='', help_text=None,
-                               widget=forms.TextInput(attrs={'placeholder': 'Category Name (Fyle)'}))
-    sub_category = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Sub-Category Name (Fyle)'}))
+                               widget=forms.TextInput(attrs={'placeholder': ' '}))
+    sub_category = forms.CharField(max_length=64, label='', help_text=None, required=False,
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     account_code = forms.IntegerField(label='', help_text=None,
-                                      widget=forms.NumberInput(attrs={'placeholder': 'Account Code (Xero)'}))
+                                      widget=forms.NumberInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
@@ -31,9 +31,9 @@ class EmployeeMappingForm(forms.Form):
     Form for getting employee mapping key and value
     """
     employee_email = forms.CharField(max_length=64, label='', help_text=None,
-                                     widget=forms.TextInput(attrs={'placeholder': 'Employee Email (Fyle)'}))
+                                     widget=forms.TextInput(attrs={'placeholder': ' '}))
     contact_name = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Contact Name (Xero)'}))
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
@@ -61,12 +61,11 @@ class ScheduleForm(forms.Form):
             'format': 'YYYY-MM-DD hh:mm a',
         },
         attrs={
-            'append': 'fa fa-calendar',
             'icon_toggle': True,
+            'placeholder': ' '
         }
     ))
 
     minutes = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
-        "class": "form-control",
-        "placeholder": "in minutes"
+        'placeholder': ' '
     }))

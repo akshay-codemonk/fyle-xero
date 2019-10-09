@@ -6,17 +6,12 @@
 
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/connect.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 {% endblock %}
 
 {% block title %}Destination{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-    {% include 'layouts/navtab.html' %}
-
     <div class="login center-div">
         {% if is_connected %}
             <p>Connected to your Xero account</p>
@@ -24,10 +19,11 @@
         {% else %}
             <p>Connect to your Xero account</p>
             <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#XeroCredentialsModal">Connect</button>
-
         {% endif %}
     </div>
-    <div class="modal fade" id="XeroCredentialsModal" tabindex="-1" role="dialog" aria-labelledby="XeroCredentialsModalTitle" aria-hidden="true">
+    <div class="modal fade" id="XeroCredentialsModal" tabindex="-1" role="dialog"
+         aria-labelledby="XeroCredentialsModalTitle" aria-hidden="true"
+         data-keyboard="false" data-backdrop="static">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -40,7 +36,10 @@
               <div class="modal-body">
                   {% csrf_token %}
                     {{ form.pem_file }}
-                    {{ form.consumer_key }}
+                    <div class="floating-label mt-3">
+                        {{ form.consumer_key }}
+                        <label class="input-label">Consumer Key</label>
+                    </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
@@ -50,7 +49,9 @@
         </div>
       </div>
     </div>
-    <div class="modal fade" id="XeroDisconnectModal" tabindex="-1" role="dialog" aria-labelledby="XeroDisconnectModalTitle" aria-hidden="true">
+    <div class="modal fade" id="XeroDisconnectModal" tabindex="-1" role="dialog"
+         aria-labelledby="XeroDisconnectModalTitle" aria-hidden="true"
+         data-keyboard="false" data-backdrop="static">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">

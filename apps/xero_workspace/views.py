@@ -2,6 +2,7 @@ import ast
 from datetime import datetime
 
 import openpyxl
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -21,8 +22,22 @@ class WorkspaceView(View):
     """
     template_name = "xero_workspace/workspace.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        method = self.request.POST.get('method', '').lower()
+        if method == 'delete':
+            return self.delete(request)
+        return super(WorkspaceView, self).dispatch(request, *args, **kwargs)
+
     def get(self, request):
-        user_workspaces = Workspace.objects.filter(user=request.user)
+        user_workspaces = Workspace.objects.filter(user=request.user).order_by('-created_at')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(user_workspaces, 8)
+        try:
+            user_workspaces = paginator.page(page)
+        except PageNotAnInteger:
+            user_workspaces = paginator.page(1)
+        except EmptyPage:
+            user_workspaces = paginator.page(paginator.num_pages)
         for workspace in user_workspaces:
             try:
                 workspace.last_sync = WorkspaceActivity.objects.filter(workspace=workspace).latest(
@@ -36,6 +51,11 @@ class WorkspaceView(View):
         workspace = create_workspace(workspace_name=workspace_name)
         workspace.user.add(request.user)
         workspace.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def delete(self, request):
+        selected_workspace = [ast.literal_eval(x) for x in request.POST.getlist('workspace_ids')]
+        Workspace.objects.filter(id__in=selected_workspace).delete()
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -98,9 +118,18 @@ class CategoryMappingView(View):
         super(CategoryMappingView, self).setup(request)
 
     def get(self, request, workspace_id):
+        category_mappings = CategoryMapping.objects.filter(workspace__id=workspace_id).order_by('-created_at')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(category_mappings, 8)
+        try:
+            category_mappings = paginator.page(page)
+        except PageNotAnInteger:
+            category_mappings = paginator.page(1)
+        except EmptyPage:
+            category_mappings = paginator.page(paginator.num_pages)
         form = CategoryMappingForm()
         context = {"category_mapping": "active", "form": form,
-                   "mappings": CategoryMapping.objects.filter(workspace__id=workspace_id)}
+                   "mappings": category_mappings}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -160,9 +189,18 @@ class EmployeeMappingView(View):
         return super(EmployeeMappingView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, workspace_id):
+        employee_mappings = EmployeeMapping.objects.filter(workspace__id=workspace_id).order_by('-created_at')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(employee_mappings, 8)
+        try:
+            employee_mappings = paginator.page(page)
+        except PageNotAnInteger:
+            employee_mappings = paginator.page(1)
+        except EmptyPage:
+            employee_mappings = paginator.page(paginator.num_pages)
         form = EmployeeMappingForm()
         context = {"employee_mapping": "active", "form": form,
-                   "mappings": EmployeeMapping.objects.filter(workspace__id=workspace_id)}
+                   "mappings": employee_mappings}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):

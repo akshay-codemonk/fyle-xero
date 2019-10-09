@@ -72,11 +72,26 @@ a, a:hover {
   margin: 0;
 }
 
+.main-layout {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
 .container-fluid {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.workspace-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-username {
@@ -139,7 +154,7 @@ button:focus{
   padding-top:10px;
 }
 
-.iconSize{
+.iconSize {
   font-size: 18px;
 }
 
@@ -196,24 +211,42 @@ button:focus{
   }
 }
 
+.floating-label {
+  position: relative;
+  margin-bottom: 20px;
+}
+
 input {
   width: 100%;
+  margin-top: 2%;
   border: 0;
   outline: 0;
-  padding: 0.5rem 0;
+  padding: 5px;
   border-bottom: 1px solid var(--fontGrey);
   box-shadow: none;
   color: #111;
+  font-size: 16px;
 }
 
-input:focus,
-input:valid {
-  border-color: var(--primaryColor);
+input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--primaryColor);
 }
 
-input:focus~label,
-input:valid~label {
-  font-size: 14px;
+.input-label {
+  color: #999;
+  font-size: 16px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 16px;
+  transition: 0.2s ease all;
+}
+
+input:focus ~ label, input:not(:placeholder-shown) ~ label {
+  top: -5px;
+  font-size: 11px;
   color: var(--primaryColor);
 }
 
@@ -280,20 +313,116 @@ input:valid~label {
   transform: rotate(45deg);
 }
 
-.mapping-error {
+.warning {
+  margin-top: 3%;
   text-align: center;
-  width: 30%;
+  width: 50%;
   margin-bottom: 5px;
 }
 
-.dashboard-content {
-  margin: 16px;
+.alert-link, .alert-link:hover {
+  text-decoration: underline;
+}
+
+.nav-tabs {
+    background-color: var(--white);
+}
+
+.navTabsUl {
+  height: 100%;
+  width: 22%;
+  position: relative;
+  background-color: #280831;
+  top: 0;
+}
+
+.nav-tabs .nav-item, .nav-link  {
+    color: var(--white) !important;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    border: none;
+    border-bottom: 2px solid var(--primaryColor) !important;
+    color: var(--primaryColor) !important;
+    font-size: 14px;
+    background-color: var(--white);
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+    font-size: 14px;
+    color: var(--primaryColor) !important;
+    text-decoration: none;
+    border-color: transparent;
+}
+
+.tabitem {
+  padding: 18px;
+  padding-left: 24px;
+}
+
+.tabitem:hover {
+  background: rgba(158,158,158,0.2);
+  width: 100% !important
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: var(--primaryColor) !important;
+  background: #d64d4d2b;
+}
+
+.nav-pills .nav-link {
+  border-radius: 0;
+}
+
+.sidenav-header {
+  position: relative;
+  padding: 24px;
+}
+
+.site-logo {
+  position: relative;
+}
+
+.fyle-logo{
+    max-width: 100px;
+}
+
+.bottomTabItems {
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+  width: 15%;
+}
+
+.tabitem-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.cardMainText {
+  color: var(--mainHeading);
+  font-size: 18px;
+}
+
+.content {
   background-color: var(--white);
   border: 1px solid var(--lightGrey);
   padding: 10px;
   border-radius: 6px;
+  margin-top: 1%;
+  height: 100%;
 }
 
-.dashboard-content-header {
+.content-header {
   padding: 10px;
+}
+
+a {
+  cursor: pointer;
 }

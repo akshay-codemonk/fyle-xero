@@ -3,17 +3,12 @@
 {% load static %}
 
 {% block link %}
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
     <link rel="stylesheet" href="{% static 'css/xero_workspace/transform.css' %}">
 {% endblock %}
 
 {% block title %}Transform{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-    {% include 'layouts/navtab.html' %}
-
       <div class="transform-content">
         <div class="container">
             <div class="row">
