@@ -415,7 +415,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   border: 1px solid var(--lightGrey);
   padding: 10px;
   border-radius: 6px;
-  margin-top: 1%;
+  margin: 16px;
   height: 100%;
 }
 

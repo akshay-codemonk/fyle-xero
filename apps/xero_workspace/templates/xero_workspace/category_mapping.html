@@ -33,8 +33,8 @@
             <table class="table">
                 <thead class="table-head">
                 <tr class="colHeadings">
-                    <th style="width: 40%">category name (Fyle)</th>
-                    <th style="width: 40%">Sub-category name (Fyle)</th>
+                    <th style="width: 35%">category name (Fyle)</th>
+                    <th style="width: 35%">Sub-category name (Fyle)</th>
                     <th class="actions">Account Code (Xero)</th>
                     <th>
                         <label class="checkbox-label">
@@ -69,30 +69,29 @@
     {% endif %}
 
     {% if mappings.has_other_pages %}
-        <div class="fixed-bottom">
-           <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    {% if mappings.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.previous_page_number }}">&laquo;</a></li>
+       <nav class="nav-pagination" aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if mappings.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                {% endif %}
+                {% for i in mappings.paginator.page_range %}
+                    {% if mappings.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
                     {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                     {% endif %}
-                    {% for i in mappings.paginator.page_range %}
-                        {% if mappings.number == i %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if mappings.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.next_page_number }}">&raquo;</a></li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
-                    {% endif %}
-                </ul>
-           </nav>
-        </div>
+                {% endfor %}
+                {% if mappings.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+       </nav>
     {% endif %}
+
     <!-- Modal -->
     <div class="modal fade" id="createCategoryMappingModal" tabindex="-1" role="dialog"
          aria-labelledby="createCategoryMappingModalTitle" aria-hidden="true"

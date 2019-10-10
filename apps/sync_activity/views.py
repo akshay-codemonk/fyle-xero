@@ -28,7 +28,7 @@ class SyncActivityView(View):
     def get(self, request, workspace_id):
         workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id).order_by('-updated_at')
         page = request.GET.get('page', 1)
-        paginator = Paginator(workspace_activity, 8)
+        paginator = Paginator(workspace_activity, 7)
         try:
             workspace_activity = paginator.page(page)
         except PageNotAnInteger:
