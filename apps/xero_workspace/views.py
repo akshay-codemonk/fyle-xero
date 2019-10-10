@@ -138,9 +138,11 @@ class CategoryMappingView(View):
             category = request.POST('category')
             sub_category = request.POST('sub_category')
             account_code = request.POST.get('account_code')
-            CategoryMapping.objects.create(workspace=self.workspace, category=category, sub_category=sub_category,
-                                           account_code=account_code)
-            self.workspace.save()
+            category_mapping, created = CategoryMapping.objects.get_or_create(workspace=self.workspace,
+                                                                              category=category)
+            category_mapping.sub_category = sub_category
+            category_mapping.account_code = account_code
+            category_mapping.save()
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -208,8 +210,10 @@ class EmployeeMappingView(View):
         if form.is_valid:
             employee_email = request.POST.get('employee_email')
             contact_name = request.POST.get('contact_name')
-            EmployeeMapping.objects.create(workspace=self.workspace, employee_email=employee_email,
-                                           contact_name=contact_name)
+            employee_mapping, created = EmployeeMapping.objects.get_or_create(workspace=self.workspace,
+                                                                              employee_email=employee_email)
+            employee_mapping.contact_name = contact_name
+            employee_mapping.save()
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
