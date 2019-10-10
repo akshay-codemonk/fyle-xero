@@ -388,6 +388,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
 
 .fyle-logo{
     max-width: 100px;
+    min-height: 32px;
 }
 
 .bottomTabItems {
