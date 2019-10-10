@@ -57,6 +57,11 @@
                     {% else %}
                         <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
                     {% endif %}
+
+                    {% if workspace_activity.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+
                     {% for i in workspace_activity.paginator.page_range %}
                         {% if workspace_activity.number == i %}
                             <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
@@ -64,6 +69,11 @@
                             <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
+
+                    {% if workspace_activity.paginator.num_pages > workspace_activity.number|add:'4' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+
                     {% if workspace_activity.has_next %}
                         <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.next_page_number }}">&raquo;</a></li>
                     {% else %}
