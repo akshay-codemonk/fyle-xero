@@ -61,11 +61,10 @@ class ScheduleForm(forms.Form):
             'format': 'YYYY-MM-DD hh:mm a',
         },
         attrs={
-            'icon_toggle': True,
-            'placeholder': ' '
+            'icon_toggle': True
         }
     ))
 
     minutes = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
-        'placeholder': ' '
+        'placeholder': 'in minutes'
     }))

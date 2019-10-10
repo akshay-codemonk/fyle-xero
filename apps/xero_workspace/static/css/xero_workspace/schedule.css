@@ -13,11 +13,14 @@ label {
 .switch-label {
     position: relative;
     display: inline-block;
-    min-width: 112px;
     cursor: pointer;
     font-weight: 500;
     text-align: left;
     padding: 0 0 0 44px;
+}
+
+.enable-schedule, .repeat-frequency, .datetimepicker {
+    align-items: baseline;
 }
 
 .switch-label:before, .switch-label:after {
@@ -77,30 +80,22 @@ label {
   display: none;
 }
 
-p {
-    text-align: center;
-    font-weight: 500;
-    margin: 0;
-}
-
 #id_minutes {
-  width: 27%;
+  width: 15%;
   margin-top: 2%;
 }
 
 .schedule-content {
-  margin-top: 3%;
-  text-align: center;
+  margin-top: 15px;
+  margin-left: 10px;
 }
 
-.datetimepicker {
-  margin-top: 5%;
+.datetimepicker, .repeat-frequency {
+  margin-top: 1%;
 }
 
 .input-group {
-  width: 27%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 15%;
   margin-top: 2%;
 }
 
@@ -116,7 +111,7 @@ p {
 
 .form-control:focus {
   box-shadow: none;
-  border-bottom: 1px solid var(--primaryColor);
+  border-bottom: 2px solid var(--primaryColor);
   color: #111;
 }
 
@@ -124,10 +119,15 @@ p {
   margin: 5% 0;
 }
 
-.input-label {
-    left: 37%;
-}
-
 .floating-label {
     margin-top: 4%;
+}
+
+.input-label {
+    top: 25px;
+}
+
+p {
+  margin-right: 5%;
+  color: var(--primaryColor);
 }

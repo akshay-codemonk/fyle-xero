@@ -11,28 +11,32 @@
 
 {% block content %}
     <div class="content">
-        <form action="" method="post">
+        <form id="schedule-form" action="" method="post">
             {% csrf_token %}
             <div class="content-header">
-                <h5 class="cardMainText">Sync Schedule</h5>
+                <h5 class="cardMainText">Schedule</h5>
             </div>
             <div class="schedule-content">
-                <div class="enable-schedule">
+                <div class="d-flex enable-schedule">
                     {% if enabled != 0 %}
+                    <p>Disable Schedule</p>
                     <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
-                           class="switch-input" checked>
-                    <label for="schedule-enabled" class="switch-label">Enable Schedule</label>
+                           class="switch-input" onchange="document.getElementById('schedule-form').submit()"
+                           checked>
+                    <label for="schedule-enabled" class="switch-label"></label>
                     {% else %}
+                        <p>Enable Schedule</p>
                         <input type="checkbox" id="schedule-disabled" name="schedule" value="enabled"
-                               class="switch-input">
-                        <label for="schedule-disabled" class="switch-label">Enable Schedule</label>
+                               class="switch-input" onchange="document.getElementById('schedule-form').submit()">
+                        <label for="schedule-disabled" class="switch-label"></label>
                     {% endif %}
                 </div>
-                <div class="floating-label">
+                <div class="d-flex repeat-frequency">
+                    <p>Repeat Frequency</p>
                     {{ form.minutes }}
-                    <label class="input-label">Repeat Frequency (in min)</label>
                 </div>
-                <div class="datetimepicker">
+                <div class="d-flex datetimepicker">
+                    <p>Start date & time</p>
                     {{ form.next_run }}
                 </div>
                 <div class="save-schedule">
