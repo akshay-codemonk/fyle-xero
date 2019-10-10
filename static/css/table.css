@@ -71,3 +71,15 @@ th {
 .fixed-bottom {
     position: absolute;
 }
+
+.table {
+    margin-bottom: 0;
+}
+
+.table-responsive {
+    position: relative;
+}
+
+.nav-pagination {
+    width: 100%;
+}
