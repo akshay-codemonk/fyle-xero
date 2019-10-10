@@ -51,3 +51,10 @@ class FyleAuthTestCases(TestCase):
         """
         fyle_auth = FyleAuth.objects.get(id=2)
         self.assertEqual(fyle_auth.url, 'https://a.test.com')
+
+    def test_string_representation(self):
+        """
+        Test model string representation
+        """
+        fyle_auth = FyleAuth.objects.get(id=1)
+        self.assertEqual(str(fyle_auth), '1')

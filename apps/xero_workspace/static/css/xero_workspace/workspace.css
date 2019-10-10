@@ -19,8 +19,7 @@
   border: 1px solid var(--lightGrey);
   padding: 10px;
   border-radius: 6px;
-  margin-top: 1%;
-  height: 100%;
+  margin: 16px;
 }
 
 .dashboard-content-header {

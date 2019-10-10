@@ -31,7 +31,7 @@ class WorkspaceView(View):
     def get(self, request):
         user_workspaces = Workspace.objects.filter(user=request.user).order_by('-created_at')
         page = request.GET.get('page', 1)
-        paginator = Paginator(user_workspaces, 8)
+        paginator = Paginator(user_workspaces, 7)
         try:
             user_workspaces = paginator.page(page)
         except PageNotAnInteger:
@@ -120,7 +120,7 @@ class CategoryMappingView(View):
     def get(self, request, workspace_id):
         category_mappings = CategoryMapping.objects.filter(workspace__id=workspace_id).order_by('-created_at')
         page = request.GET.get('page', 1)
-        paginator = Paginator(category_mappings, 8)
+        paginator = Paginator(category_mappings, 7)
         try:
             category_mappings = paginator.page(page)
         except PageNotAnInteger:
@@ -193,7 +193,7 @@ class EmployeeMappingView(View):
     def get(self, request, workspace_id):
         employee_mappings = EmployeeMapping.objects.filter(workspace__id=workspace_id).order_by('-created_at')
         page = request.GET.get('page', 1)
-        paginator = Paginator(employee_mappings, 8)
+        paginator = Paginator(employee_mappings, 7)
         try:
             employee_mappings = paginator.page(page)
         except PageNotAnInteger:
