@@ -50,29 +50,27 @@
         {% endif %}
 
         {% if workspace_activity.has_other_pages %}
-            <div class="fixed-bottom">
-               <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        {% if workspace_activity.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.previous_page_number }}">&laquo;</a></li>
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if workspace_activity.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
+                    {% for i in workspace_activity.paginator.page_range %}
+                        {% if workspace_activity.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
                         {% else %}
-                            <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                         {% endif %}
-                        {% for i in workspace_activity.paginator.page_range %}
-                            {% if workspace_activity.number == i %}
-                                <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if workspace_activity.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.next_page_number }}">&raquo;</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
-                        {% endif %}
-                    </ul>
-               </nav>
-            </div>
+                    {% endfor %}
+                    {% if workspace_activity.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+           </nav>
         {% endif %}
 
     </div>
