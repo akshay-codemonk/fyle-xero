@@ -1,7 +1,9 @@
 import ast
 from datetime import datetime
+from zipfile import BadZipFile
 
 import openpyxl
+from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -160,15 +162,18 @@ class CategoryMappingBulkUploadView(View):
     def post(request, workspace_id):
         workspace = Workspace.objects.get(id=workspace_id)
         file = request.FILES['bulk_upload_file']
-        work_book = openpyxl.load_workbook(file)
-        worksheet = work_book.active
-        category_objects = []
-        for category, sub_category, account_code in worksheet.iter_rows(min_row=2):
-            sub_category.value = '' if sub_category.value is None else sub_category.value
-            category_objects.append(
-                CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
-                                account_code=account_code.value))
-        CategoryMapping.objects.bulk_create(category_objects)
+        try:
+            work_book = openpyxl.load_workbook(file)
+            worksheet = work_book.active
+            category_objects = []
+            for category, sub_category, account_code in worksheet.iter_rows(min_row=2):
+                sub_category.value = '' if sub_category.value is None else sub_category.value
+                category_objects.append(
+                    CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
+                                    account_code=account_code.value))
+            CategoryMapping.objects.bulk_create(category_objects)
+        except (ValueError, BadZipFile):
+            messages.error(request, 'The uploaded file has invalid column(s): Please reupload again')
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
 
 
@@ -231,14 +236,17 @@ class EmployeeMappingBulkUploadView(View):
     def post(request, workspace_id):
         workspace = Workspace.objects.get(id=workspace_id)
         file = request.FILES['bulk_upload_file']
-        work_book = openpyxl.load_workbook(file)
-        worksheet = work_book.active
-        employee_mapping_objects = []
-        for employee_email, contact_name in worksheet.iter_rows(min_row=2):
-            employee_mapping_objects.append(
-                EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
-                                contact_name=contact_name.value))
-        EmployeeMapping.objects.bulk_create(employee_mapping_objects)
+        try:
+            work_book = openpyxl.load_workbook(file)
+            worksheet = work_book.active
+            employee_mapping_objects = []
+            for employee_email, contact_name in worksheet.iter_rows(min_row=2):
+                employee_mapping_objects.append(
+                    EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
+                                    contact_name=contact_name.value))
+            EmployeeMapping.objects.bulk_create(employee_mapping_objects)
+        except:
+            messages.error(request, 'The uploaded file has invalid column(s): Please reupload again')
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
 
 
