@@ -403,6 +403,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  padding: 16px;
 }
 
 .cardMainText {
@@ -415,8 +416,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   border: 1px solid var(--lightGrey);
   padding: 10px;
   border-radius: 6px;
-  margin: 16px;
-  height: 100%;
+  overflow: auto;
 }
 
 .content-header {

@@ -19,158 +19,162 @@
 </head>
 <body>
 <div class="container-fluid">
-    <nav class="navbar fixed-top navbar-light">
-        <h1 class="navbar-brand">Xero Integration Dashboard</h1>
-        <div class="dropdown">
-            <button class="user-profile" type="button" id="profileBtn" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                <div class="d-flex flex-row user-details">
-                    <i class="material-icons user-icon">account_circle</i>
-                    <div>
-                        <strong class="user-name">{{username}}</strong>
-                        <p class="org-name">{{org}}</p>
+    <div class="main-layout">
+        <nav class="navbar fixed-top navbar-light">
+            <h1 class="navbar-brand">Xero Integration Dashboard</h1>
+            <div class="dropdown">
+                <button class="user-profile" type="button" id="profileBtn" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                    <div class="d-flex flex-row user-details">
+                        <i class="material-icons user-icon">account_circle</i>
+                        <div>
+                            <strong class="user-name">{{username}}</strong>
+                            <p class="org-name">{{org}}</p>
+                        </div>
+                        <i class="material-icons arrow-down">keyboard_arrow_down</i>
                     </div>
-                    <i class="material-icons arrow-down">keyboard_arrow_down</i>
-                </div>
-            </button>
-            <div>
-                <div class="dropdown-menu profile-content" aria-labelledby="profileBtn">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p data-letters="A"></p>
-                            </div>
-                            <div class="col-md-8">
-                                <p class="profile-username">{{username}}</p>
-                                <p class="profile-organizationName">{{org}}</p>
+                </button>
+                <div>
+                    <div class="dropdown-menu profile-content" aria-labelledby="profileBtn">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p data-letters="A"></p>
+                                </div>
+                                <div class="col-md-8">
+                                    <p class="profile-username">{{username}}</p>
+                                    <p class="profile-organizationName">{{org}}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <form method="post" action="{% url 'account_logout' %}">
-                        {% csrf_token %}
-                        <button class="btn-block signoutBtn" type="submit">
-                            <i class="material-icons mt-1 iconSize">power_settings_new</i>
-                            Signout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <div class="dashboard-content">
-        <div class="d-flex dashboard-content-header">
-            {% if workspaces|length <= 1 %}
-            <h5 class="cardMainText">{{ workspaces|length }} Workspace</h5>
-            {% else %}
-            <h5 class="cardMainText">{{ workspaces|length }} Workspaces</h5>
-            {% endif %}
-            <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createWorkspaceModal">New Workspace
-            </button>
-            <button class="btn main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
-                    name="method" value="delete">Delete
-            </button>
-        </div>
-        {% if workspaces|length == 0 %}
-        <div class="alert alert-light mx-auto warning" role="alert">
-            <p>No workspaces found!</p>
-            <p>Click on new workspace to create one</p>
-        </div>
-        {% else %}
-        <p>{{workspaces.count}}</p>
-        <div class="table-layout">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="table-head">
-                    <tr class="colHeadings">
-                        <th scope="col" style="width: 70%">Workspace Name</th>
-                        <th scope="col" style="width: 30%">Last Sync</th>
-                        <th scope="col">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="select-all"/>
-                                <span class="checkmark"></span>
-                            </label>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <form id="delete-form" action="" method="post">
-                        {% csrf_token %}
-                        {% for workspace in workspaces %}
-                        <tr>
-                            <td>
-                                <a href="{{workspace.id}}/activity">
-                                    <div>
-                                        {{ workspace.name }}
-                                    </div>
-                                </a>
-                            </td>
-                            <td>{{ workspace.last_sync }}</td>
-                            <td>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" class="workspaceCheckbox" name="workspace_ids"
-                                           value='"{{workspace.id}}"'/>
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </form>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        {% if workspaces.has_other_pages %}
-               <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        {% if workspaces.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ workspaces.previous_page_number }}">&laquo;</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
-                        {% endif %}
-                        {% for i in workspaces.paginator.page_range %}
-                            {% if workspaces.number == i %}
-                                <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if workspaces.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ workspaces.next_page_number }}">&raquo;</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
-                        {% endif %}
-                    </ul>
-               </nav>
-        {% endif %}
-
-        <!-- Modal -->
-        <div class="modal fade" id="createWorkspaceModal" tabindex="-1" role="dialog"
-             aria-labelledby="createWorkspaceModalTitle" aria-hidden="true"
-             data-keyboard="false" data-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createWorkspaceModalTitle">Create New Workspace</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="" method="post">
-                        <div class="modal-body">
+                        <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}
-                            <div class="floating-label">
-                                <input name="new-workspace-name" placeholder=" " type="text" required/>
-                                <label class="input-label">Workspace Name</label>
+                            <button class="btn-block signoutBtn" type="submit">
+                                <i class="material-icons mt-1 iconSize">power_settings_new</i>
+                                Signout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="dashboard-main">
+            <div class="dashboard-content">
+                <div class="d-flex dashboard-content-header">
+                    {% if workspaces|length <= 1 %}
+                    <h5 class="cardMainText">{{ workspaces|length }} Workspace</h5>
+                    {% else %}
+                    <h5 class="cardMainText">{{ workspaces|length }} Workspaces</h5>
+                    {% endif %}
+                    <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
+                            data-target="#createWorkspaceModal">New Workspace
+                    </button>
+                    <button class="btn main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
+                            name="method" value="delete">Delete
+                    </button>
+                </div>
+                {% if workspaces|length == 0 %}
+                    <div class="alert alert-light mx-auto warning" role="alert">
+                        <p>No workspaces found!</p>
+                        <p>Click on new workspace to create one</p>
+                    </div>
+                {% else %}
+                <p>{{workspaces.count}}</p>
+                <div class="table-layout">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-head">
+                            <tr class="colHeadings">
+                                <th scope="col" style="width: 70%">Workspace Name</th>
+                                <th scope="col" style="width: 30%">Last Sync</th>
+                                <th scope="col">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="select-all"/>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <form id="delete-form" action="" method="post">
+                                {% csrf_token %}
+                                {% for workspace in workspaces %}
+                                <tr>
+                                    <td>
+                                        <a href="{{workspace.id}}/activity">
+                                            <div>
+                                                {{ workspace.name }}
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{ workspace.last_sync }}</td>
+                                    <td>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="workspaceCheckbox" name="workspace_ids"
+                                                   value='"{{workspace.id}}"'/>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </form>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if workspaces.has_other_pages %}
+                   <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            {% if workspaces.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page={{ workspaces.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                            {% endif %}
+                            {% for i in workspaces.paginator.page_range %}
+                                {% if workspaces.number == i %}
+                                    <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if workspaces.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ workspaces.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                            {% endif %}
+                        </ul>
+                   </nav>
+                {% endif %}
+
+                <!-- Modal -->
+                <div class="modal fade" id="createWorkspaceModal" tabindex="-1" role="dialog"
+                     aria-labelledby="createWorkspaceModalTitle" aria-hidden="true"
+                     data-keyboard="false" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createWorkspaceModalTitle">Create New Workspace</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
+                            <form action="" method="post">
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="floating-label">
+                                        <input name="new-workspace-name" placeholder=" " type="text" required/>
+                                        <label class="input-label">Workspace Name</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
+                                    <button class="btn btnInline saveBtn" type="submit">Create</button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                            <button class="btn btnInline saveBtn" type="submit">Create</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
