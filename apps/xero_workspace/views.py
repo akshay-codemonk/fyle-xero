@@ -135,8 +135,8 @@ class CategoryMappingView(View):
     def post(self, request, workspace_id):
         form = CategoryMappingForm(request.POST)
         if form.is_valid:
-            category = request.POST('category')
-            sub_category = request.POST('sub_category')
+            category = request.POST.get('category')
+            sub_category = request.POST.get('sub_category')
             account_code = request.POST.get('account_code')
             category_mapping, created = CategoryMapping.objects.get_or_create(workspace=self.workspace,
                                                                               category=category)
