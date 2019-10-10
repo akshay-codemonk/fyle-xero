@@ -81,7 +81,7 @@ class XeroConnectView(View):
     def post(request, workspace_id):
         form = XeroCredentialsForm(request.POST, request.FILES)
         if form.is_valid:
-            consumer_key = request.POST['consumer_key']
+            consumer_key = request.POST.get('consumer_key')
             private_key = str(request.FILES['pem_file'].read(), 'utf-8')
             XeroCredential.objects.create(private_key=private_key, consumer_key=consumer_key,
                                           workspace=Workspace.objects.get(id=workspace_id))
@@ -135,9 +135,9 @@ class CategoryMappingView(View):
     def post(self, request, workspace_id):
         form = CategoryMappingForm(request.POST)
         if form.is_valid:
-            category = request.POST['category']
-            sub_category = request.POST['sub_category']
-            account_code = request.POST['account_code']
+            category = request.POST('category')
+            sub_category = request.POST('sub_category')
+            account_code = request.POST.get('account_code')
             CategoryMapping.objects.create(workspace=self.workspace, category=category, sub_category=sub_category,
                                            account_code=account_code)
             self.workspace.save()
@@ -206,8 +206,8 @@ class EmployeeMappingView(View):
     def post(self, request, workspace_id):
         form = EmployeeMappingForm(request.POST)
         if form.is_valid:
-            employee_email = request.POST['employee_email']
-            contact_name = request.POST['contact_name']
+            employee_email = request.POST.get('employee_email')
+            contact_name = request.POST.get('contact_name')
             EmployeeMapping.objects.create(workspace=self.workspace, employee_email=employee_email,
                                            contact_name=contact_name)
         return HttpResponseRedirect(self.request.path_info)
@@ -267,7 +267,7 @@ class TransformView(View):
     def post(self, request, workspace_id):
         self.form = TransformForm(request.POST)
         if self.form.is_valid:
-            self.workspace.transform_sql = request.POST['transform_sql']
+            self.workspace.transform_sql = request.POST.get('transform_sql')
             self.workspace.save()
         return HttpResponseRedirect(self.request.path_info)
 
@@ -296,9 +296,9 @@ class ScheduleView(View):
 
     def post(self, request, workspace_id):
         schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
-        datetime_str = request.POST['next_run']
+        datetime_str = request.POST.get('next_run')
         datetime_object = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
-        minutes = request.POST['minutes']
+        minutes = request.POST.get('minutes')
         value = request.POST.get('schedule')
         schedule_enabled = 0
         if value == 'enabled':
