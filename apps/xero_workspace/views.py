@@ -207,15 +207,14 @@ class TransformView(View):
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
         if method == 'update':
-            return self.update(*args, **kwargs)
+            return self.update(request, *args, **kwargs)
         return super(TransformView, self).dispatch(request, *args, **kwargs)
 
     def setup(self, request, *args, **kwargs):
         workspace_id = kwargs['workspace_id']
         self.form = TransformForm()
         self.workspace = Workspace.objects.get(id=workspace_id)
-        if self.workspace.transform_sql is not None:
-            self.form.fields['transform_sql'].initial = self.workspace.transform_sql
+        self.form.fields['transform_sql'].initial = self.workspace.transform_sql
         self.context = {"transform": "active", "form": self.form}
         super(TransformView, self).setup(request)
 

@@ -3,8 +3,8 @@
 {% load static %}
 
 {% block link %}
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
-    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+<link rel="stylesheet" href="{% static 'css/navtab.css' %}">
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
 {% endblock %}
 
 {% block title %}Activity{% endblock %}
@@ -12,41 +12,53 @@
 {% block navbar-header %}{{workspace_name}}{% endblock %}
 
 {% block content %}
-    {% include 'layouts/navtab.html' %}
+{% include 'layouts/navtab.html' %}
 
-    <div class="dashboard-content">
+<div class="dashboard-content">
+    <h5 class="cardMainText">Activity</h5>
+    <form action="" method="post">
+        {% csrf_token %}
         <div class="d-flex dashboard-content-header">
-          <button class="ml-auto btn main-btn" type="button">Sync Now</button>
+            <button class="ml-auto btn main-btn" name="submit" type="submit" value="sync">Sync Now</button>
         </div>
-        <div class="table-layout">
-          <div class="table-responsive">
+    </form>
+    <div class="d-flex dashboard-content-header">
+
+
+    </div>
+    {% if workspace_activity|length == 0 %}
+    <div class="alert mx-auto mapping-error" role="alert">
+        No sync activity found!
+        <br>
+        <br>
+        Please connect the <a href="{% url 'xero_workspace:source' workspace_id %}" class="alert-link">source</a> and
+        <a href="{% url 'xero_workspace:destination' workspace_id %}" class="alert-link">destination</a> accounts
+        <br>
+        <a>If already connected click on Sync Now</a>
+    </div>
+    {% else %}
+    <div class="table-layout">
+        <div class="table-responsive">
             <table class="table">
-              <thead class="table-head">
+                <thead class="table-head">
                 <tr class="colHeadings">
-                  <th>Status</th>
-                  <th style="width: 75%">Activity</th>
-                  <th class="actions">Time & Date</th>
+                    <th style="width: 20%">Date & Time (UTC)</th>
+                    <th style="width: 60%">Message</th>
+                    <th class="actions"> Status</th>
                 </tr>
-              </thead>
-              <tbody>
+                </thead>
+                <tbody>
+                {% for activity in workspace_activity %}
                 <tr>
-                  <td>.</td>
-                  <td>Trying to sync all expenses...</td>
-                  <td class="actions">2:31 Aug 18, 2019</td>
+                    <td>{{ activity.updated_at }}</td>
+                    <td>{{ activity.error_msg }}</td>
+                    <td class="actions">{{ activity.status }}</td>
                 </tr>
-                <tr>
-                  <td>/</td>
-                  <td>Synced all reports successfully.</td>
-                  <td class="actions">2:31 Aug 18, 2019</td>
-                </tr>
-                <tr>
-                  <td>?</td>
-                  <td>Sync failed due to mismatch in fields</td>
-                  <td class="actions">2:31 Aug 18, 2019</td>
-                </tr>
-              </tbody>
+                {% endfor %}
+                </tbody>
             </table>
-          </div>
         </div>
     </div>
+    {% endif %}
+</div>
 {% endblock %}

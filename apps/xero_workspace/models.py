@@ -4,6 +4,7 @@ from apps.fyle_connect.models import FyleAuth
 from apps.schedule.models import Schedule
 from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
+from fyle_xero_integration_web_app.settings import BASE_DIR
 
 
 def default_for_json_field():
@@ -23,6 +24,16 @@ class Workspace(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.pk is None:
+            file_path = '{}/resources/transform.sql'.format(BASE_DIR)
+            with open(file_path, 'r') as myfile:
+                transform_sql = myfile.read()
+                self.transform_sql = transform_sql
+        super(Workspace, self).save(force_insert=False, force_update=False, using=None,
+                                    update_fields=None)
 
 
 class EmployeeMapping(models.Model):
@@ -108,7 +119,7 @@ class WorkspaceActivity(models.Model):
     """
     id = models.AutoField(primary_key=True, )
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='FK to Workspace')
-    activity = models.ForeignKey(Activity, null=True, blank=True, on_delete=models.CASCADE,
+    activity = models.ForeignKey(Activity, null=True, blank=True, related_name='activities', on_delete=models.CASCADE,
                                  help_text='FK to Activity')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')

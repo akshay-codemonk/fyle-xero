@@ -1,5 +1,7 @@
 import json
 
+import numpy as np
+import pandas as pd
 import requests
 
 from fyle_xero_integration_web_app import settings
@@ -42,3 +44,54 @@ class FyleOAuth2():
         tokens = json.loads(access_token_response.text)
 
         return tokens
+
+
+def extract_fyle(connection, conn):
+    """
+    extracts data from fyle and store in SQLite database
+    :param connection: Fyle connection object
+    :param conn: SQLite connection object
+    :return:
+    """
+
+    employees = connection.Employees.get_all()
+    settlements = list(filter(lambda settlement: not settlement['exported'], connection.Settlements.get_all()))
+    if settlements:
+        df_settlements = pd.DataFrame(settlements)
+        reimbursements = list(filter(lambda reimbursement: reimbursement['settlement_id'] in list(df_settlements['id']),
+                                     connection.Reimbursements.get_all()))
+        df_reimbursements = pd.DataFrame(reimbursements)
+        expenses = list(
+            filter(lambda expense: expense['settlement_id'] in list(df_settlements['id']) and expense['reimbursable'],
+                   connection.Expenses.get_all()))
+        df_employees = pd.DataFrame(employees)
+        df_employees['annual_mileage_of_user_before_joining_fyle'] = df_employees[
+            'annual_mileage_of_user_before_joining_fyle'].astype('str')
+        df_employees['perdiem_names'] = df_employees['perdiem_names'].astype('str')
+        df_employees['joining_date'] = pd.to_datetime(df_employees['joining_date']).dt.strftime('%Y-%m-%d')
+        df_expenses = pd.DataFrame(expenses)
+        df_expenses['approved_by'] = df_expenses['approved_by'].map(lambda expense: expense[0] if expense else None)
+        df_expenses['index_no'] = np.arange(len(df_expenses))
+        df_expenses['approved_by'] = df_expenses['approved_by'].astype('str')
+        df_expenses['export_ids'] = df_expenses['export_ids'].astype('str')
+        df_expenses['custom_properties'] = df_expenses['custom_properties'].astype('str')
+        df_expenses['locations'] = df_expenses['locations'].astype('str')
+        df_reimbursements['export_ids'] = df_reimbursements['export_ids'].astype('str')
+        df_employees.to_sql('employees', conn, if_exists='replace', index=False)
+        df_settlements.to_sql('settlements', conn, if_exists='replace', index=False)
+        df_reimbursements.to_sql('reimbursements', conn, if_exists='replace', index=False)
+        df_expenses.to_sql('expenses', conn, if_exists='replace', index=False)
+        return True
+    return False
+
+
+def load_exports_to_fyle(connection, conn):
+    """
+    Load the reference of exported expenses to Fyle
+    :param connection:
+    :param conn:
+    :return:
+    """
+    exports = pd.read_sql_query(sql="select * from fyle_load_tpa_exports", con=conn)
+    data = exports.to_dict(orient='records')
+    connection.connection.Exports.post(data)
