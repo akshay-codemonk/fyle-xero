@@ -65,11 +65,13 @@ a, a:hover {
 
 .user-name {
   font-size: 14px;
+  text-transform: uppercase;
 }
 
 .org-name {
   font-size: 12px;
   margin: 0;
+  text-transform: uppercase;
 }
 
 .main-layout {
@@ -116,11 +118,17 @@ a, a:hover {
   padding:8px 16px;
   border:none;
   background-color: var(--white);
-  margin-top:5px;
 }
 .signoutBtn:hover {
-  color: var(--red);
   background-color: rgba(158,158,158,0.2) !important;
+}
+
+.signoutBtn:hover .signout-text {
+  color: var(--red);
+}
+
+.signoutBtn:hover .icon {
+  color: var(--red);
 }
 
 [data-letters]:before {
@@ -154,8 +162,10 @@ button:focus{
   padding-top:10px;
 }
 
-.iconSize {
-  font-size: 18px;
+.icon {
+  font-size: 21px;
+  margin-top: 2px;
+  color: var(--fontGrey);
 }
 
 .main-btn {
@@ -428,9 +438,30 @@ a {
   cursor: pointer;
 }
 
-.message-overall{
-  position:absolute;
-  left:50%;
-  top: 0;
-  z-index: 9999;
+.message-overall {
+  top: 8px;
+  z-index: -1;
+  margin: 0;
+  position: fixed;
+}
+
+.msg {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.alert-dismissible .close {
+    padding: .65rem 1.25rem;
+}
+
+.signout-text {
+  margin-bottom: 0;
+  margin-left: 8px;
+  color: var(--fontGrey);
+}
+
+.signout-layout {
+  justify-content: center;
 }

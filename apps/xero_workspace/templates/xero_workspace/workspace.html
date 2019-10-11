@@ -22,6 +22,10 @@
     <div class="main-layout">
         <nav class="navbar fixed-top navbar-light">
             <h1 class="navbar-brand">Xero Integration Dashboard</h1>
+            {% if messages %}
+                {% for message in messages %}
+                {% endfor %}
+            {% endif %}
             <div class="dropdown">
                 <button class="user-profile" type="button" id="profileBtn" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
@@ -205,7 +209,7 @@
                   $(".workspaceCheckbox").prop('checked', $(this).prop('checked'));
               });
           });
-      
+
 </script>
 </body>
 </html>

@@ -172,8 +172,8 @@ class CategoryMappingBulkUploadView(View):
                     CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
                                     account_code=account_code.value))
             CategoryMapping.objects.bulk_create(category_objects)
-        except (ValueError, BadZipFile):
-            messages.error(request, 'The uploaded file has invalid column(s): Please reupload again')
+        except (ValueError, BadZipFile, KeyError):
+            messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
 
 
@@ -245,8 +245,8 @@ class EmployeeMappingBulkUploadView(View):
                     EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
                                     contact_name=contact_name.value))
             EmployeeMapping.objects.bulk_create(employee_mapping_objects)
-        except:
-            messages.error(request, 'The uploaded file has invalid column(s): Please reupload again')
+        except(ValueError, BadZipFile, KeyError):
+            messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
 
 
