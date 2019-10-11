@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
@@ -105,7 +107,7 @@ class WorkspaceSchedule(models.Model):
     id = models.AutoField(primary_key=True, )
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE,
                                      help_text='FK to Workspace')
-    schedule = models.OneToOneField(Schedule, on_delete=models.CASCADE, help_text='FK to Schedule')
+    schedule = models.OneToOneField(Schedule, null=True, on_delete=models.SET_NULL, help_text='FK to Schedule')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
@@ -129,3 +131,11 @@ class WorkspaceActivity(models.Model):
 
     class Meta:
         unique_together = ('workspace', 'activity',)
+
+
+@receiver(pre_delete, sender=WorkspaceSchedule, dispatch_uid='schedule_delete_signal')
+def delete_schedule(sender, instance, using, **kwargs):
+    """
+    Delete the schedule related to workspace
+    """
+    instance.schedule.delete()
