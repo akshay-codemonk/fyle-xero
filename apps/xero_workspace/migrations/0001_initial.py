@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('schedule', '0001_initial'),
+        # ('schedule', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('sync_activity', '0001_initial'),
         ('fyle_connect', '0001_initial'),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True, help_text='Created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, help_text='Updated at')),
-                ('schedule', models.OneToOneField(help_text='FK to Schedule', on_delete=django.db.models.deletion.CASCADE, to='schedule.Schedule')),
+                ('schedule', models.OneToOneField(help_text='FK to Schedule', on_delete=django.db.models.deletion.CASCADE, to='django_q.Schedule')),
                 ('workspace', models.OneToOneField(help_text='FK to Workspace', on_delete=django.db.models.deletion.CASCADE, to='xero_workspace.Workspace')),
             ],
         ),

@@ -33,8 +33,3 @@ To perform synchronization [Redis](https://redis.io/) is required
 python manage.py qcluster```
 
 Now click on the sync button to perform Fyle to Xero synchronization 
-
-
- 
- 
-

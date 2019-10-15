@@ -40,3 +40,4 @@ fylesdk==0.8.1
 openpyxl==2.6.3
 pandas==0.25.1
 numpy==1.17.2
+django-tempus-dominus==5.1.2.8

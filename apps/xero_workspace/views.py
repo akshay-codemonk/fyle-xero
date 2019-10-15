@@ -1,13 +1,18 @@
 import ast
+from datetime import datetime
 
 import openpyxl
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm
-from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, CategoryMapping, EmployeeMapping
+from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm, \
+    ScheduleForm
+from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, CategoryMapping, EmployeeMapping, \
+    WorkspaceSchedule
+from apps.xero_workspace.utils import create_workspace
 
 
 class WorkspaceView(View):
@@ -27,10 +32,10 @@ class WorkspaceView(View):
         return render(request, self.template_name, {"workspaces": user_workspaces})
 
     def post(self, request):
-        new_workspace_name = request.POST.get('new-workspace-name')
-        instance = Workspace.objects.create(name=new_workspace_name)
-        instance.user.add(request.user)
-        instance.save()
+        workspace_name = request.POST.get('new-workspace-name')
+        workspace = create_workspace(workspace_name=workspace_name)
+        workspace.user.add(request.user)
+        workspace.save()
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -232,3 +237,37 @@ class TransformView(View):
         self.form.fields['transform_sql'].widget.attrs['disabled'] = False
         self.context['save_button'] = True
         return render(request, self.template_name, self.context)
+
+
+class ScheduleView(View):
+    """
+    Schedule View
+    """
+    template_name = "xero_workspace/schedule.html"
+
+    def get(self, request, workspace_id):
+        workspace = Workspace.objects.get(id=workspace_id)
+        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
+        form = ScheduleForm(initial={'minutes': schedule.minutes})
+        form.fields['next_run'].widget.js_options['defaultDate'] = schedule.next_run.strftime(
+            '%Y-%m-%d %I:%M %p')
+        context = {"schedule": "active", "workspace_id": workspace_id,
+                   "workspace_name": workspace.name, "form": form,
+                   "enabled": schedule.repeats}
+        return render(request, self.template_name, context)
+
+    def post(self, request, workspace_id):
+        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
+        datetime_str = request.POST.get('next_run')
+        datetime_object = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+        minutes = request.POST.get('minutes')
+        value = request.POST.get('schedule')
+        schedule_enabled = 0
+        if value == 'enabled':
+            schedule_enabled = -1
+        schedule.minutes = minutes
+        schedule.next_run = make_aware(datetime_object)
+        schedule.repeats = schedule_enabled
+        schedule.save()
+
+        return HttpResponseRedirect(self.request.path_info)

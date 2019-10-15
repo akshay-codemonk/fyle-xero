@@ -1,7 +1,7 @@
 from django.db import models
+from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
-from apps.schedule.models import Schedule
 from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
 from fyle_xero_integration_web_app.settings import BASE_DIR
