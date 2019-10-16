@@ -23,7 +23,7 @@ COPY . /code/
 WORKDIR /code
 
 # Run lint checks
-RUN pylint --load-plugins pylint_django apps/**/ --disable=missing-docstring --disable=unused-variable --disable=unused-argument --max-line-length=120
+RUN pylint --load-plugins pylint_django apps/**/ --disable=missing-docstring  --ignored-argument-names=kwargs --max-line-length=120
 
 # Run tests
 RUN python manage.py test

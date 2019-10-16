@@ -136,7 +136,7 @@ class WorkspaceActivity(models.Model):
 
 
 @receiver(pre_delete, sender=WorkspaceSchedule, dispatch_uid='schedule_delete_signal')
-def delete_schedule(sender, instance, using, **kwargs):
+def delete_schedule(instance, **kwargs):
     """
     Delete the schedule related to workspace
     """
@@ -144,7 +144,7 @@ def delete_schedule(sender, instance, using, **kwargs):
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
-def create_workspace_(sender, instance, created, **kwargs):
+def create_workspace_(instance, created, **kwargs):
     if created:
         schedule = Schedule.objects.create(func='apps.xero_workspace.tasks.sync_xero_scheduled',
                                            hook='apps.xero_workspace.hooks.update_activity_status',

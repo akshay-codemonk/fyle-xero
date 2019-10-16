@@ -131,7 +131,7 @@ def create_invoice(data, xero):
 
 def transform(conn, workspace_id):
     """
-    Transforms the collected fyle and mapping data into Xero API consumption
+    Transforms the collected fyle data and mapping data into Xero data
     :param conn:
     :param workspace_id:
     :return:
