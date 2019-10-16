@@ -1,5 +1,7 @@
+import datetime
+
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django_q.models import Schedule
 
@@ -139,3 +141,17 @@ def delete_schedule(sender, instance, using, **kwargs):
     Delete the schedule related to workspace
     """
     instance.schedule.delete()
+
+
+@receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
+def create_workspace_(sender, instance, created, **kwargs):
+    if created:
+        schedule = Schedule.objects.create(func='apps.xero_workspace.tasks.sync_xero_scheduled',
+                                           hook='apps.xero_workspace.hooks.update_activity_status',
+                                           args=instance.id,
+                                           schedule_type=Schedule.MINUTES,
+                                           repeats=0,
+                                           minutes=5,
+                                           next_run=datetime.datetime.now()
+                                           )
+        WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)

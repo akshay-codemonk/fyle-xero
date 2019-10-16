@@ -15,7 +15,6 @@ from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, 
     ScheduleForm
 from apps.xero_workspace.models import Workspace, WorkspaceActivity, XeroCredential, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule
-from apps.xero_workspace.utils import create_workspace
 
 
 class WorkspaceView(View):
@@ -50,7 +49,7 @@ class WorkspaceView(View):
 
     def post(self, request):
         workspace_name = request.POST.get('new-workspace-name')
-        workspace = create_workspace(workspace_name=workspace_name)
+        workspace = Workspace.objects.create(name=workspace_name)
         workspace.user.add(request.user)
         workspace.save()
         return HttpResponseRedirect(self.request.path_info)
