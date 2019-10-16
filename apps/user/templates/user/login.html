@@ -12,6 +12,12 @@
 <body>
 <div class="container-fluid">
     <div class="main-layout">
+        <div class="msg">
+            {% if messages %}
+                {% for message in messages %}
+                {% endfor %}
+            {% endif %}
+        </div>
         <header class="header">
             <a href="#">
                 <img class="app-logo"

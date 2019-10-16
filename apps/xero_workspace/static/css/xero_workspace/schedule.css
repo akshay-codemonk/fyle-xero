@@ -2,23 +2,6 @@ body {
     background-color: var(--lightGrey);
 }
 
-.scheduleInputContainer {
-    margin: 2%;
-}
-
-input:focus,
-input:valid {
-    border-color: var(--primaryColor);
-}
-input:focus~label,
-input:valid~label {
-    font-size: 14px;
-    color: var(--primaryColor);
-}
-
-.marginLeft25 {
-    margin-left: 3%;
-}
 .switch-input {
     display: none;
 }
@@ -30,12 +13,16 @@ label {
 .switch-label {
     position: relative;
     display: inline-block;
-    min-width: 112px;
     cursor: pointer;
     font-weight: 500;
     text-align: left;
     padding: 0 0 0 44px;
 }
+
+.enable-schedule, .repeat-frequency, .datetimepicker {
+    align-items: baseline;
+}
+
 .switch-label:before, .switch-label:after {
     content: "";
     position: absolute;
@@ -48,6 +35,7 @@ label {
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
 }
+
 .switch-label:before {
     left: 1px;
     width: 34px;
@@ -55,6 +43,7 @@ label {
     background-color: #9E9E9E;
     border-radius: 8px;
 }
+
 .switch-label:after {
     left: 0;
     width: 20px;
@@ -63,48 +52,81 @@ label {
     border-radius: 50%;
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.14), 0 2px 2px 0 rgba(0, 0, 0, 0.098), 0 1px 5px 0 rgba(0, 0, 0, 0.084);
 }
+
 .switch-label .toggle--on {
   display: none;
 }
+
 .switch-label .toggle--off {
   display: inline-block;
 }
+
 .switch-input:checked + .switch-label:before {
   background-color: #7ed321;
 }
+
 .switch-input:checked + .switch-label:after {
    background-color: #569413;
   -ms-transform: translate(80%, -50%);
   -webkit-transform: translate(80%, -50%);
   transform: translate(80%, -50%);
 }
+
 .switch-input:checked + .switch-label .toggle--on {
   display: inline-block;
 }
+
 .switch-input:checked + .switch-label .toggle--off {
   display: none;
 }
 
-p {
-    text-align: center;
-    font-weight: 500;
-    margin: 0;
+#id_minutes {
+  width: 15%;
+  margin-top: 2%;
 }
 
-.form-control {
-    width: 35%;
-    margin-left: 5%;
+.schedule-content {
+  margin-top: 15px;
+  margin-left: 10px;
 }
 
-.input-group-text {
-    height: 38px;
+.datetimepicker, .repeat-frequency {
+  margin-top: 1%;
 }
 
 .input-group {
-    width: 65%;
-    margin-left: 5%;
+  width: 15%;
+  margin-top: 2%;
 }
 
-.datetimepicker, .time-interval {
-    align-items: center;
+.form-control {
+  border: 0;
+  outline: 0;
+  padding: 5px;
+  border-bottom: 1px solid var(--fontGrey);
+  border-radius: 0;
+  box-shadow: none;
+  color: #111;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-bottom: 2px solid var(--primaryColor);
+  color: #111;
+}
+
+.save-schedule {
+  margin: 5% 0;
+}
+
+.floating-label {
+    margin-top: 4%;
+}
+
+.input-label {
+    top: 25px;
+}
+
+p {
+  margin-right: 5%;
 }

@@ -2,13 +2,11 @@ import datetime
 import re
 
 import pandas as pd
-from django_q.models import Schedule
 from fylesdk import FyleSDK
 from xero import Xero, auth
 from xero.auth import PrivateCredentials
 
-from apps.xero_workspace.models import XeroCredential, FyleCredential, CategoryMapping, EmployeeMapping, Workspace, \
-    WorkspaceSchedule
+from apps.xero_workspace.models import XeroCredential, FyleCredential, CategoryMapping, EmployeeMapping, Workspace
 from fyle_xero_integration_web_app.settings import FYLE_BASE_URL, FYLE_CLIENT_ID, FYLE_CLIENT_SECRET
 
 
@@ -133,7 +131,7 @@ def create_invoice(data, xero):
 
 def transform(conn, workspace_id):
     """
-    Transforms the collected fyle and mapping data into Xero API consumption
+    Transforms the collected fyle data and mapping data into Xero data
     :param conn:
     :param workspace_id:
     :return:
@@ -143,23 +141,3 @@ def transform(conn, workspace_id):
     cur.executescript(qry)
     cur.close()
     conn.commit()
-
-
-def create_workspace(workspace_name):
-    """
-    Create workspace and it's dependencies
-    :param workspace_name:
-    :return: workspace instance
-    """
-    workspace = Workspace.objects.create(name=workspace_name)
-
-    schedule = Schedule.objects.create(func='apps.xero_workspace.tasks.sync_xero_scheduled',
-                                       hook='apps.xero_workspace.hooks.update_activity_status',
-                                       args=workspace.id,
-                                       schedule_type=Schedule.MINUTES,
-                                       repeats=0,
-                                       minutes=5,
-                                       next_run=datetime.datetime.now()
-                                       )
-    WorkspaceSchedule.objects.create(workspace=workspace, schedule=schedule)
-    return workspace

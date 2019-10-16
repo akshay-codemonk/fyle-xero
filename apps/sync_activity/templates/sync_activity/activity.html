@@ -3,62 +3,85 @@
 {% load static %}
 
 {% block link %}
-<link rel="stylesheet" href="{% static 'css/navtab.css' %}">
-<link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
 {% endblock %}
 
 {% block title %}Activity{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-{% include 'layouts/navtab.html' %}
+    <div class="content mt-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex content-header">
+                <h5 class="cardMainText">Activity</h5>
+                <button class="ml-auto btn main-btn" name="submit" type="submit" value="sync">Sync Now</button>
+            </div>
+        </form>
+        {% if workspace_activity|length == 0 %}
+            <div class="alert alert-light mx-auto warning" role="alert">
+                <p>No sync activity found!</p>
+                <p>Please connect the <a href="{% url 'xero_workspace:source' workspace_id %}" class="alert-link">source</a> and
+                <a href="{% url 'xero_workspace:destination' workspace_id %}" class="alert-link">destination</a> accounts</p>
+                <p>If already connected click on Sync Now</p>
+            </div>
+        {% else %}
+            <div class="table-layout">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-head">
+                        <tr class="colHeadings">
+                            <th style="width: 20%">Date & Time (UTC)</th>
+                            <th style="width: 60%">Message</th>
+                            <th class="actions"> Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for activity in workspace_activity %}
+                        <tr>
+                            <td>{{ activity.updated_at }}</td>
+                            <td>{{ activity.error_msg }}</td>
+                            <td class="actions">{{ activity.status }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
 
-<div class="dashboard-content">
-    <h5 class="cardMainText">Activity</h5>
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="d-flex dashboard-content-header">
-            <button class="ml-auto btn main-btn" name="submit" type="submit" value="sync">Sync Now</button>
-        </div>
-    </form>
-    <div class="d-flex dashboard-content-header">
+        {% if workspace_activity.has_other_pages %}
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if workspace_activity.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
 
+                    {% if workspace_activity.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% for i in workspace_activity.paginator.page_range %}
+                        {% if workspace_activity.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if workspace_activity.paginator.num_pages > workspace_activity.number|add:'4' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% if workspace_activity.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ workspace_activity.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+           </nav>
+        {% endif %}
 
     </div>
-    {% if workspace_activity|length == 0 %}
-    <div class="alert mx-auto mapping-error" role="alert">
-        No sync activity found!
-        <br>
-        <br>
-        Please connect the <a href="{% url 'xero_workspace:source' workspace_id %}" class="alert-link">source</a> and
-        <a href="{% url 'xero_workspace:destination' workspace_id %}" class="alert-link">destination</a> accounts
-        <br>
-        <a>If already connected click on Sync Now</a>
-    </div>
-    {% else %}
-    <div class="table-layout">
-        <div class="table-responsive">
-            <table class="table">
-                <thead class="table-head">
-                <tr class="colHeadings">
-                    <th style="width: 20%">Date & Time (UTC)</th>
-                    <th style="width: 60%">Message</th>
-                    <th class="actions"> Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for activity in workspace_activity %}
-                <tr>
-                    <td>{{ activity.updated_at }}</td>
-                    <td>{{ activity.error_msg }}</td>
-                    <td class="actions">{{ activity.status }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% endif %}
-</div>
 {% endblock %}

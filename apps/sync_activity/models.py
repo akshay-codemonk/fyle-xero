@@ -24,3 +24,13 @@ class Activity(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def update_status(self, message, status):
+        """
+        Update the Activity status
+        :param message:
+        :param status:
+        """
+        self.error_msg = message
+        self.status = status
+        self.save()

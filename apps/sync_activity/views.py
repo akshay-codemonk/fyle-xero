@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from django.views import View
 from django_q.tasks import async_task
@@ -19,11 +20,22 @@ class SyncActivityView(View):
     def setup(self, request, *args, **kwargs):
         workspace_id = kwargs['workspace_id']
         self.workspace = Workspace.objects.get(id=workspace_id)
-        workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id).order_by('-updated_at')
+        workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id).order_by(
+            '-updated_at')
         self.context = {"activity": "active", "workspace_activity": workspace_activity}
         super(SyncActivityView, self).setup(request)
 
     def get(self, request, workspace_id):
+        workspace_activity = Activity.objects.filter(activities__workspace__id=workspace_id).order_by('-updated_at')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(workspace_activity, 10)
+        try:
+            workspace_activity = paginator.page(page)
+        except PageNotAnInteger:
+            workspace_activity = paginator.page(1)
+        except EmptyPage:
+            workspace_activity = paginator.page(paginator.num_pages)
+        self.context['workspace_activity'] = workspace_activity
         return render(request, self.template_name, self.context)
 
     def post(self, request, workspace_id):

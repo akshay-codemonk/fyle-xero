@@ -3,21 +3,16 @@
 {% load static %}
 
 {% block link %}
-<link rel="stylesheet" href="{% static 'css/navtab.css' %}">
-<link rel="stylesheet" href="{% static 'css/table.css' %}">
-<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 {% endblock %}
 
 {% block title %}Category Mapping{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-{% include 'layouts/navtab.html' %}
-
-<div class="dashboard-content">
-    <div class="d-flex dashboard-content-header">
-        <p>Category Mapping</p>
+<div class="content">
+    <div class="d-flex content-header">
+        <h5 class="cardMainText">Category Mapping</h5>
         <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
                 data-target="#createCategoryMappingModal">New Mapping
         </button>
@@ -28,16 +23,18 @@
                 name="method" value="delete">Delete
         </button>
     </div>
-    {% if mappings.count == 0 %}
-    <p style="text-align:center;color:red;">Looks like you don't have any Category Mappings</p>
+    {% if mappings|length == 0 %}
+        <div class="alert alert-light mx-auto warning" role="alert">
+            <p>Looks like you don't have any Category Mappings</p>
+        </div>
     {% else %}
     <div class="table-layout">
         <div class="table-responsive">
             <table class="table">
                 <thead class="table-head">
                 <tr class="colHeadings">
-                    <th style="width: 40%">category name (Fyle)</th>
-                    <th style="width: 40%">Sub-category name (Fyle)</th>
+                    <th style="width: 35%">category name (Fyle)</th>
+                    <th style="width: 35%">Sub-category name (Fyle)</th>
                     <th class="actions">Account Code (Xero)</th>
                     <th>
                         <label class="checkbox-label">
@@ -70,9 +67,45 @@
         </div>
     </div>
     {% endif %}
+
+    {% if mappings.has_other_pages %}
+       <nav class="nav-pagination" aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if mappings.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                {% endif %}
+
+                {% if mappings.number|add:'-4' > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}
+
+                {% for i in mappings.paginator.page_range %}
+                    {% if mappings.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                    {% elif i > mappings.number|add:'-5' and i < mappings.number|add:'5' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if mappings.paginator.num_pages > mappings.number|add:'4' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+
+                {% if mappings.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+       </nav>
+    {% endif %}
+
     <!-- Modal -->
     <div class="modal fade" id="createCategoryMappingModal" tabindex="-1" role="dialog"
-         aria-labelledby="createCategoryMappingModalTitle" aria-hidden="true">
+         aria-labelledby="createCategoryMappingModalTitle" aria-hidden="true"
+         data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -84,11 +117,18 @@
                 <form action="" method="post">
                     <div class="modal-body">
                         {% csrf_token %}
-                        {{ form.category }}
-                        <br>
-                        {{ form.sub_category }}
-                        <br>
-                        {{ form.account_code }}
+                        <div class="floating-label">
+                            {{ form.category }}
+                            <label class="input-label">Category Name*</label>
+                        </div>
+                        <div class="floating-label">
+                            {{ form.sub_category }}
+                            <label class="input-label">Subcategory Name</label>
+                        </div>
+                        <div class="floating-label">
+                            {{ form.account_code }}
+                            <label class="input-label">Account Code*</label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
@@ -126,11 +166,10 @@
 {% endblock %}
 
 {% block script %}
-$(document).ready(function () {
-console.log('conming here');
-$("#select-all").click(function () {
-$(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
-});
-});
+    $(document).ready(function () {
+        $("#select-all").click(function () {
+            $(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
+        });
+    });
 {% endblock %}
 

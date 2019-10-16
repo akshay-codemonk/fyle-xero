@@ -65,11 +65,21 @@ a, a:hover {
 
 .user-name {
   font-size: 14px;
+  text-transform: uppercase;
 }
 
 .org-name {
   font-size: 12px;
   margin: 0;
+  text-transform: uppercase;
+}
+
+.main-layout {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
 }
 
 .container-fluid {
@@ -77,6 +87,13 @@ a, a:hover {
   padding: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.workspace-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-username {
@@ -101,11 +118,17 @@ a, a:hover {
   padding:8px 16px;
   border:none;
   background-color: var(--white);
-  margin-top:5px;
 }
 .signoutBtn:hover {
-  color: var(--red);
   background-color: rgba(158,158,158,0.2) !important;
+}
+
+.signoutBtn:hover .signout-text {
+  color: var(--red);
+}
+
+.signoutBtn:hover .icon {
+  color: var(--red);
 }
 
 [data-letters]:before {
@@ -139,8 +162,10 @@ button:focus{
   padding-top:10px;
 }
 
-.iconSize{
-  font-size: 18px;
+.icon {
+  font-size: 21px;
+  margin-top: 2px;
+  color: var(--fontGrey);
 }
 
 .main-btn {
@@ -196,24 +221,42 @@ button:focus{
   }
 }
 
+.floating-label {
+  position: relative;
+  margin-bottom: 20px;
+}
+
 input {
   width: 100%;
+  margin-top: 2%;
   border: 0;
   outline: 0;
-  padding: 0.5rem 0;
+  padding: 5px;
   border-bottom: 1px solid var(--fontGrey);
   box-shadow: none;
   color: #111;
+  font-size: 16px;
 }
 
-input:focus,
-input:valid {
-  border-color: var(--primaryColor);
+input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--primaryColor);
 }
 
-input:focus~label,
-input:valid~label {
-  font-size: 14px;
+.input-label {
+  color: #999;
+  font-size: 16px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 16px;
+  transition: 0.2s ease all;
+}
+
+input:focus ~ label, input:not(:placeholder-shown) ~ label {
+  top: -5px;
+  font-size: 11px;
   color: var(--primaryColor);
 }
 
@@ -280,20 +323,145 @@ input:valid~label {
   transform: rotate(45deg);
 }
 
-.mapping-error {
+.warning {
+  margin-top: 3%;
   text-align: center;
-  width: 30%;
+  width: 50%;
   margin-bottom: 5px;
 }
 
-.dashboard-content {
-  margin: 16px;
+.alert-link, .alert-link:hover {
+  text-decoration: underline;
+}
+
+.nav-tabs {
+    background-color: var(--white);
+}
+
+.navTabsUl {
+  height: 100%;
+  width: 22%;
+  position: relative;
+  background-color: #280831;
+  top: 0;
+}
+
+.nav-tabs .nav-item, .nav-link  {
+    color: var(--white) !important;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    border: none;
+    border-bottom: 2px solid var(--primaryColor) !important;
+    color: var(--primaryColor) !important;
+    font-size: 14px;
+    background-color: var(--white);
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+    font-size: 14px;
+    color: var(--primaryColor) !important;
+    text-decoration: none;
+    border-color: transparent;
+}
+
+.tabitem {
+  padding: 18px;
+  padding-left: 24px;
+}
+
+.tabitem:hover {
+  background: rgba(158,158,158,0.2);
+  width: 100% !important
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: var(--primaryColor) !important;
+  background: #d64d4d2b;
+}
+
+.nav-pills .nav-link {
+  border-radius: 0;
+}
+
+.sidenav-header {
+  position: relative;
+  padding: 24px;
+}
+
+.site-logo {
+  position: relative;
+}
+
+.fyle-logo{
+    max-width: 100px;
+    min-height: 32px;
+}
+
+.bottomTabItems {
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+  width: 15%;
+}
+
+.tabitem-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  padding: 16px;
+}
+
+.cardMainText {
+  color: var(--mainHeading);
+  font-size: 18px;
+}
+
+.content {
   background-color: var(--white);
   border: 1px solid var(--lightGrey);
   padding: 10px;
   border-radius: 6px;
+  overflow: auto;
 }
 
-.dashboard-content-header {
+.content-header {
   padding: 10px;
+}
+
+a {
+  cursor: pointer;
+}
+
+.message-overall {
+  top: 8px;
+  z-index: -1;
+  margin: 0;
+  position: fixed;
+}
+
+.msg {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.alert-dismissible .close {
+    padding: .65rem 1.25rem;
+}
+
+.signout-text {
+  margin-bottom: 0;
+  margin-left: 8px;
+  color: var(--fontGrey);
+}
+
+.signout-layout {
+  justify-content: center;
 }

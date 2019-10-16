@@ -3,17 +3,12 @@
 {% load static %}
 
 {% block link %}
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
     <link rel="stylesheet" href="{% static 'css/xero_workspace/transform.css' %}">
 {% endblock %}
 
 {% block title %}Transform{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-    {% include 'layouts/navtab.html' %}
-
       <div class="transform-content">
         <div class="container">
             <div class="row">
@@ -39,7 +34,7 @@
                     {{ form.test_sql }}
                     <button class="btn main-btn-outline mt-2 align-right">TEST</button>
                   </div>
-                  <p class="mt-5">Fetched 58 records</p>
+                  <p class="mt-5">Fetched 0 records</p>
                 </div>
 
                 <div class="col-md-3"></div>
