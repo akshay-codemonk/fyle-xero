@@ -10,16 +10,3 @@ def upload_sqlite(file_name, file, connection):
     s3_upload_url = connection.Files.create_upload_url(file_id)['url']
     connection.Files.upload_file_to_aws('application/x-sqlite3', file, s3_upload_url)
     return file_id
-
-
-def update_activity_status(activity, message, status):
-    """
-    Update the Activity status
-    :param activity:
-    :param message:
-    :param status:
-    :return:
-    """
-    activity.error_msg = message
-    activity.status = status
-    activity.save()

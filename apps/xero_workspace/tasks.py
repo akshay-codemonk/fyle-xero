@@ -6,7 +6,7 @@ from xero.exceptions import XeroUnauthorized
 
 from apps.fyle_connect.utils import extract_fyle
 from apps.sync_activity.models import Activity
-from apps.sync_activity.utils import upload_sqlite, update_activity_status
+from apps.sync_activity.utils import upload_sqlite
 from apps.xero_workspace.models import XeroCredential, FyleCredential, Workspace, WorkspaceActivity
 from apps.xero_workspace.utils import connect_to_xero, connect_to_fyle, generate_invoice_request_data, create_invoice, \
     load_mapping, transform
@@ -47,33 +47,33 @@ def sync_xero(workspace_id, activity_id):
         file_id = upload_sqlite(f'{workspace_id}_{activity_id}.db', file_content, fyle_connection)
         activity.sync_db_file_id = file_id
 
-        update_activity_status(activity, 'Synchronisation completed successfully', Activity.STATUS.success)
+        activity.update_status('Synchronisation completed successfully', Activity.STATUS.success)
 
     except FyleCredential.DoesNotExist:
-        update_activity_status(activity, 'Please connect your Source (Fyle) Account', Activity.STATUS.failed)
+        activity.update_status('Please connect your Source (Fyle) Account', Activity.STATUS.failed)
 
     except XeroCredential.DoesNotExist:
-        update_activity_status(activity, 'Please connect your Destination (Xero) Account', Activity.STATUS.failed)
+        activity.update_status('Please connect your Destination (Xero) Account', Activity.STATUS.failed)
 
     except XeroUnauthorized as error:
-        update_activity_status(activity, f'Unable to connect to your Xero account, {error}', Activity.STATUS.failed)
+        activity.update_status(f'Unable to connect to your Xero account, {error}', Activity.STATUS.failed)
 
     except sqlite3.OperationalError as error:
-        update_activity_status(activity, f'Error performing transform operation, {error}', Activity.STATUS.failed)
+        activity.update_status(f'Error performing transform operation, {error}', Activity.STATUS.failed)
 
     except requests.exceptions.ConnectionError:
-        update_activity_status(activity, 'Failed to establish a network connection, please try again later',
+        activity.update_status('Failed to establish a network connection, please try again later',
                                Activity.STATUS.timeout)
 
     except NoPrivilegeError as error:
-        update_activity_status(activity, f'Please check your Fyle credentials, {error}', Activity.STATUS.failed)
+        activity.update_status(f'Please check your Fyle credentials, {error}', Activity.STATUS.failed)
 
     except KeyError as error:
-        update_activity_status(activity, f'Please check your mapping tables, {error}', Activity.STATUS.failed)
+        activity.update_status(f'Please check your mapping tables, {error}', Activity.STATUS.failed)
 
     finally:
         if activity.status == Activity.STATUS.in_progress:
-            update_activity_status(activity_id, 'An error occurred while processing your request',
+            activity.update_status('An error occurred while processing your request',
                                    Activity.STATUS.failed)
         conn.close()
 
