@@ -1,0 +1,132 @@
+body {
+    background-color: var(--lightGrey);
+}
+
+.switch-input {
+    display: none;
+}
+
+label {
+    margin-bottom: 0;
+}
+
+.switch-label {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: left;
+    padding: 0 0 0 44px;
+}
+
+.enable-schedule, .repeat-frequency, .datetimepicker {
+    align-items: baseline;
+}
+
+.switch-label:before, .switch-label:after {
+    content: "";
+    position: absolute;
+    margin: 0;
+    outline: 0;
+    top: 50%;
+    -ms-transform: translate(0, -50%);
+    -webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.switch-label:before {
+    left: 1px;
+    width: 34px;
+    height: 14px;
+    background-color: #9E9E9E;
+    border-radius: 8px;
+}
+
+.switch-label:after {
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: var(--pageBackground);
+    border-radius: 50%;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.14), 0 2px 2px 0 rgba(0, 0, 0, 0.098), 0 1px 5px 0 rgba(0, 0, 0, 0.084);
+}
+
+.switch-label .toggle--on {
+  display: none;
+}
+
+.switch-label .toggle--off {
+  display: inline-block;
+}
+
+.switch-input:checked + .switch-label:before {
+  background-color: #7ed321;
+}
+
+.switch-input:checked + .switch-label:after {
+   background-color: #569413;
+  -ms-transform: translate(80%, -50%);
+  -webkit-transform: translate(80%, -50%);
+  transform: translate(80%, -50%);
+}
+
+.switch-input:checked + .switch-label .toggle--on {
+  display: inline-block;
+}
+
+.switch-input:checked + .switch-label .toggle--off {
+  display: none;
+}
+
+#id_minutes {
+  width: 15%;
+  margin-top: 2%;
+}
+
+.schedule-content {
+  margin-top: 15px;
+  margin-left: 10px;
+}
+
+.datetimepicker, .repeat-frequency {
+  margin-top: 1%;
+}
+
+.input-group {
+  width: 15%;
+  margin-top: 2%;
+}
+
+.form-control {
+  border: 0;
+  outline: 0;
+  padding: 5px;
+  border-bottom: 1px solid var(--fontGrey);
+  border-radius: 0;
+  box-shadow: none;
+  color: #111;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-bottom: 2px solid var(--primaryColor);
+  color: #111;
+}
+
+.save-schedule {
+  margin: 5% 0;
+}
+
+.floating-label {
+    margin-top: 4%;
+}
+
+.input-label {
+    top: 25px;
+}
+
+p {
+  margin-right: 5%;
+}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/xero_workspace/schedule.css' %}">
+    {{ form.media }}
+{% endblock %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <form id="schedule-form" action="" method="post">
+            {% csrf_token %}
+            <div class="content-header">
+                <h5 class="cardMainText">Schedule</h5>
+            </div>
+            <div class="schedule-content">
+                <div class="d-flex enable-schedule">
+                    {% if enabled != 0 %}
+                    <p>Enabled</p>
+                    <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
+                           class="switch-input" onchange="document.getElementById('schedule-form').submit()"
+                           checked>
+                    <label for="schedule-enabled" class="switch-label"></label>
+                    {% else %}
+                        <p>Disabled</p>
+                        <input type="checkbox" id="schedule-disabled" name="schedule" value="enabled"
+                               class="switch-input" onchange="document.getElementById('schedule-form').submit()">
+                        <label for="schedule-disabled" class="switch-label"></label>
+                    {% endif %}
+                </div>
+                <div class="d-flex repeat-frequency">
+                    <p>Repeat Frequency</p>
+                    {{ form.minutes }}
+                </div>
+                <div class="d-flex datetimepicker">
+                    <p>Start date & time</p>
+                    {{ form.next_run }}
+                </div>
+                <div class="save-schedule">
+                    <button class="main-btn btn save-btn" type="submit">Save Schedule</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

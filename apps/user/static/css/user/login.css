@@ -62,3 +62,9 @@ button {
   background-color: var(--primaryColor);
   color: var(--white);
 }
+
+.alert {
+  width: 20%;
+  margin: 0;
+  position: absolute;
+}

@@ -1,4 +1,5 @@
 from django import forms
+from tempus_dominus.widgets import DateTimePicker
 
 
 class XeroCredentialsForm(forms.Form):
@@ -6,7 +7,7 @@ class XeroCredentialsForm(forms.Form):
     Form for getting xero credentials
     """
     consumer_key = forms.CharField(max_length=256, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Consumer Key'}))
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     pem_file = forms.FileField(label='', help_text=None,
                                widget=forms.FileInput(attrs={'accept': '.pem'}))
 
@@ -16,11 +17,11 @@ class CategoryMappingForm(forms.Form):
     Form for getting category mapping key and value
     """
     category = forms.CharField(max_length=64, label='', help_text=None,
-                               widget=forms.TextInput(attrs={'placeholder': 'Category Name (Fyle)'}))
-    sub_category = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Sub-Category Name (Fyle)'}))
+                               widget=forms.TextInput(attrs={'placeholder': ' '}))
+    sub_category = forms.CharField(max_length=64, label='', help_text=None, required=False,
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     account_code = forms.IntegerField(label='', help_text=None,
-                                      widget=forms.NumberInput(attrs={'placeholder': 'Account Code (Xero)'}))
+                                      widget=forms.NumberInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
@@ -30,9 +31,9 @@ class EmployeeMappingForm(forms.Form):
     Form for getting employee mapping key and value
     """
     employee_email = forms.CharField(max_length=64, label='', help_text=None,
-                                     widget=forms.TextInput(attrs={'placeholder': 'Employee Email (Fyle)'}))
+                                     widget=forms.TextInput(attrs={'placeholder': ' '}))
     contact_name = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': 'Contact Name (Xero)'}))
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
@@ -42,12 +43,28 @@ class TransformForm(forms.Form):
     Form for writing sql queries
     """
 
-    def __init__(self, *args, **kwargs):
-        super(TransformForm, self).__init__(*args, **kwargs)
-        self.fields['transform_sql'].initial = 'This is default text.'
-
     transform_sql = forms.CharField(label=None, help_text=None,
                                     widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control",
                                                                  "disabled": "True"}))
     test_sql = forms.CharField(label=None, help_text=None,
                                widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control"}))
+
+
+class ScheduleForm(forms.Form):
+    """
+    Form to get schedule data
+    """
+
+    next_run = forms.DateTimeField(widget=DateTimePicker(
+        options={
+            'useCurrent': True,
+            'format': 'YYYY-MM-DD hh:mm a',
+        },
+        attrs={
+            'icon_toggle': True
+        }
+    ))
+
+    minutes = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
+        'placeholder': 'in minutes'
+    }))

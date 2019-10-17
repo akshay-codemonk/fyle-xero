@@ -1,9 +1,14 @@
+import datetime
+
 from django.db import models
+from django.db.models.signals import pre_delete, post_save
+from django.dispatch import receiver
+from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
-from apps.schedule.models import Schedule
 from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
+from fyle_xero_integration_web_app.settings import BASE_DIR
 
 
 def default_for_json_field():
@@ -23,6 +28,16 @@ class Workspace(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.pk is None:
+            file_path = '{}/resources/transform.sql'.format(BASE_DIR)
+            with open(file_path, 'r') as myfile:
+                transform_sql = myfile.read()
+                self.transform_sql = transform_sql
+        super(Workspace, self).save(force_insert=False, force_update=False, using=None,
+                                    update_fields=None)
 
 
 class EmployeeMapping(models.Model):
@@ -94,7 +109,7 @@ class WorkspaceSchedule(models.Model):
     id = models.AutoField(primary_key=True, )
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE,
                                      help_text='FK to Workspace')
-    schedule = models.OneToOneField(Schedule, on_delete=models.CASCADE, help_text='FK to Schedule')
+    schedule = models.OneToOneField(Schedule, null=True, on_delete=models.SET_NULL, help_text='FK to Schedule')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
@@ -108,7 +123,7 @@ class WorkspaceActivity(models.Model):
     """
     id = models.AutoField(primary_key=True, )
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='FK to Workspace')
-    activity = models.ForeignKey(Activity, null=True, blank=True, on_delete=models.CASCADE,
+    activity = models.ForeignKey(Activity, null=True, blank=True, related_name='activities', on_delete=models.CASCADE,
                                  help_text='FK to Activity')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
@@ -118,3 +133,25 @@ class WorkspaceActivity(models.Model):
 
     class Meta:
         unique_together = ('workspace', 'activity',)
+
+
+@receiver(pre_delete, sender=WorkspaceSchedule, dispatch_uid='schedule_delete_signal')
+def delete_schedule(instance, **kwargs):
+    """
+    Delete the schedule related to workspace
+    """
+    instance.schedule.delete()
+
+
+@receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
+def create_workspace_(instance, created, **kwargs):
+    if created:
+        schedule = Schedule.objects.create(func='apps.xero_workspace.tasks.sync_xero_scheduled',
+                                           hook='apps.xero_workspace.hooks.update_activity_status',
+                                           args=instance.id,
+                                           schedule_type=Schedule.MINUTES,
+                                           repeats=0,
+                                           minutes=5,
+                                           next_run=datetime.datetime.now()
+                                           )
+        WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)

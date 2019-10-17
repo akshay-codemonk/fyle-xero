@@ -5,18 +5,13 @@
 {% load socialaccount %}
 
 {% block link %}
-    <link rel="stylesheet" href="{% static 'css/navtab.css' %}">
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
     <link rel="stylesheet" href="{% static 'css/connect.css' %}">
 {% endblock %}
 
 {% block title %}Source{% endblock %}
 
-{% block navbar-header %}{{workspace_name}}{% endblock %}
-
 {% block content %}
-    {% include 'layouts/navtab.html' %}
-
     <div class="login center-div">
         {% if is_connected %}
             <p>Connected to your Fyle account</p>
@@ -31,7 +26,9 @@
         {% endif %}
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="FyleDisconnectModal" tabindex="-1" role="dialog" aria-labelledby="FyleDisconnectModalTitle" aria-hidden="true">
+    <div class="modal fade" id="FyleDisconnectModal" tabindex="-1" role="dialog"
+         aria-labelledby="FyleDisconnectModalTitle" aria-hidden="true"
+         data-keyboard="false" data-backdrop="static">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
