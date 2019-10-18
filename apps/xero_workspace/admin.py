@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from apps.xero_workspace.models import Workspace, FyleCredential, WorkspaceActivity, WorkspaceSchedule, \
-    XeroCredential, CategoryMapping, EmployeeMapping
+from apps.xero_workspace.models import Workspace, FyleCredential, WorkspaceSchedule, \
+    XeroCredential, CategoryMapping, EmployeeMapping, Activity
 
 
 class WorkspaceAdmin(admin.ModelAdmin):
@@ -28,14 +28,6 @@ class FyleCredentialAdmin(admin.ModelAdmin):
     list_filter = ['created_at', 'updated_at']
 
 
-class WorkspaceActivityAdmin(admin.ModelAdmin):
-    """
-    Admin options WorkspaceActivity Model
-    """
-    list_display = ('id', 'workspace', 'activity', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'activity', 'created_at', 'updated_at']
-
-
 class WorkspaceScheduleAdmin(admin.ModelAdmin):
     """
     Admin options WorkspaceSchedule Model
@@ -60,11 +52,19 @@ class CategoryMappingAdmin(admin.ModelAdmin):
     list_filter = ['workspace', 'created_at', 'updated_at']
 
 
+class ActivityAdmin(admin.ModelAdmin):
+    """
+    Admin options for Activity Model
+    """
+    list_display = ('id', 'status', 'triggered_by', 'created_at', 'updated_at')
+    list_filter = ['status', 'triggered_by', 'created_at', 'updated_at']
+
+
 # Register Models with Admin
 admin.site.register(Workspace, WorkspaceAdmin)
 admin.site.register(XeroCredential, XeroCredentialAdmin)
 admin.site.register(FyleCredential, FyleCredentialAdmin)
-admin.site.register(WorkspaceActivity, WorkspaceActivityAdmin)
 admin.site.register(WorkspaceSchedule, WorkspaceScheduleAdmin)
 admin.site.register(EmployeeMapping, EmployeeMappingAdmin)
 admin.site.register(CategoryMapping, CategoryMappingAdmin)
+admin.site.register(Activity, ActivityAdmin)

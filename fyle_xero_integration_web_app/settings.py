@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'apps.user',
     'apps.fyle_connect',
     'apps.xero_workspace',
-    'apps.sync_activity',
     'tempus_dominus',
 
 ]
