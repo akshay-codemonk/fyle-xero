@@ -5,11 +5,9 @@ from fylesdk import NoPrivilegeError
 from xero.exceptions import XeroUnauthorized
 
 from apps.fyle_connect.utils import extract_fyle
-from apps.sync_activity.models import Activity
-from apps.sync_activity.utils import upload_sqlite
-from apps.xero_workspace.models import XeroCredential, FyleCredential, Workspace, WorkspaceActivity
+from apps.xero_workspace.models import XeroCredential, FyleCredential, Workspace, Activity
 from apps.xero_workspace.utils import connect_to_xero, connect_to_fyle, generate_invoice_request_data, create_invoice, \
-    load_mapping, transform
+    load_mapping, transform, upload_sqlite
 
 
 def sync_xero(workspace_id, activity_id):
@@ -80,8 +78,7 @@ def sync_xero(workspace_id, activity_id):
 
 def sync_xero_scheduled(workspace_id):
     workspace = Workspace.objects.get(id=workspace_id)
-    activity = Activity.objects.create(transform_sql=workspace.transform_sql,
+    activity = Activity.objects.create(workspace=workspace, transform_sql=workspace.transform_sql,
                                        error_msg='Synchronisation in progress')
     activity_id = activity.id
-    WorkspaceActivity.objects.create(workspace=workspace, activity=activity)
     sync_xero(workspace_id, activity_id)
