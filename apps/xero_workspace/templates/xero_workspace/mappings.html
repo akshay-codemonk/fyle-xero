@@ -13,4 +13,8 @@
         <a class="sub-nav-link {{ employee_mapping }}"
            href="{% url 'xero_workspace:employee_mapping' workspace_id %}">Employee</a>
     </li>
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ project_mapping }}"
+           href="{% url 'xero_workspace:project_mapping' workspace_id %}">Project</a>
+    </li>
 {% endblock %}

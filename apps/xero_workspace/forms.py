@@ -38,6 +38,20 @@ class EmployeeMappingForm(forms.Form):
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
 
+class ProjectMappingForm(forms.Form):
+    """
+    Form for getting project mapping key and value
+    """
+    project_name = forms.CharField(max_length=64, label='', help_text=None,
+                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
+    tracking_category_name = forms.CharField(max_length=64, label='', help_text=None, required=False,
+                                             widget=forms.TextInput(attrs={'placeholder': ' '}))
+    tracking_category_option = forms.CharField(max_length=64, label='', help_text=None, required=False,
+                                               widget=forms.TextInput(attrs={'placeholder': ' '}))
+    bulk_upload_file = forms.FileField(label='', help_text=None,
+                                       widget=forms.FileInput(attrs={'accept': '.xlsx'}))
+
+
 class TransformForm(forms.Form):
     """
     Form for writing sql queries
