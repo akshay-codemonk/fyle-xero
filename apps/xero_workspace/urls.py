@@ -7,7 +7,7 @@ from django.urls import path, include
 from apps.fyle_connect.views import FyleTokenView
 from apps.xero_workspace.views import WorkspaceView, XeroConnectView, EmployeeMappingView, \
     CategoryMappingView, TransformView, CategoryMappingBulkUploadView, \
-    EmployeeMappingBulkUploadView, XeroDisconnectView, DestinationView, ScheduleView
+    EmployeeMappingBulkUploadView, XeroDisconnectView, DestinationView, ScheduleView, SyncActivityView
 
 app_name = 'xero_workspace'
 urlpatterns = [
@@ -26,7 +26,7 @@ urlpatterns = [
     path('<int:workspace_id>/transform/', TransformView.as_view(),
          name="transform"),
     path('<int:workspace_id>/source/', include('apps.fyle_connect.urls')),
-    path('<int:workspace_id>/activity/', include('apps.sync_activity.urls')),
+    path('<int:workspace_id>/activity/', SyncActivityView.as_view(), name="activity"),
     path('<int:workspace_id>/schedule/', ScheduleView.as_view(), name="schedule"),
     # Path for getting the Fyle authorisation code
     path('connect/fyle/', FyleTokenView.as_view(), name="fyle_authorise")

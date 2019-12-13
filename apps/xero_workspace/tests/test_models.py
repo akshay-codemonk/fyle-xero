@@ -4,10 +4,9 @@ from django.test import TestCase
 from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
-from apps.sync_activity.models import Activity
 from apps.user.models import UserProfile
-from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceActivity, WorkspaceSchedule, EmployeeMapping, \
-    CategoryMapping, FyleCredential
+from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceSchedule, EmployeeMapping, \
+    CategoryMapping, FyleCredential, Activity
 
 
 class WorkspaceTestCases(TestCase):
@@ -74,36 +73,6 @@ class XeroCredentialTestCases(TestCase):
         """
         xero_credential = XeroCredential.objects.get(id=1)
         self.assertEqual(str(xero_credential), '1')
-
-
-class WorkspaceActivityTestCases(TestCase):
-    """
-    Test cases for WorkspaceActivity model
-    """
-
-    @classmethod
-    def setUpTestData(cls):
-        """
-        Set up test data
-        """
-        activity = Activity.objects.create(transform_sql='transform_sql')
-        workspace = Workspace.objects.create(name='workspace1')
-
-        WorkspaceActivity.objects.create(workspace=workspace, activity=activity)
-
-    def test_workspace_activity_creation(self):
-        """
-        Test creation
-        """
-        workspace_activity = WorkspaceActivity.objects.get(id=1)
-        self.assertEqual(workspace_activity.activity.transform_sql, 'transform_sql')
-
-    def test_string_representation(self):
-        """
-        Test model string representation
-        """
-        workspace_activity = WorkspaceActivity.objects.get(id=1)
-        self.assertEqual(str(workspace_activity), '1')
 
 
 class EmployeeMappingTestCases(TestCase):
@@ -220,3 +189,81 @@ class WorkspaceScheduleTestCases(TestCase):
         """
         workspace_schedule = WorkspaceSchedule.objects.get(id=1)
         self.assertEqual(str(workspace_schedule), '1')
+
+
+class ActivityTestCases(TestCase):
+    """
+    Test cases for Activity model
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Set up test data
+        """
+
+        success = Activity.STATUS.success
+        triggerd_by = Activity.TRIGGERS.user
+        workspace = Workspace.objects.create(name='workspace1')
+
+        Activity.objects.create(workspace=workspace, transform_sql='transform_sql', status=success,
+                                triggered_by=triggerd_by,
+                                sync_db_file_id='1a2b', request_data='{request: 1}', response_data='{response: 1}',
+                                error_msg='error')
+        Activity.objects.create()
+
+    def test_transform_sql_value(self):
+        """
+        Test transform_sql value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.transform_sql, 'transform_sql')
+
+    def test_sync_db_value(self):
+        """
+        Test sync_db_file_id value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.sync_db_file_id, '1a2b')
+
+    def test_status_value(self):
+        """
+        Test status value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.status, 'success')
+
+    def test_triggered_by_value(self):
+        """
+        Test triggered_by value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.triggered_by, 'user')
+
+    def test_request_data_value(self):
+        """
+        Test request_data value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.request_data, '{request: 1}')
+
+    def test_response_data_value(self):
+        """
+        Test response_data value
+        """
+        activity = Activity.objects.get(id=1)
+        self.assertEqual(activity.response_data, '{response: 1}')
+
+    def test_default_status_value(self):
+        """
+        Test default status value
+        """
+        activity = Activity.objects.get(id=2)
+        self.assertEqual(activity.status, 'in_progress')
+
+    def test_default_triggered_by_value(self):
+        """
+        Test default triggered_by value
+        """
+        activity = Activity.objects.get(id=2)
+        self.assertEqual(activity.triggered_by, 'user')
