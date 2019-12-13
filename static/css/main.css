@@ -438,6 +438,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   padding: 10px;
   border-radius: 6px;
   overflow: auto;
+  height: 400px;
 }
 
 .content-header {
