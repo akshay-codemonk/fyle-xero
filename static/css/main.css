@@ -40,6 +40,12 @@ a, a:hover {
   padding: 8px 20px;
 }
 
+.sub-navbar {
+  border-bottom: 1px solid var(--lightGrey);
+  background-color: var(--white);
+  padding: 0px 20px;
+}
+
 .fixed-top {
   position: relative;
 }
@@ -265,6 +271,10 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   color: var(--mainHeading);
 }
 
+.sub-navbar-heading {
+  width: 100%;
+}
+
 .checkbox-label {
   display: block;
   position: relative;
@@ -464,4 +474,38 @@ a {
 
 .signout-layout {
   justify-content: center;
+}
+
+.sub-nav-tabs {
+    background-color: var(--white);
+    width: 100%;
+}
+
+.sub-nav-tabs .sub-nav-item, .sub-nav-link  {
+    color: var(--fontGrey) !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.sub-nav-link {
+    padding: 8px 16px 8px;
+}
+
+.sub-nav-item {
+    padding: 8px 16px 8px 0px;
+}
+
+.sub-nav-tabs .sub-nav-item.show .sub-nav-link, .sub-nav-tabs .sub-nav-link.active {
+    border: none;
+    border-bottom: 2px solid var(--primaryColor) !important;
+    color: var(--primaryColor) !important;
+    font-size: 16px;
+    background-color: var(--white);
+}
+.sub-nav-tabs .sub-nav-link:focus, .sub-nav-tabs .sub-nav-link:hover {
+    font-size: 16px;
+    color: var(--primaryColor) !important;
+    text-decoration: none;
+    border-color: transparent;
 }
