@@ -71,6 +71,22 @@ class CategoryMapping(models.Model):
         return str(self.id)
 
 
+class ProjectMapping(models.Model):
+    """
+    Mapping table for Fyle Project, Xero Tracking Category and Tracking Category options
+    """
+    id = models.AutoField(primary_key=True)
+    project_name = models.CharField(max_length=64, help_text='Fyle Project Name')
+    tracking_category_name = models.CharField(max_length=64, help_text='Xero Tracking Category Name')
+    tracking_category_option = models.CharField(max_length=64, help_text='Xero Tracking Category Option')
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
+
+    def __str__(self):
+        return str(self.id)
+
+
 class XeroCredential(models.Model):
     """
     Xero credentials
