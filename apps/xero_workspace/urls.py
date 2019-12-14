@@ -7,7 +7,8 @@ from django.urls import path, include
 from apps.fyle_connect.views import FyleTokenView
 from apps.xero_workspace.views import WorkspaceView, XeroConnectView, EmployeeMappingView, \
     CategoryMappingView, TransformView, CategoryMappingBulkUploadView, \
-    EmployeeMappingBulkUploadView, XeroDisconnectView, DestinationView, ScheduleView, SyncActivityView
+    EmployeeMappingBulkUploadView, XeroDisconnectView, DestinationView, ScheduleView, SyncActivityView, \
+    ProjectMappingView, ProjectMappingBulkUploadView
 
 app_name = 'xero_workspace'
 urlpatterns = [
@@ -23,6 +24,10 @@ urlpatterns = [
          name="employee_mapping"),
     path('<int:workspace_id>/mappings/employee_mapping/upload/', EmployeeMappingBulkUploadView.as_view(),
          name="employee_mapping_bulk_upload"),
+    path('<int:workspace_id>/mappings/project_mapping/', ProjectMappingView.as_view(),
+         name="project_mapping"),
+    path('<int:workspace_id>/mappings/project_mapping/upload/', ProjectMappingBulkUploadView.as_view(),
+         name="project_mapping_bulk_upload"),
     path('<int:workspace_id>/settings/transform/', TransformView.as_view(),
          name="transform"),
     path('<int:workspace_id>/settings/source/', include('apps.fyle_connect.urls')),
