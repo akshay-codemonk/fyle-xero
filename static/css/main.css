@@ -452,6 +452,17 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
     }
 }
 
+@media (min-width: 1440px) and (max-width: 2560px) {
+    .content {
+        background-color: var(--white);
+        border: 1px solid var(--lightGrey);
+        padding: 10px;
+        border-radius: 6px;
+        height: 800px;
+        overflow: auto;
+    }
+}
+
 .content-header {
   padding: 10px;
 }
