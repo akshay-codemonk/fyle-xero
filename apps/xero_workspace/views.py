@@ -71,7 +71,8 @@ class DestinationView(View):
     def get(self, request, workspace_id):
         form = XeroCredentialsForm()
         is_connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"destination": "active", "form": form, "is_connected": is_connected}
+        context = {"destination": "active", "form": form,
+                   "is_connected": is_connected, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
 
@@ -132,7 +133,7 @@ class CategoryMappingView(View):
             category_mappings = paginator.page(paginator.num_pages)
         form = CategoryMappingForm()
         context = {"category_mapping": "active", "form": form,
-                   "mappings": category_mappings}
+                   "mappings": category_mappings, "mappings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -208,7 +209,7 @@ class EmployeeMappingView(View):
             employee_mappings = paginator.page(paginator.num_pages)
         form = EmployeeMappingForm()
         context = {"employee_mapping": "active", "form": form,
-                   "mappings": employee_mappings}
+                   "mappings": employee_mappings, "mappings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -271,7 +272,8 @@ class TransformView(View):
         self.form = TransformForm()
         self.workspace = Workspace.objects.get(id=workspace_id)
         self.form.fields['transform_sql'].initial = self.workspace.transform_sql
-        self.context = {"transform": "active", "form": self.form}
+        self.context = {"transform": "active", "form": self.form,
+                        "settings_tab": "active"}
         super(TransformView, self).setup(request)
 
     def get(self, request, workspace_id):
@@ -304,7 +306,7 @@ class ScheduleView(View):
             '%Y-%m-%d %I:%M %p')
         context = {"schedule": "active", "workspace_id": workspace_id,
                    "workspace_name": workspace.name, "form": form,
-                   "enabled": schedule.repeats}
+                   "enabled": schedule.repeats, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):

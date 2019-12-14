@@ -82,4 +82,9 @@ th {
 
 .nav-pagination {
     width: 100%;
+    margin-top: 2%;
+}
+
+ul.pagination {
+    margin-bottom: 0;
 }
