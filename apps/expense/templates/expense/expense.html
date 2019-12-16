@@ -1,0 +1,87 @@
+{% extends "xero_workspace/expense_groups.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+{% endblock %}
+
+{% block title %}Expense Groups{% endblock %}
+
+{% block content %}
+    <div class="content mt-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex content-header">
+                <button class="ml-auto btn main-btn" name="submit" type="submit" value="sync">Sync</button>
+                <button class="btn main-btn-outline ml-3">Resync</button>
+            </div>
+        </form>
+        <div class="table-layout">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-head">
+                    <tr class="colHeadings">
+                        <th style="width: 40%">Description</th>
+                        <th>Status</th>
+                        <th>Created at</th>
+                        <th>Invoice</th>
+                        <th>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="select-all"/>
+                                <span class="checkmark"></span>
+                            </label>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Grouped by report id: REP-467</td>
+                            <td>Complete</td>
+                            <td>02:31 Jul 30, 2019</td>
+                            <td>View</td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Grouped by report id: REP-468</td>
+                            <td>Failed</td>
+                            <td>05:45 Jul 30, 2019</td>
+                            <td>-</td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Grouped by report id: REP-469</td>
+                            <td>Pending</td>
+                            <td>08:30 Jul 30, 2019</td>
+                            <td>-</td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    $(document).ready(function () {
+        $("#select-all").click(function () {
+            $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
+        });
+    });
+{% endblock %}
