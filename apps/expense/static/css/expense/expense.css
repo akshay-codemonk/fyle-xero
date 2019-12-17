@@ -82,3 +82,15 @@
 .sync-btn, .resync-btn {
     width: 13%;
 }
+
+.expenses-link, .expenses-link:hover {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.expense-groups-table td:hover {
+    cursor: default;
+}
+
+.expense-groups-table td:nth-child(1):hover {
+    cursor: pointer;
+}

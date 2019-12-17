@@ -41,7 +41,7 @@
         </form>
         <div class="table-layout">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table expense-groups-table">
                     <thead class="table-head">
                         <tr class="colHeadings">
                             <th style="width: 30%">Description</th>
@@ -58,11 +58,13 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><a href="<group_id>/expenses/">Grouped by report id: REP-467</a></td>
+                            <td><a class="expenses-link" href="<group_id>/expenses/">Grouped by report id: REP-467</a></td>
                             <td>Complete</td>
                             <td>02:31 Jul 30, 2019</td>
                             <td>
-                                <span class="badge badge-pill view-invoice-badge">View</span>
+                                <a href="#invoice">
+                                    <span class="badge badge-pill view-invoice-badge">View</span>
+                                </a>
                             </td>
                             <td>
                                 <label class="checkbox-label">
