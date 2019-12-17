@@ -1,87 +1,129 @@
-{% extends "xero_workspace/expense_groups.html" %}
+{% extends "base.html" %}
 
 {% load static %}
 
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/expense/expense.css' %}">
 {% endblock %}
 
 {% block title %}Expense Groups{% endblock %}
+
+{% block sub-nav-heading %}Expenses{% endblock %}
 
 {% block content %}
     <div class="content mt-3">
         <form action="" method="post">
             {% csrf_token %}
             <div class="d-flex content-header">
-                <button class="ml-auto btn main-btn" name="submit" type="submit" value="sync">Sync</button>
-                <button class="btn main-btn-outline ml-3">Resync</button>
+                <p class="employee-email">Email ID: employee1@fyle.in</p>
             </div>
         </form>
         <div class="table-layout">
             <div class="table-responsive">
                 <table class="table">
                     <thead class="table-head">
-                    <tr class="colHeadings">
-                        <th style="width: 40%">Description</th>
-                        <th>Status</th>
-                        <th>Created at</th>
-                        <th>Invoice</th>
-                        <th>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="select-all"/>
-                                <span class="checkmark"></span>
-                            </label>
-                        </th>
-                    </tr>
+                        <tr class="colHeadings">
+                            <th>Expense Number</th>
+                            <th>Spend Date</th>
+                            <th>Created on</th>
+                            <th>Amount</th>
+                            <th>Project</th>
+                            <th>Purpose</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Grouped by report id: REP-467</td>
-                            <td>Complete</td>
-                            <td>02:31 Jul 30, 2019</td>
-                            <td>View</td>
-                            <td>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" class="expenseCheckbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
+                        <tr data-toggle="modal" data-target="#expenseModal">
+                            <td>E/2019/14/T/1</td>
+                            <td>Nov 14, 2019</td>
+                            <td>Nov 30, 2019</td>
+                            <td>4250.00</td>
+                            <td>Project 1</td>
+                            <td>Client Meeting</td>
                         </tr>
                         <tr>
-                            <td>Grouped by report id: REP-468</td>
-                            <td>Failed</td>
-                            <td>05:45 Jul 30, 2019</td>
-                            <td>-</td>
-                            <td>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" class="expenseCheckbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
+                            <td>E/2019/14/T/1</td>
+                            <td>Nov 4, 2019</td>
+                            <td>Nov 29, 2019</td>
+                            <td>1250.00</td>
+                            <td>Project 3</td>
+                            <td>Client Meeting</td>
                         </tr>
                         <tr>
-                            <td>Grouped by report id: REP-469</td>
-                            <td>Pending</td>
-                            <td>08:30 Jul 30, 2019</td>
-                            <td>-</td>
-                            <td>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" class="expenseCheckbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
+                            <td>E/2019/14/T/2</td>
+                            <td>Dec 14, 2019</td>
+                            <td>Dec 30, 2019</td>
+                            <td>250.00</td>
+                            <td>Project 4</td>
+                            <td>Client Meeting</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-{% endblock %}
 
-{% block script %}
-    $(document).ready(function () {
-        $("#select-all").click(function () {
-            $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
-        });
-    });
+    <!-- Modal -->
+    <div class="modal right fade" id="expenseModal" tabindex="-1" role="dialog"
+         aria-labelledby="expenseModalTitle">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="expenseModalTitle">Expense Details</h5>
+                </div>
+                <div class="modal-body expense-details">
+                    <p class="employee-email">Email: employee1@fyle.in</p>
+                    <div class="table-responsive">
+                        <table class="table expenses-table">
+                            <tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>E/2019/14/T/1</td>
+                                </tr>
+                                <tr>
+                                    <td>Created Date</td>
+                                    <td>Nov 28, 2019</td>
+                                </tr>
+                                <tr>
+                                    <td>Spend Date</td>
+                                    <td>Nov 27, 2019</td>
+                                </tr>
+                                <tr>
+                                    <td>Category</td>
+                                    <td>Taxi</td>
+                                </tr>
+                                <tr>
+                                    <td>Category Code</td>
+                                    <td>440</td>
+                                </tr>
+                                <tr>
+                                    <td>Merchant</td>
+                                    <td>Uber</td>
+                                </tr>
+                                <tr>
+                                    <td>Purpose</td>
+                                    <td>Client</td>
+                                </tr>
+                                <tr>
+                                    <td>Project</td>
+                                    <td>Project 1</td>
+                                </tr>
+                                <tr>
+                                    <td>Reimbursable</td>
+                                    <td>Yes</td>
+                                </tr>
+                                <tr>
+                                    <td>State</td>
+                                    <td>FYLED</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

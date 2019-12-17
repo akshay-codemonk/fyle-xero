@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/expense/expense.css' %}">
+{% endblock %}
+
+{% block title %}Expense Groups{% endblock %}
+
+{% block sub-nav-heading %}Expense Groups{% endblock %}
+
+{% block sub-nav-tabs %}
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ expense_groups }}"
+           href="{% url 'xero_workspace:expense_groups' workspace_id %}">All</a>
+    </li>
+    <li class="sub-nav-item">
+        <a class="sub-nav-link"
+           href="#complete">Complete</a>
+    </li>
+    <li class="sub-nav-item">
+            <a class="sub-nav-link"
+               href="#pending">Pending</a>
+    </li>
+    <li class="sub-nav-item">
+            <a class="sub-nav-link"
+               href="#failed">Failed</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div class="content mt-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex content-header">
+                <button class="btn ml-auto main-btn sync-btn" name="submit" type="submit" value="sync">Sync</button>
+                <button class="btn main-btn-outline ml-4 resync-btn">Resync</button>
+            </div>
+        </form>
+        <div class="table-layout">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-head">
+                        <tr class="colHeadings">
+                            <th style="width: 30%">Description</th>
+                            <th>Status</th>
+                            <th>Created at</th>
+                            <th>Invoice</th>
+                            <th>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="select-all"/>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="<group_id>/expenses/">Grouped by report id: REP-467</a></td>
+                            <td>Complete</td>
+                            <td>02:31 Jul 30, 2019</td>
+                            <td>
+                                <span class="badge badge-pill view-invoice-badge">View</span>
+                            </td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Grouped by report id: REP-468</td>
+                            <td>Failed</td>
+                            <td>05:45 Jul 30, 2019</td>
+                            <td></td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Grouped by report id: REP-469</td>
+                            <td>Pending</td>
+                            <td>08:30 Jul 30, 2019</td>
+                            <td></td>
+                            <td>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="expenseCheckbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    $(document).ready(function () {
+        $("#select-all").click(function () {
+            $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
+        });
+    });
+{% endblock %}
