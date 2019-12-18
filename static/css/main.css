@@ -48,6 +48,7 @@ a, a:hover {
 
 .fixed-top {
   position: relative;
+  z-index: auto;
 }
 
 .user-profile {
