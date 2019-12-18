@@ -6,7 +6,7 @@ from django_q.models import Schedule
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
 from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceSchedule, EmployeeMapping, \
-    CategoryMapping, FyleCredential, Activity
+    CategoryMapping, FyleCredential, Activity, ProjectMapping
 
 
 class WorkspaceTestCases(TestCase):
@@ -132,6 +132,37 @@ class CategoryMappingTestCases(TestCase):
         self.assertEqual(str(category_mapping), '1')
 
 
+class ProjectMappingTestCases(TestCase):
+    """
+    Test cases for ProjectMapping model
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Set up test data
+        """
+        workspace = Workspace.objects.create(name='workspace1')
+        ProjectMapping.objects.create(project_name='project',
+                                      tracking_category_name='tracking_category_name',
+                                      tracking_category_option='tracking_category_option',
+                                      workspace=workspace)
+
+    def test_project_mapping_creation(self):
+        """
+        Test project mapping creation
+        """
+        project_mapping = ProjectMapping.objects.get(id=1)
+        self.assertEqual(project_mapping.workspace.name, 'workspace1')
+
+    def test_string_representation(self):
+        """
+        Test model string representation
+        """
+        project_mapping = ProjectMapping.objects.get(id=1)
+        self.assertEqual(str(project_mapping), '1')
+
+
 class FyleCredentialTestCases(TestCase):
     """
     Test model string representation
@@ -163,7 +194,7 @@ class FyleCredentialTestCases(TestCase):
 
 class WorkspaceScheduleTestCases(TestCase):
     """
-    Test cases for the WorksapceSchedule model
+    Test cases for the WorkspaceSchedule model
     """
 
     @classmethod
@@ -204,13 +235,14 @@ class ActivityTestCases(TestCase):
 
         success = Activity.STATUS.success
         triggerd_by = Activity.TRIGGERS.user
-        workspace = Workspace.objects.create(name='workspace1')
+        workspace1 = Workspace.objects.create(name='workspace1')
+        workspace2 = Workspace.objects.create(name='workspace2')
 
-        Activity.objects.create(workspace=workspace, transform_sql='transform_sql', status=success,
+        Activity.objects.create(workspace=workspace1, transform_sql='transform_sql', status=success,
                                 triggered_by=triggerd_by,
                                 sync_db_file_id='1a2b', request_data='{request: 1}', response_data='{response: 1}',
                                 error_msg='error')
-        Activity.objects.create()
+        Activity.objects.create(workspace=workspace2)
 
     def test_transform_sql_value(self):
         """
