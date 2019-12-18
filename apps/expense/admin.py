@@ -10,7 +10,7 @@ class ExpenseAdmin(admin.ModelAdmin):
     list_display = ('expense_id', 'expense_number', 'employee_email',
                     'purpose', 'amount', 'created_at', 'updated_at')
     list_filter = ['expense_id', 'expense_number', 'employee_email',
-                   'created_at', 'updated_at']
+                   'report_id', 'created_at', 'updated_at']
 
 
 class ExpenseGroupAdmin(admin.ModelAdmin):
