@@ -1,5 +1,7 @@
-from django.test import TestCase
 from datetime import datetime
+
+import pytz
+from django.test import TestCase
 
 from apps.expense.models import Expense, ExpenseGroup
 from apps.xero_workspace.models import Workspace
@@ -9,6 +11,7 @@ class ExpenseTestCases(TestCase):
     """
     Test cases for Expense model
     """
+
     @classmethod
     def setUpTestData(cls):
         """
@@ -21,8 +24,8 @@ class ExpenseTestCases(TestCase):
             amount=499.50,
             settlement_id="set123",
             report_id="rep123",
-            expense_created_at=datetime.now(),
-            spent_at=datetime.now(),
+            expense_created_at=datetime.now(tz=pytz.utc),
+            spent_at=datetime.now(tz=pytz.utc),
             reimbursable=True,
             state="PAID",
         )
@@ -61,8 +64,8 @@ class ExpenseGroupTestCases(TestCase):
             amount=499.50,
             settlement_id="set123",
             report_id="rep123",
-            expense_created_at=datetime.now(),
-            spent_at=datetime.now(),
+            expense_created_at=datetime.now(tz=pytz.utc),
+            spent_at=datetime.now(tz=pytz.utc),
             reimbursable=True,
             state="PAID",
         )
