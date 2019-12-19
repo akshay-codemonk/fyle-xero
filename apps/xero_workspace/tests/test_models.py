@@ -1,7 +1,4 @@
-import datetime
-
 from django.test import TestCase
-from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
@@ -202,24 +199,14 @@ class WorkspaceScheduleTestCases(TestCase):
         """
         Set up test data
         """
-        workspace = Workspace.objects.create(name='workspace1')
-        schedule = Schedule.objects.create(func='module.tasks.function', schedule_type=Schedule.MINUTES,
-                                           repeats=0, minutes=5, next_run=datetime.datetime.now())
-        WorkspaceSchedule.objects.create(workspace=workspace, schedule=schedule)
+        Workspace.objects.create(name='schedule_creation')
 
     def test_workspace_schedule_creation(self):
         """
         Test creation
         """
-        workspace_schedule = WorkspaceSchedule.objects.get(id=1)
-        self.assertEqual(workspace_schedule.schedule.id, 1)
-
-    def test_string_representation(self):
-        """
-        Test model string representation
-        """
-        workspace_schedule = WorkspaceSchedule.objects.get(id=1)
-        self.assertEqual(str(workspace_schedule), '1')
+        workspace_schedule = WorkspaceSchedule.objects.get(workspace__name='schedule_creation')
+        self.assertEqual(workspace_schedule.workspace.name, 'schedule_creation')
 
 
 class ActivityTestCases(TestCase):
