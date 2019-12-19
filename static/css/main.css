@@ -422,7 +422,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
   padding: 16px;
 }
@@ -438,6 +438,29 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
   padding: 10px;
   border-radius: 6px;
   overflow: auto;
+  height: 400px;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+    .content {
+        background-color: var(--white);
+        border: 1px solid var(--lightGrey);
+        padding: 10px;
+        border-radius: 6px;
+        height: 650px;
+        overflow: auto;
+    }
+}
+
+@media (min-width: 1440px) and (max-width: 2560px) {
+    .content {
+        background-color: var(--white);
+        border: 1px solid var(--lightGrey);
+        padding: 10px;
+        border-radius: 6px;
+        height: 800px;
+        overflow: auto;
+    }
 }
 
 .content-header {
