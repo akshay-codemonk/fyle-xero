@@ -1,5 +1,6 @@
-from django.db import models
 from itertools import groupby
+
+from django.db import models
 
 from apps.xero_workspace.models import Workspace
 from apps.xero_workspace.utils import connect_to_fyle
@@ -91,7 +92,7 @@ class ExpenseGroup(models.Model):
         Group expense by report_id
         """
         expense_groups = []
-        for report_id, expense_group in groupby(expense_objects, key=lambda x: x.report_id):
+        for report_id, _expense_group in groupby(expense_objects, key=lambda x: x.report_id):
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
                 description=report_id
