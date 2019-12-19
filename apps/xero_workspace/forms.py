@@ -44,9 +44,9 @@ class ProjectMappingForm(forms.Form):
     """
     project_name = forms.CharField(max_length=64, label='', help_text=None,
                                    widget=forms.TextInput(attrs={'placeholder': ' '}))
-    tracking_category_name = forms.CharField(max_length=64, label='', help_text=None, required=False,
+    tracking_category_name = forms.CharField(max_length=64, label='', help_text=None,
                                              widget=forms.TextInput(attrs={'placeholder': ' '}))
-    tracking_category_option = forms.CharField(max_length=64, label='', help_text=None, required=False,
+    tracking_category_option = forms.CharField(max_length=64, label='', help_text=None,
                                                widget=forms.TextInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
