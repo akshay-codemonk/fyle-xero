@@ -100,6 +100,7 @@
             </nav>
             <nav class="sub-navbar navbar fixed-top navbar-light d-flex flex-column">
                 <div class="sub-navbar-heading">
+                    {% block back-button %}{% endblock %}
                     <h1 class="navbar-brand">{% block sub-nav-heading %}{% endblock %}</h1>
                 </div>
                 <ul class="nav sub-nav-tabs d-flex flex-row" class="tabSection">

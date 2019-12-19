@@ -67,16 +67,8 @@
     font-weight: 400;
 }
 
-.view-invoice-badge {
-    background-color: transparent;
-    border: 1px solid var(--primaryColor);
-    color: var(--primaryColor);
-}
-
-.view-invoice-badge:hover {
-    color: var(--white);
-    background-color: var(--primaryColor);
-    border-color: var(--primaryColor);
+.view-invoice, .view-invoice:hover {
+    text-decoration: underline;
 }
 
 .sync-btn, .resync-btn {
@@ -93,4 +85,8 @@
 
 .expense-groups-table td:nth-child(1):hover {
     cursor: pointer;
+}
+
+.back-btn {
+    vertical-align: middle;
 }
