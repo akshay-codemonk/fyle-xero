@@ -35,6 +35,10 @@
                    href="{% url 'xero_workspace:activity' workspace_id %}">Activity</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link tabitem {{ expense_groups_tab }}"
+                   href="{% url 'xero_workspace:expense_groups' workspace_id %}">Expense Groups</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link tabitem {{ mappings_tab }}"
                    href="{% url 'xero_workspace:category_mapping' workspace_id %}">Mappings</a>
             </li>
@@ -96,6 +100,7 @@
             </nav>
             <nav class="sub-navbar navbar fixed-top navbar-light d-flex flex-column">
                 <div class="sub-navbar-heading">
+                    {% block back-button %}{% endblock %}
                     <h1 class="navbar-brand">{% block sub-nav-heading %}{% endblock %}</h1>
                 </div>
                 <ul class="nav sub-nav-tabs d-flex flex-row" class="tabSection">
