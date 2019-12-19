@@ -458,7 +458,7 @@ input:focus ~ label, input:not(:placeholder-shown) ~ label {
         border: 1px solid var(--lightGrey);
         padding: 10px;
         border-radius: 6px;
-        max-height: 600px;
+        max-height: 400px;
         overflow: auto;
     }
 }
