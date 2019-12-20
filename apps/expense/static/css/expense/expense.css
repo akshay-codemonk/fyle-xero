@@ -11,10 +11,6 @@
     overflow-y: auto;
 }
 
-.modal.right .modal-body {
-    padding: 15px 15px 80px;
-}
-
 .modal.right.fade .modal-dialog {
     right: 0;
     transition: opacity 0.3s linear, right 0.3s ease-out;
@@ -69,6 +65,7 @@
 
 .view-invoice, .view-invoice:hover {
     text-decoration: underline;
+    color: #212529
 }
 
 .sync-btn, .resync-btn {
