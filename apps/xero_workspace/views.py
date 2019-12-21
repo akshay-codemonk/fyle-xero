@@ -13,10 +13,10 @@ from django.views import View
 from django_q.tasks import async_task
 
 from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm, \
-    ScheduleForm
+    ScheduleForm, ProjectMappingForm
 from apps.xero_workspace.hooks import update_activity_status
 from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
-    WorkspaceSchedule, Activity
+    WorkspaceSchedule, Activity, ProjectMapping
 from apps.xero_workspace.tasks import sync_xero
 
 
@@ -71,7 +71,8 @@ class DestinationView(View):
     def get(self, request, workspace_id):
         form = XeroCredentialsForm()
         is_connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"destination": "active", "form": form, "is_connected": is_connected}
+        context = {"destination": "active", "form": form,
+                   "is_connected": is_connected, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
 
@@ -132,7 +133,7 @@ class CategoryMappingView(View):
             category_mappings = paginator.page(paginator.num_pages)
         form = CategoryMappingForm()
         context = {"category_mapping": "active", "form": form,
-                   "mappings": category_mappings}
+                   "mappings": category_mappings, "mappings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -208,7 +209,7 @@ class EmployeeMappingView(View):
             employee_mappings = paginator.page(paginator.num_pages)
         form = EmployeeMappingForm()
         context = {"employee_mapping": "active", "form": form,
-                   "mappings": employee_mappings}
+                   "mappings": employee_mappings, "mappings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -251,6 +252,82 @@ class EmployeeMappingBulkUploadView(View):
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
 
 
+class ProjectMappingView(View):
+    """
+    Project Mapping View
+    """
+    template_name = "xero_workspace/project_mapping.html"
+    workspace = None
+
+    def dispatch(self, request, *args, **kwargs):
+        method = self.request.POST.get('method', '').lower()
+        if method == 'delete':
+            return self.delete(request, *args, **kwargs)
+        return super(ProjectMappingView, self).dispatch(request, *args, **kwargs)
+
+    def setup(self, request, *args, **kwargs):
+        workspace_id = kwargs['workspace_id']
+        self.workspace = Workspace.objects.get(id=workspace_id)
+        super(ProjectMappingView, self).setup(request)
+
+    def get(self, request, workspace_id):
+        project_mappings = ProjectMapping.objects.filter(workspace__id=workspace_id).order_by('-created_at')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(project_mappings, 10)
+        try:
+            project_mappings = paginator.page(page)
+        except PageNotAnInteger:
+            project_mappings = paginator.page(1)
+        except EmptyPage:
+            project_mappings = paginator.page(paginator.num_pages)
+        form = ProjectMappingForm()
+        context = {"project_mapping": "active", "form": form,
+                   "mappings": project_mappings, "mappings_tab": "active"}
+        return render(request, self.template_name, context)
+
+    def post(self, request, workspace_id):
+        form = ProjectMappingForm(request.POST)
+        if form.is_valid:
+            project_name = request.POST.get('project_name')
+            tracking_category_name = request.POST.get('tracking_category_name')
+            tracking_category_option = request.POST.get('tracking_category_option')
+            project_mapping, _created = ProjectMapping.objects.get_or_create(workspace=self.workspace,
+                                                                             project_name=project_name)
+            project_mapping.tracking_category_name = tracking_category_name
+            project_mapping.tracking_category_option = tracking_category_option
+            project_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def delete(self, request, workspace_id):
+        selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('mapping_ids')]
+        ProjectMapping.objects.filter(id__in=selected_mappings).delete()
+        return HttpResponseRedirect(self.request.path_info)
+
+
+class ProjectMappingBulkUploadView(View):
+    """
+    Project mapping bulk upload view
+    """
+
+    @staticmethod
+    def post(request, workspace_id):
+        workspace = Workspace.objects.get(id=workspace_id)
+        file = request.FILES['bulk_upload_file']
+        try:
+            work_book = openpyxl.load_workbook(file)
+            worksheet = work_book.active
+            project_objects = []
+            for project_name, tracking_category_name, tracking_category_option in worksheet.iter_rows(min_row=2):
+                project_objects.append(
+                    ProjectMapping(workspace=workspace, project_name=project_name.value,
+                                   tracking_category_name=tracking_category_name.value,
+                                   tracking_category_option=tracking_category_option.value))
+            ProjectMapping.objects.bulk_create(project_objects)
+        except (ValueError, BadZipFile, KeyError):
+            messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
+        return HttpResponseRedirect(reverse('xero_workspace:project_mapping', args=[workspace_id]))
+
+
 class TransformView(View):
     """
     Transform View
@@ -271,7 +348,8 @@ class TransformView(View):
         self.form = TransformForm()
         self.workspace = Workspace.objects.get(id=workspace_id)
         self.form.fields['transform_sql'].initial = self.workspace.transform_sql
-        self.context = {"transform": "active", "form": self.form}
+        self.context = {"transform": "active", "form": self.form,
+                        "settings_tab": "active"}
         super(TransformView, self).setup(request)
 
     def get(self, request, workspace_id):
@@ -304,7 +382,7 @@ class ScheduleView(View):
             '%Y-%m-%d %I:%M %p')
         context = {"schedule": "active", "workspace_id": workspace_id,
                    "workspace_name": workspace.name, "form": form,
-                   "enabled": schedule.repeats}
+                   "enabled": schedule.repeats, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
