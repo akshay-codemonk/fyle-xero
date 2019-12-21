@@ -33,7 +33,7 @@ urlpatterns = [
     path('<int:workspace_id>/settings/source/', include('apps.fyle_connect.urls')),
     path('<int:workspace_id>/activity/', SyncActivityView.as_view(), name="activity"),
     path('<int:workspace_id>/settings/schedule/', ScheduleView.as_view(), name="schedule"),
-    path('<int:workspace_id>/expense_groups/', include('apps.expense.urls')),
+    path('<int:workspace_id>/expense_groups/', include('apps.fyle_expense.urls')),
     # Path for getting the Fyle authorisation code
     path('connect/fyle/', FyleTokenView.as_view(), name="fyle_authorise")
 ]

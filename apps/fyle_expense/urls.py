@@ -3,7 +3,7 @@ expense app URL Configuration
 """
 from django.urls import path
 
-from apps.expense.views import ExpenseGroupView, ExpenseView
+from apps.fyle_expense.views import ExpenseGroupView, ExpenseView
 
 urlpatterns = [
     path('', ExpenseGroupView.as_view(), name="expense_groups"),
