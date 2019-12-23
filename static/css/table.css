@@ -27,11 +27,6 @@ td:hover {
   background-color: none !important;
 }
 
-td {
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.87);
-}
-
 th {
   color: var(--darkGrey) !important;
   vertical-align: middle !important;
@@ -92,3 +87,4 @@ th {
 ul.pagination {
     margin-bottom: 0;
 }
+
