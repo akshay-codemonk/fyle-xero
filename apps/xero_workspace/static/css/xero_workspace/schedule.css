@@ -133,12 +133,7 @@ p {
 }
 
 .bootstrap-datetimepicker-widget {
-    top: -180px !important;
+    top: -130px !important;
     left: 200px !important;
     bottom: auto !important;
-}
-
-.bootstrap-datetimepicker-widget.dropdown-menu:before,
-.bootstrap-datetimepicker-widget.dropdown-menu:after {
-    content: none !important;
 }
