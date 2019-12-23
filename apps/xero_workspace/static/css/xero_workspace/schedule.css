@@ -82,7 +82,6 @@ label {
 
 #id_minutes {
   width: 15%;
-  margin-top: 2%;
 }
 
 .schedule-content {
@@ -95,9 +94,12 @@ label {
   margin-bottom: 3%;
 }
 
+input {
+    margin: 0;
+}
+
 .input-group {
   width: 16%;
-  margin-top: 2%;
 }
 
 .form-control {
@@ -133,7 +135,12 @@ p {
 }
 
 .bootstrap-datetimepicker-widget {
-    top: -130px !important;
+    top: -160px !important;
     left: 200px !important;
     bottom: auto !important;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu:before,
+.bootstrap-datetimepicker-widget.dropdown-menu:after {
+    content: none !important;
 }
