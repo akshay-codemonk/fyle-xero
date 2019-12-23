@@ -196,7 +196,7 @@ class Invoice(models.Model):
     """
     id = models.AutoField(primary_key=True)
     invoice_number = models.CharField(max_length=64, help_text="Invoice number")
-    invoice_id = models.CharField(max_length=64, help_text="Invoice id")
+    invoice_id = models.CharField(max_length=64, null=True, blank=True, help_text="Invoice id")
     contact_name = models.CharField(max_length=64, help_text="Contact Name")
     date = models.DateTimeField(help_text="Invoice created date")
     due_date = models.DateTimeField(help_text="Invoice due date")
