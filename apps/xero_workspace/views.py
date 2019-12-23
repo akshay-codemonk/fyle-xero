@@ -70,9 +70,9 @@ class DestinationView(View):
 
     def get(self, request, workspace_id):
         form = XeroCredentialsForm()
-        is_connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
+        connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
         context = {"destination": "active", "form": form,
-                   "is_connected": is_connected, "settings_tab": "active"}
+                   "connected": connected, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
 
