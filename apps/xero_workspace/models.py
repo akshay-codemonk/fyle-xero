@@ -218,6 +218,10 @@ class InvoiceLineItem(models.Model):
     account_name = models.CharField(max_length=64, help_text="Account name")
     description = models.CharField(max_length=64, help_text="Description")
     amount = models.FloatField(help_text="Lineitem amount")
+    tracking_category_name = models.CharField(max_length=64, null=True, blank=True,
+                                              help_text="Tracking Category Name")
+    tracking_category_option = models.CharField(max_length=64, null=True, blank=True,
+                                                help_text="Tracking Category Option")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
