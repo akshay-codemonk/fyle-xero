@@ -2,6 +2,8 @@ import json
 from django.db import models
 from itertools import groupby
 
+from django.db import models
+
 from apps.xero_workspace.models import Workspace
 from apps.xero_workspace.utils import connect_to_fyle
 

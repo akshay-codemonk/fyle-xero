@@ -16,8 +16,8 @@ class SourceView(View):
     template_name = "fyle_connect/source.html"
 
     def get(self, request, workspace_id):
-        is_connected = FyleCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"source": "active", "is_connected": is_connected,
+        connected = FyleCredential.objects.filter(workspace__id=workspace_id).exists()
+        context = {"source": "active", "connected": connected,
                    "settings_tab": "active"}
         return render(request, self.template_name, context)
 
