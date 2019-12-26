@@ -1,3 +1,4 @@
+import json
 from itertools import groupby
 
 from django.db import models
@@ -91,25 +92,32 @@ class ExpenseGroup(models.Model):
         return str(self.id)
 
     @staticmethod
-    def group_expense_by_report_id(expense_objects, workspace_id):
+    def group_expense_by_report_id(expense_objects, workspace_id, connection):
         """
         Group expense by report_id
         """
         expense_groups = []
+        reports = connection.Reports.get(state='PAID')
         for report_id, _expense_group in groupby(expense_objects, key=lambda x: x.report_id):
+            report = [report for report in reports['data'] if report_id == report['id']].pop()
+            report_data = {
+                "report_id": report['id'],
+                "employee_email": report['employee_email'],
+                "approved_at": report['approved_at']
+            }
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
-                description=report_id
+                description=str(json.dumps(report_data))
             ))
         return expense_groups
 
     @staticmethod
     def create_expense_groups(expense_groups):
         expense_group_objects = ExpenseGroup.objects.bulk_create(expense_groups)
-
         through_model_objects = []
         for expense_group_object in expense_group_objects:
-            expenses = Expense.objects.filter(report_id=expense_group_object.description)
+            report_id = json.loads(expense_group_object.description)['report_id']
+            expenses = Expense.objects.filter(report_id=report_id)
             for expense in expenses:
                 through_model_objects.append(ExpenseGroup.expenses.through(
                     expensegroup_id=expense_group_object.id,

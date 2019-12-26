@@ -1,5 +1,6 @@
 import datetime
 
+import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
@@ -185,7 +186,7 @@ def create_workspace_(instance, created, **kwargs):
                                            schedule_type=Schedule.MINUTES,
                                            repeats=0,
                                            minutes=5,
-                                           next_run=datetime.datetime.now()
+                                           next_run=datetime.datetime.now(tz=pytz.UTC)
                                            )
         WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)
 
