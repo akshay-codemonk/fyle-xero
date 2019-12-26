@@ -211,6 +211,11 @@ class Invoice(models.Model):
 
     @staticmethod
     def create_invoice(expense_group):
+        """
+        Create invoice from expense group
+        :param expense_group
+        :return: invoice id
+        """
         description = json.loads(expense_group.description)
         invoice = Invoice.objects.create(
             invoice_number=description.get("report_id"),
@@ -244,6 +249,12 @@ class InvoiceLineItem(models.Model):
 
     @staticmethod
     def create_invoice_line_item(invoice_id, expense_group):
+        """
+        Create Invoice line item from expenses and update ExpenseGroup
+        and Expense model fields
+        :param invoice_id
+        :param expense_group
+        """
         expenses = expense_group.expenses.all()
         for expense in expenses:
             invoice_line_item = InvoiceLineItem.objects.create(
