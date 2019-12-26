@@ -219,12 +219,12 @@ class Invoice(models.Model):
                 employee_email=description.get("employee_email")).contact_name,
             date=description.get("approved_at")
         )
-        return invoice_object
+        return invoice_object.id
 
 
 class InvoiceLineItem(models.Model):
     """
-    Invoice lineitem model
+    Invoice line item model
     """
     id = models.AutoField(primary_key=True)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, help_text="FK to Invoice")
@@ -243,11 +243,11 @@ class InvoiceLineItem(models.Model):
         return str(self.id)
 
     @staticmethod
-    def create_invoice_lineitem(invoice_object, expense_group):
+    def create_invoice_line_item(invoice_id, expense_group):
         expenses = expense_group.expenses.all()
         for expense in expenses:
-            invoice_lineitem_object = InvoiceLineItem.objects.create(
-                invoice=Invoice.objects.get(id=invoice_object_id),
+            invoice_line_item_object = InvoiceLineItem.objects.create(
+                invoice=Invoice.objects.get(id=invoice_id),
                 account_code=CategoryMapping.objects.get(
                     category=expense.category).account_code,
                 account_name=CategoryMapping.objects.get(
@@ -258,13 +258,13 @@ class InvoiceLineItem(models.Model):
 
             if expense.project is not None:
                 project_mapping = ProjectMapping.objects.get(project_name=expense.project)
-                invoice_lineitem_object.tracking_category_name = project_mapping.tracking_category_name
-                invoice_lineitem_object.tracking_category_option = project_mapping.tracking_category_option
-                invoice_lineitem_object.save()
+                invoice_line_item_object.tracking_category_name = project_mapping.tracking_category_name
+                invoice_line_item_object.tracking_category_option = project_mapping.tracking_category_option
+                invoice_line_item_object.save()
 
-            if invoice_lineitem_object.id:
+            if invoice_line_item_object.id:
                 expense.invoice_lineitem = InvoiceLineItem.objects.get(
-                    id=invoice_lineitem_object.id)
+                    id=invoice_line_item_object.id)
                 expense.save()
-                expense_group.invoice = invoice_object
+                expense_group.invoice = Invoice.objects.get(id=invoice_id)
                 expense_group.save()
