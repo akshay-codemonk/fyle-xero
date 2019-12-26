@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import pytz
 from django.db import models
@@ -206,7 +207,19 @@ class Invoice(models.Model):
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
-        return self.invoice_id
+        return str(self.id)
+
+    @staticmethod
+    def create_invoice(expense_group):
+        description = json.loads(expense_group.description)
+        invoice_object = Invoice.objects.create(
+            invoice_number=description.get("report_id"),
+            description=description.get("report_id"),
+            contact_name=EmployeeMapping.objects.get(
+                employee_email=description.get("employee_email")).contact_name,
+            date=description.get("approved_at")
+        )
+        return invoice_object
 
 
 class InvoiceLineItem(models.Model):
@@ -228,3 +241,30 @@ class InvoiceLineItem(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    @staticmethod
+    def create_invoice_lineitem(invoice_object, expense_group):
+        expenses = expense_group.expenses.all()
+        for expense in expenses:
+            invoice_lineitem_object = InvoiceLineItem.objects.create(
+                invoice=Invoice.objects.get(id=invoice_object_id),
+                account_code=CategoryMapping.objects.get(
+                    category=expense.category).account_code,
+                account_name=CategoryMapping.objects.get(
+                    category=expense.category).account_code,
+                description=expense.report_id,
+                amount=expense.amount
+            )
+
+            if expense.project is not None:
+                project_mapping = ProjectMapping.objects.get(project_name=expense.project)
+                invoice_lineitem_object.tracking_category_name = project_mapping.tracking_category_name
+                invoice_lineitem_object.tracking_category_option = project_mapping.tracking_category_option
+                invoice_lineitem_object.save()
+
+            if invoice_lineitem_object.id:
+                expense.invoice_lineitem = InvoiceLineItem.objects.get(
+                    id=invoice_lineitem_object.id)
+                expense.save()
+                expense_group.invoice = invoice_object
+                expense_group.save()
