@@ -27,8 +27,8 @@ class Expense(models.Model):
     spent_at = models.DateTimeField(help_text="Expense spent at")
     reimbursable = models.BooleanField(help_text="Expense reimbursable or not")
     state = models.CharField(max_length=64, help_text="Expense state")
-    invoice_lineitem = models.ForeignKey(InvoiceLineItem, null=True, blank=True,
-                                         on_delete=models.PROTECT, help_text="FK to Invoice Lineitem")
+    invoice_line_item = models.ForeignKey(InvoiceLineItem, null=True, blank=True,
+                                          on_delete=models.PROTECT, help_text="FK to InvoiceLineItem")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 

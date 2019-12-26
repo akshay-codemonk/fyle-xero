@@ -231,7 +231,7 @@ class InvoiceLineItem(models.Model):
     account_code = models.IntegerField(help_text="Account Code")
     account_name = models.CharField(max_length=64, help_text="Account name")
     description = models.CharField(max_length=64, help_text="Description")
-    amount = models.FloatField(help_text="Lineitem amount")
+    amount = models.FloatField(help_text="Invoice line item amount")
     tracking_category_name = models.CharField(max_length=64, null=True, blank=True,
                                               help_text="Tracking Category Name")
     tracking_category_option = models.CharField(max_length=64, null=True, blank=True,
@@ -263,7 +263,7 @@ class InvoiceLineItem(models.Model):
                 invoice_line_item_object.save()
 
             if invoice_line_item_object.id:
-                expense.invoice_lineitem = InvoiceLineItem.objects.get(
+                expense.invoice_line_item = InvoiceLineItem.objects.get(
                     id=invoice_line_item_object.id)
                 expense.save()
                 expense_group.invoice = Invoice.objects.get(id=invoice_id)
