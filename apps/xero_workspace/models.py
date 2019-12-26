@@ -200,7 +200,7 @@ class Invoice(models.Model):
     invoice_id = models.CharField(max_length=64, null=True, blank=True, help_text="Invoice id")
     contact_name = models.CharField(max_length=64, help_text="Contact Name")
     date = models.DateTimeField(help_text="Invoice created date")
-    due_date = models.DateTimeField(help_text="Invoice due date")
+    due_date = models.DateTimeField(null=True, blank=True, help_text="Invoice due date")
     description = models.CharField(max_length=64, help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
