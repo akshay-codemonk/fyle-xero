@@ -1,5 +1,4 @@
 import json
-from django.db import models
 from itertools import groupby
 
 from django.db import models
@@ -95,7 +94,7 @@ class ExpenseGroup(models.Model):
         """
         expense_groups = []
         reports = connection.Reports.get(state='PAID')
-        for report_id, expense_group in groupby(expense_objects, key=lambda x: x.report_id):
+        for report_id, _expense_group in groupby(expense_objects, key=lambda x: x.report_id):
             report = [report for report in reports['data'] if report_id == report['id']].pop()
             report_data = {
                 "report_id": report['id'],
