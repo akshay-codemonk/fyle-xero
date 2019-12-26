@@ -3,7 +3,7 @@ from itertools import groupby
 
 from django.db import models
 
-from apps.xero_workspace.models import Workspace
+from apps.xero_workspace.models import Workspace, InvoiceLineItem, Invoice
 from apps.xero_workspace.utils import connect_to_fyle
 
 
@@ -27,6 +27,8 @@ class Expense(models.Model):
     spent_at = models.DateTimeField(help_text="Expense spent at")
     reimbursable = models.BooleanField(help_text="Expense reimbursable or not")
     state = models.CharField(max_length=64, help_text="Expense state")
+    invoice_lineitem = models.ForeignKey(InvoiceLineItem, null=True, blank=True,
+                                         on_delete=models.PROTECT, help_text="FK to Invoice Lineitem")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
@@ -80,6 +82,8 @@ class ExpenseGroup(models.Model):
     workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
                                   help_text="To which workspace this expense group belongs to")
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
+    invoice = models.ForeignKey(Invoice, null=True, blank=True,
+                                on_delete=models.PROTECT, help_text="FK to Invoice")
     description = models.CharField(max_length=255, help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')

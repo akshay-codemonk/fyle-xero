@@ -5,6 +5,7 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
     <link rel="stylesheet" href="{% static 'css/expense/expense.css' %}">
+    <link rel="stylesheet" href="{% static 'css/xero_workspace/invoice.css' %}">
 {% endblock %}
 
 {% block title %}Expense Groups{% endblock %}
@@ -40,6 +41,9 @@
             </div>
         </form>
     </div>
+
+    {% include 'xero_workspace/invoice.html' %}
+
 {% endblock %}
 
 {% block script %}

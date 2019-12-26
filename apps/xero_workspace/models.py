@@ -189,3 +189,42 @@ def create_workspace_(instance, created, **kwargs):
                                            next_run=datetime.datetime.now(tz=pytz.UTC)
                                            )
         WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)
+
+
+class Invoice(models.Model):
+    """
+    Invoice model
+    """
+    id = models.AutoField(primary_key=True)
+    invoice_number = models.CharField(max_length=64, help_text="Invoice number")
+    invoice_id = models.CharField(max_length=64, null=True, blank=True, help_text="Invoice id")
+    contact_name = models.CharField(max_length=64, help_text="Contact Name")
+    date = models.DateTimeField(help_text="Invoice created date")
+    due_date = models.DateTimeField(help_text="Invoice due date")
+    description = models.CharField(max_length=64, help_text="Description")
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
+
+    def __str__(self):
+        return self.invoice_id
+
+
+class InvoiceLineItem(models.Model):
+    """
+    Invoice lineitem model
+    """
+    id = models.AutoField(primary_key=True)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, help_text="FK to Invoice")
+    account_code = models.IntegerField(help_text="Account Code")
+    account_name = models.CharField(max_length=64, help_text="Account name")
+    description = models.CharField(max_length=64, help_text="Description")
+    amount = models.FloatField(help_text="Lineitem amount")
+    tracking_category_name = models.CharField(max_length=64, null=True, blank=True,
+                                              help_text="Tracking Category Name")
+    tracking_category_option = models.CharField(max_length=64, null=True, blank=True,
+                                                help_text="Tracking Category Option")
+    created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
+    updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
+
+    def __str__(self):
+        return str(self.id)

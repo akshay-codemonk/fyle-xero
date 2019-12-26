@@ -5,6 +5,7 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
     <link rel="stylesheet" href="{% static 'css/expense/expense.css' %}">
+    <link rel="stylesheet" href="{% static 'css/xero_workspace/invoice.css' %}">
 {% endblock %}
 
 {% block title %}Expense Groups{% endblock %}
@@ -22,6 +23,9 @@
         <form action="" method="post">
             {% csrf_token %}
             <div class="d-flex content-header">
+                <button class="ml-auto btn main-btn" name="view_invoice" type="button"
+                        data-toggle="modal" data-target="#invoiceModal">View Invoice
+                </button>
             </div>
         </form>
     </div>
@@ -40,4 +44,7 @@
             </div>
         </div>
     </div>
+
+    {% include 'xero_workspace/invoice.html' %}
+
 {% endblock %}
