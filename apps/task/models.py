@@ -12,7 +12,7 @@ class TaskLog(models.Model):
     id = models.AutoField(primary_key=True)
     workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
                                   help_text="FK to Workspace")
-    task = models.ForeignKey(Task, on_delete=models.PROTECT, help_text="FK to Task")
+    task_id = models.CharField(max_length=64, help_text="Django Q task id")
     expense_group = models.ForeignKey(ExpenseGroup, null=True, blank=True,
                                       on_delete=models.PROTECT, help_text="FK to ExpenseGroup")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
