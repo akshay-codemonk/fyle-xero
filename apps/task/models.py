@@ -17,8 +17,8 @@ class TaskLog(models.Model):
                                       on_delete=models.PROTECT, help_text="FK to ExpenseGroup")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
-    level = models.CharField(max_length=64, help_text="Level")
-    detail = models.TextField(help_text="Detail")
+    level = models.CharField(max_length=64, null=True, blank=True, help_text="Level")
+    detail = models.TextField(null=True, blank=True, help_text="Detail")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
