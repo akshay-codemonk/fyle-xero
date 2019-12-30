@@ -35,6 +35,10 @@
                    href="{% url 'xero_workspace:activity' workspace_id %}">Activity</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link tabitem {{ tasks_tab }}"
+                   href="{% url 'xero_workspace:tasks' workspace_id %}">Tasks</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link tabitem {{ expense_groups_tab }}"
                    href="{% url 'xero_workspace:expense_groups' workspace_id %}">Expense Groups</a>
             </li>
