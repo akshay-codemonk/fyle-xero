@@ -227,7 +227,8 @@ class InvoiceLineItem(models.Model):
     Invoice line item model
     """
     id = models.AutoField(primary_key=True)
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, help_text="FK to Invoice")
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE,
+                                related_name="invoice_line_items", help_text="FK to Invoice")
     account_code = models.IntegerField(help_text="Account Code")
     account_name = models.CharField(max_length=64, help_text="Account name")
     description = models.CharField(max_length=64, help_text="Description")
