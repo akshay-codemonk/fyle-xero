@@ -28,9 +28,11 @@
 
 {% block content %}
     <div class="content">
-        <form action="">
+        <form action="" method="post">
+            {% csrf_token %}
             <div class="d-flex content-header">
-                <button class="btn ml-auto main-btn sync-btn">Sync Now</button>
+                <button class="btn ml-auto main-btn sync-btn" name="submit"
+                        value="sync" type="submit">Sync Now</button>
             </div>
         </form>
     </div>
