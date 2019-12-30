@@ -124,3 +124,4 @@ class ExpenseGroup(models.Model):
                     expense_id=expense.id
                 ))
         ExpenseGroup.expenses.through.objects.bulk_create(through_model_objects)
+        return expense_group_objects
