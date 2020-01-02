@@ -197,15 +197,17 @@
         }
     }
 
-    setTimeout(function clearModalValues() {
-        $('#categoryMappingModalTitle').text('Create New Mapping');
-        $('#id_category').val('');
-        $('#id_sub_category').val('');
-        $('#id_account_code').val('');
-        $('#submit-btn').text('Create');
-        $('#submit-btn').removeAttr('name');
-        $('#submit-btn').removeAttr('val');
-        $('#mapping_id').removeAttr('val');
-    }, 1000);
+    function clearModalValues() {
+        setTimeout(function(){
+            $('#categoryMappingModalTitle').text('Create New Mapping');
+            $('#id_category').val('');
+            $('#id_sub_category').val('');
+            $('#id_account_code').val('');
+            $('#submit-btn').text('Create');
+            $('#submit-btn').removeAttr('name');
+            $('#submit-btn').removeAttr('val');
+            $('#mapping_id').removeAttr('val');
+        }, 1000);
+    }
 
 {% endblock %}
