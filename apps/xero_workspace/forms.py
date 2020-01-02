@@ -16,11 +16,13 @@ class CategoryMappingForm(forms.Form):
     """
     Form for getting category mapping key and value
     """
-    category = forms.CharField(max_length=64, label='', help_text=None,
-                               widget=forms.TextInput(attrs={'placeholder': ' '}))
-    sub_category = forms.CharField(max_length=64, label='', help_text=None, required=False,
-                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
-    account_code = forms.IntegerField(label='', help_text=None,
+    category = forms.CharField(max_length=64, label='Category*', help_text=None,
+                               widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                             'autocomplete': 'off'}))
+    sub_category = forms.CharField(max_length=64, label='Subcategory', help_text=None, required=False,
+                                   widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                 'autocomplete': 'off'}))
+    account_code = forms.IntegerField(label='Account Code*', help_text=None,
                                       widget=forms.NumberInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))

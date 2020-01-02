@@ -123,15 +123,15 @@
                         {% csrf_token %}
                         <div class="floating-label">
                             {{ form.category }}
-                            <label class="input-label">Category Name*</label>
+                            <label class="input-label">{{ form.category.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.sub_category }}
-                            <label class="input-label">Subcategory Name</label>
+                            <label class="input-label">{{ form.sub_category.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.account_code }}
-                            <label class="input-label">Account Code*</label>
+                            <label class="input-label">{{ form.account_code.label }}</label>
                         </div>
                         <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>
