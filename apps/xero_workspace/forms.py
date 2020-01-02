@@ -32,10 +32,12 @@ class EmployeeMappingForm(forms.Form):
     """
     Form for getting employee mapping key and value
     """
-    employee_email = forms.CharField(max_length=64, label='', help_text=None,
-                                     widget=forms.TextInput(attrs={'placeholder': ' '}))
-    contact_name = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
+    employee_email = forms.CharField(max_length=64, label='Employee Email*', help_text=None,
+                                     widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                   'autocomplete': 'off'}))
+    contact_name = forms.CharField(max_length=64, label='Contact Name*', help_text=None,
+                                   widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                 'autocomplete': 'off'}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
@@ -44,12 +46,17 @@ class ProjectMappingForm(forms.Form):
     """
     Form for getting project mapping key and value
     """
-    project_name = forms.CharField(max_length=64, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
-    tracking_category_name = forms.CharField(max_length=64, label='', help_text=None,
-                                             widget=forms.TextInput(attrs={'placeholder': ' '}))
-    tracking_category_option = forms.CharField(max_length=64, label='', help_text=None,
-                                               widget=forms.TextInput(attrs={'placeholder': ' '}))
+    project_name = forms.CharField(max_length=64, label='Project Name*', help_text=None,
+                                   widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                 'autocomplete': 'off'}))
+    tracking_category_name = forms.CharField(max_length=64, label='Tracking Category Name*',
+                                             help_text=None,
+                                             widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                           'autocomplete': 'off'}))
+    tracking_category_option = forms.CharField(max_length=64, label='Tracking Category Option*',
+                                               help_text=None,
+                                               widget=forms.TextInput(attrs={'placeholder': ' ',
+                                                                             'autocomplete': 'off'}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 

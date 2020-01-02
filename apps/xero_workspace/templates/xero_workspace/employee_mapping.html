@@ -121,11 +121,11 @@
                         {% csrf_token %}
                         <div class="floating-label">
                             {{ form.employee_email }}
-                            <label class="input-label">Employee Email*</label>
+                            <label class="input-label">{{ form.employee_email.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.contact_name }}
-                            <label class="input-label">Contact Name*</label>
+                            <label class="input-label">{{ form.contact_name.label }}</label>
                         </div>
                         <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>

@@ -123,15 +123,15 @@
                         {% csrf_token %}
                         <div class="floating-label">
                             {{ form.project_name }}
-                            <label class="input-label">Project Name*</label>
+                            <label class="input-label">{{ form.project_name.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.tracking_category_name }}
-                            <label class="input-label">Tracking Category Name*</label>
+                            <label class="input-label">{{ form.tracking_category_name.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.tracking_category_option }}
-                            <label class="input-label">Tracking Category Option*</label>
+                            <label class="input-label">{{ form.tracking_category_option.label }}</label>
                         </div>
                         <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>
