@@ -14,7 +14,7 @@
         <div class="d-flex content-header">
             <h5 class="cardMainText">Category Mapping</h5>
             <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createCategoryMappingModal">New Mapping
+                    data-target="#categoryMappingModal">New Mapping
             </button>
             <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
                     data-target="#bulkAddMappingModal">Bulk Add/Update
@@ -48,7 +48,7 @@
                         <form id="delete-form" action="" method="post">
                             {% csrf_token %}
                             {% for mapping in mappings %}
-                            <tr>
+                            <tr onclick="openEditModal(this, {{mapping.id}})" class="category-mapping-table">
                                 <td>{{mapping.category}}</td>
                                 <td>{{mapping.sub_category}}</td>
                                 <td class="actions">{{mapping.account_code}}</td>
@@ -56,7 +56,7 @@
                                     <label class="checkbox-label">
                                         <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                                value='"{{mapping.id}}"'/>
-                                        <span class="checkmark"></span>
+                                        <span id="checkmark" class="checkmark"></span>
                                     </label>
                                 </td>
                             </tr>
@@ -106,14 +106,15 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="createCategoryMappingModal" tabindex="-1" role="dialog"
-         aria-labelledby="createCategoryMappingModalTitle" aria-hidden="true"
+    <div class="modal fade" id="categoryMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="categoryMappingModalTitle" aria-hidden="true"
          data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createCategoryMappingModalTitle">Create New Mapping</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="categoryMappingModalTitle">Create New Mapping</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close" onclick="clearModalValues()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -132,10 +133,12 @@
                             {{ form.account_code }}
                             <label class="input-label">Account Code*</label>
                         </div>
+                        <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                        <button class="btn btnInline saveBtn" type="submit">Create</button>
+                        <button id="cancel-btn" class="btn btnInline cancelBtn" type="button"
+                                data-dismiss="modal" onclick="clearModalValues()">Cancel</button>
+                        <button id="submit-btn" class="btn btnInline saveBtn" type="submit" name="method">Create</button>
                     </div>
                 </form>
             </div>
@@ -168,9 +171,41 @@
 {% endblock %}
 
 {% block script %}
-    $(document).ready(function () {
-        $("#select-all").click(function () {
+    $(document).ready(function() {
+        $("#select-all").click(function() {
             $(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
         });
     });
+
+    $(".mappingsCheckbox").click(function(e) {
+        if(e.target.type === 'checkbox') {
+            e.stopPropagation();
+        }
+    });
+
+    function openEditModal(table_row, mapping_id) {
+        if (event.target.id !== 'checkmark') {
+            const cells = table_row.getElementsByTagName('td');
+            $('#id_category').val(cells[0].innerHTML);
+            $('#id_sub_category').val(cells[1].innerHTML);
+            $('#id_account_code').val(cells[2].innerHTML);
+            $('#categoryMappingModalTitle').text('Edit Category Mapping');
+            $('#submit-btn').text('Update');
+            $('#submit-btn').val('update');
+            $('#mapping_id').val(mapping_id.toString());
+            $('#categoryMappingModal').modal('show');
+        }
+    }
+
+    setTimeout(function clearModalValues() {
+        $('#categoryMappingModalTitle').text('Create New Mapping');
+        $('#id_category').val('');
+        $('#id_sub_category').val('');
+        $('#id_account_code').val('');
+        $('#submit-btn').text('Create');
+        $('#submit-btn').removeAttr('name');
+        $('#submit-btn').removeAttr('val');
+        $('#mapping_id').removeAttr('val');
+    }, 1000);
+
 {% endblock %}

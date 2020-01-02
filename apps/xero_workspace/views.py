@@ -112,6 +112,8 @@ class CategoryMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(CategoryMappingView, self).dispatch(request, *args, **kwargs)
@@ -147,6 +149,18 @@ class CategoryMappingView(View):
             category_mapping.sub_category = sub_category
             category_mapping.account_code = account_code
             category_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = CategoryMappingForm(request.POST)
+        if form.is_valid:
+            category = request.POST.get('category')
+            sub_category = request.POST.get('sub_category')
+            account_code = request.POST.get('account_code')
+            mapping_id = request.POST.get('mapping_id')
+            CategoryMapping.objects.filter(id=mapping_id).update(category=category,
+                                                                 sub_category=sub_category,
+                                                                 account_code=account_code)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
