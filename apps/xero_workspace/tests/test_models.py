@@ -1,9 +1,12 @@
+from datetime import datetime
+
+import pytz
 from django.test import TestCase
 
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
 from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceSchedule, EmployeeMapping, \
-    CategoryMapping, FyleCredential, Activity, ProjectMapping
+    CategoryMapping, FyleCredential, Activity, ProjectMapping, Invoice, InvoiceLineItem
 
 
 class WorkspaceTestCases(TestCase):
@@ -286,3 +289,54 @@ class ActivityTestCases(TestCase):
         """
         activity = Activity.objects.get(id=2)
         self.assertEqual(activity.triggered_by, 'user')
+
+
+class InvoiceTestCases(TestCase):
+    """
+    Invoice model test cases
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        Invoice.objects.create(
+            invoice_number="inv123",
+            contact_name="employee",
+            date=datetime.now(tz=pytz.utc),
+            description="rep123"
+        )
+
+    def test_invoice_creation(self):
+        """
+        Test invoice creation
+        """
+        invoice = Invoice.objects.get(invoice_number="inv123")
+        self.assertEqual(invoice.contact_name, "employee")
+
+
+class InvoiceLineItemTestCases(TestCase):
+    """
+    InvoiceLineItem model test cases
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        invoice = Invoice.objects.create(
+            invoice_number="inv123",
+            contact_name="employee",
+            date=datetime.now(tz=pytz.utc),
+            description="rep123"
+        )
+        InvoiceLineItem.objects.create(
+            invoice=invoice,
+            account_code=123,
+            account_name="acc_name",
+            description="rep123",
+            amount=100.00
+        )
+
+    def test_invoice_lineitem_creation(self):
+        """
+        Test invoice lineitem creation
+        """
+        invoice_lineitem = InvoiceLineItem.objects.get(account_code=123)
+        self.assertEqual(invoice_lineitem.account_name, "acc_name")

@@ -1,8 +1,9 @@
+import json
 from itertools import groupby
 
 from django.db import models
 
-from apps.xero_workspace.models import Workspace
+from apps.xero_workspace.models import Workspace, InvoiceLineItem, Invoice
 from apps.xero_workspace.utils import connect_to_fyle
 
 
@@ -26,6 +27,8 @@ class Expense(models.Model):
     spent_at = models.DateTimeField(help_text="Expense spent at")
     reimbursable = models.BooleanField(help_text="Expense reimbursable or not")
     state = models.CharField(max_length=64, help_text="Expense state")
+    invoice_line_item = models.ForeignKey(InvoiceLineItem, null=True, blank=True,
+                                          on_delete=models.PROTECT, help_text="FK to InvoiceLineItem")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
@@ -79,6 +82,8 @@ class ExpenseGroup(models.Model):
     workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
                                   help_text="To which workspace this expense group belongs to")
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
+    invoice = models.ForeignKey(Invoice, null=True, blank=True,
+                                on_delete=models.PROTECT, help_text="FK to Invoice")
     description = models.CharField(max_length=255, help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
@@ -87,25 +92,32 @@ class ExpenseGroup(models.Model):
         return str(self.id)
 
     @staticmethod
-    def group_expense_by_report_id(expense_objects, workspace_id):
+    def group_expense_by_report_id(expense_objects, workspace_id, connection):
         """
         Group expense by report_id
         """
         expense_groups = []
+        reports = connection.Reports.get(state='PAID')
         for report_id, _expense_group in groupby(expense_objects, key=lambda x: x.report_id):
+            report = [report for report in reports['data'] if report_id == report['id']].pop()
+            report_data = {
+                "report_id": report['id'],
+                "employee_email": report['employee_email'],
+                "approved_at": report['approved_at']
+            }
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
-                description=report_id
+                description=str(json.dumps(report_data))
             ))
         return expense_groups
 
     @staticmethod
     def create_expense_groups(expense_groups):
         expense_group_objects = ExpenseGroup.objects.bulk_create(expense_groups)
-
         through_model_objects = []
         for expense_group_object in expense_group_objects:
-            expenses = Expense.objects.filter(report_id=expense_group_object.description)
+            report_id = json.loads(expense_group_object.description)['report_id']
+            expenses = Expense.objects.filter(report_id=report_id)
             for expense in expenses:
                 through_model_objects.append(ExpenseGroup.expenses.through(
                     expensegroup_id=expense_group_object.id,
