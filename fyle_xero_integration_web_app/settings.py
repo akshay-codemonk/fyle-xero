@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'fyle_allauth',
     'apps.user',
     'apps.fyle_connect',
+    'apps.xero_connect',
     'apps.xero_workspace',
     'apps.expense',
     'apps.task',
