@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from apps.xero_workspace.models import Workspace, FyleCredential, WorkspaceSchedule, \
-    XeroCredential, CategoryMapping, EmployeeMapping, Activity, ProjectMapping, \
+    XeroCredential, CategoryMapping, EmployeeMapping, ProjectMapping, \
     Invoice, InvoiceLineItem
 
 
@@ -62,14 +62,6 @@ class ProjectMappingAdmin(admin.ModelAdmin):
     list_filter = ['workspace', 'created_at', 'updated_at']
 
 
-class ActivityAdmin(admin.ModelAdmin):
-    """
-    Admin options for Activity Model
-    """
-    list_display = ('id', 'status', 'triggered_by', 'created_at', 'updated_at')
-    list_filter = ['status', 'triggered_by', 'created_at', 'updated_at']
-
-
 class InvoiceAdmin(admin.ModelAdmin):
     """
     Admin options for Invoice Model
@@ -96,6 +88,5 @@ admin.site.register(WorkspaceSchedule, WorkspaceScheduleAdmin)
 admin.site.register(EmployeeMapping, EmployeeMappingAdmin)
 admin.site.register(CategoryMapping, CategoryMappingAdmin)
 admin.site.register(ProjectMapping, ProjectMappingAdmin)
-admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(InvoiceLineItem, InvoiceLineItemAdmin)
