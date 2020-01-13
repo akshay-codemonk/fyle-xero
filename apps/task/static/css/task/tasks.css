@@ -1,0 +1,91 @@
+.tasks-table td:nth-child(5):hover {
+    cursor: default;
+}
+
+.material-icons:hover {
+    cursor: pointer;
+}
+
+.modal.right .modal-dialog {
+    position: fixed;
+    margin: auto;
+    width: 60%;
+    height: 100%;
+    transform: translate3d(0%, 0, 0);
+}
+
+.modal.right .modal-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.modal.right.fade .modal-dialog {
+    right: 0;
+    transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.right.fade.in .modal-dialog {
+    right: 0;
+}
+
+.modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+.modal-dialog {
+    max-width: 80%;
+}
+
+.modal-header {
+    align-items: baseline;
+    border-bottom: 2px solid #e9ecef;
+    justify-content: flex-start;
+}
+
+.modal-header .close {
+    margin: -1rem;
+}
+
+.modal-title {
+    margin-left: 3%;
+}
+
+.task-name {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.task-details .task-name {
+    margin-left: 37px;
+    font-size: 25px;
+    font-weight: 400;
+}
+
+.task-details-table {
+    width: 75%;
+    margin: 4% auto 4%;
+}
+
+.task-details-table td:nth-child(2) {
+    text-align: center;
+}
+
+.task-logs {
+    margin: 0 37px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.task-logs a {
+    text-decoration: underline;
+    color: #212529;
+    font-size: 18px;
+}
+
+.task-logs a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #212529;
+}
