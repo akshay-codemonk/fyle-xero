@@ -16,8 +16,7 @@ from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, 
     ScheduleForm, ProjectMappingForm
 from apps.xero_workspace.hooks import update_activity_status
 from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
-    WorkspaceSchedule, Activity, ProjectMapping
-from apps.xero_workspace.tasks import sync_xero
+    WorkspaceSchedule, ProjectMapping
 
 
 class WorkspaceView(View):
@@ -42,11 +41,6 @@ class WorkspaceView(View):
             user_workspaces = paginator.page(1)
         except EmptyPage:
             user_workspaces = paginator.page(paginator.num_pages)
-        for workspace in user_workspaces:
-            try:
-                workspace.last_sync = Activity.objects.filter(workspace=workspace).latest('updated_at').updated_at
-            except Activity.DoesNotExist:
-                workspace.last_sync = '-'
         return render(request, self.template_name, {"workspaces": user_workspaces})
 
     def post(self, request):
@@ -441,43 +435,3 @@ class ScheduleView(View):
         schedule.save()
 
         return HttpResponseRedirect(self.request.path_info)
-
-
-class SyncActivityView(View):
-    """
-    Sync Activity View
-    """
-    template_name = "xero_workspace/activity.html"
-    workspace = None
-    context = None
-
-    def setup(self, request, *args, **kwargs):
-        workspace_id = kwargs['workspace_id']
-        self.workspace = Workspace.objects.get(id=workspace_id)
-        activity = Activity.objects.filter(workspace=self.workspace).order_by(
-            '-updated_at')
-        self.context = {"activity": "active", "workspace_activity": activity}
-        super(SyncActivityView, self).setup(request)
-
-    def get(self, request, workspace_id):
-        activity = Activity.objects.filter(workspace=self.workspace).order_by('-updated_at')
-        page = request.GET.get('page', 1)
-        paginator = Paginator(activity, 10)
-        try:
-            activity = paginator.page(page)
-        except PageNotAnInteger:
-            activity = paginator.page(1)
-        except EmptyPage:
-            activity = paginator.page(paginator.num_pages)
-        self.context['workspace_activity'] = activity
-        return render(request, self.template_name, self.context)
-
-    def post(self, request, workspace_id):
-        value = request.POST.get('submit')
-        if value == 'sync':
-            activity = Activity.objects.create(workspace=self.workspace, transform_sql=self.workspace.transform_sql,
-                                               error_msg='Synchronisation in progress')
-            activity_id = activity.id
-            async_task(sync_xero, workspace_id, activity_id, hook=update_activity_status)
-            return render(request, self.template_name, self.context)
-        return render(request, self.template_name, self.context)
