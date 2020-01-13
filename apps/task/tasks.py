@@ -1,5 +1,4 @@
-from django_q.models import Task
-from django_q.tasks import async_task, result, Chain
+from django_q.tasks import async_task, Chain
 
 from apps.expense.models import Expense, ExpenseGroup
 from apps.task.models import TaskLog
