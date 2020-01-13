@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django_q.models import Schedule
-from model_utils import Choices
 
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
