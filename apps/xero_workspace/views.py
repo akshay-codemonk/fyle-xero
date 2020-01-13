@@ -10,11 +10,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
-from django_q.tasks import async_task
 
 from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm, \
     ScheduleForm, ProjectMappingForm
-from apps.xero_workspace.hooks import update_activity_status
 from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
 
