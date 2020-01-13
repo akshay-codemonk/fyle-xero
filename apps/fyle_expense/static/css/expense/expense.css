@@ -1,0 +1,92 @@
+.modal.right .modal-dialog {
+    position: fixed;
+    margin: auto;
+    width: 60%;
+    height: 100%;
+    transform: translate3d(0%, 0, 0);
+}
+
+.modal.right .modal-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.modal.right .modal-body {
+    padding: 15px 15px 80px;
+}
+
+.modal.right.fade .modal-dialog {
+    right: 0;
+    transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.right.fade.in .modal-dialog {
+    right: 0;
+}
+
+.modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+.modal-dialog {
+    max-width: 80%;
+}
+
+.modal-header {
+    align-items: baseline;
+    border-bottom: 2px solid #e9ecef;
+    justify-content: flex-start;
+}
+
+.modal-header .close {
+    margin: -1rem;
+}
+
+.modal-title {
+    margin-left: 3%;
+}
+
+.expenses-table {
+    width: 75%;
+    margin: 4% auto 0;
+}
+
+.expenses-table td:nth-child(2) {
+    text-align: center;
+}
+
+.employee-email {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.expense-details .employee-email {
+    margin-left: 37px;
+    font-size: 25px;
+    font-weight: 400;
+}
+
+.view-invoice, .view-invoice:hover {
+    text-decoration: underline;
+}
+
+.sync-btn, .resync-btn {
+    width: 13%;
+}
+
+.expenses-link, .expenses-link:hover {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.expense-groups-table td:hover {
+    cursor: default;
+}
+
+.expense-groups-table td:nth-child(1):hover {
+    cursor: pointer;
+}
+
+.back-btn {
+    vertical-align: middle;
+}
