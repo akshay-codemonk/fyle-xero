@@ -1,6 +1,5 @@
-from apps.task.models import TaskLog
-from apps.xero_workspace.models import Invoice
 from apps.expense.models import ExpenseGroup
+from apps.task.models import TaskLog
 
 
 def update_fetch_expense_task(task):
