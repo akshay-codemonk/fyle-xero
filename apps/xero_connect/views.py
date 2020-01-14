@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 
-from apps.xero_connect.utils import XeroOAuth2
 from apps.xero_connect.models import XeroAuth
+from apps.xero_connect.utils import XeroOAuth2
 from apps.xero_workspace.models import XeroCredential, Workspace
 from fyle_xero_integration_web_app.settings import XERO_BASE_URL, XERO_CLIENT_ID, \
     XERO_CLIENT_SECRET
@@ -66,6 +66,6 @@ class XeroTokenView(View):
                     client_secret=XERO_CLIENT_SECRET,
                     refresh_token=refresh_token
                 )
-                XeroCredential.objects.create(xero_auth=xero_auth, 
+                XeroCredential.objects.create(xero_auth=xero_auth,
                                               workspace=Workspace.objects.get(id=workspace_id))
         return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
