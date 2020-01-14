@@ -1,7 +1,7 @@
-import requests
 import json
-
 from base64 import b64encode
+
+import requests
 
 from fyle_xero_integration_web_app.settings import XERO_CLIENT_ID, XERO_CLIENT_SECRET, \
     XERO_REDIRECT_URI, XERO_SCOPE, XERO_AUTHORIZE_URI, XERO_TOKEN_URI
