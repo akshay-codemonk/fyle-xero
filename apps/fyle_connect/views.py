@@ -41,7 +41,7 @@ class FyleDisconnectView(View):
 
     @staticmethod
     def post(request, workspace_id):
-        FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).id).delete()
+        FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.id).delete()
         return HttpResponseRedirect(reverse('xero_workspace:source', args=[workspace_id]))
 
 

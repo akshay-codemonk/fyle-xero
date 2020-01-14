@@ -4,6 +4,7 @@ import pytz
 from django.test import TestCase
 
 from apps.fyle_connect.models import FyleAuth
+from apps.xero_connect.models import XeroAuth
 from apps.user.models import UserProfile
 from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceSchedule, EmployeeMapping, \
     CategoryMapping, FyleCredential, ProjectMapping, Invoice, InvoiceLineItem
@@ -50,22 +51,15 @@ class XeroCredentialTestCases(TestCase):
         Set up test data
         """
         workspace = Workspace.objects.create(name='workspace1')
+        xero_auth = XeroAuth.objects.create(client_id='12345', client_secret='abcd#1234', refresh_token='qwerty')
+        XeroCredential.objects.create(xero_auth=xero_auth, workspace=workspace)
 
-        XeroCredential.objects.create(private_key='private_key', consumer_key='consumer_key', workspace=workspace)
-
-    def test_private_key_value(self):
+    def test_xero_credential_creation(self):
         """
-        Test for private_key value
+        Test model creation
         """
         xero_credential = XeroCredential.objects.get(id=1)
-        self.assertEqual(xero_credential.private_key, 'private_key')
-
-    def test_consumer_key_value(self):
-        """
-        Test for pem_file value
-        """
-        xero_credential = XeroCredential.objects.get(id=1)
-        self.assertEqual(xero_credential.consumer_key, 'consumer_key')
+        self.assertEqual(xero_credential.workspace.name, 'workspace1')
 
     def test_string_representation(self):
         """

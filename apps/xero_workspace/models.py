@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
+from apps.xero_connect.models import XeroAuth
 from apps.user.models import UserProfile
 from fyle_xero_integration_web_app.settings import BASE_DIR
 
@@ -93,8 +94,8 @@ class XeroCredential(models.Model):
     Xero credentials
     """
     id = models.AutoField(primary_key=True, help_text='id')
-    private_key = models.TextField(help_text='Xero Application Private Key')
-    consumer_key = models.CharField(max_length=256, help_text='Xero Consumer key')
+    xero_auth = models.OneToOneField(XeroAuth, on_delete=models.CASCADE,
+                                     help_text='FK to Xero Auth')
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE, help_text='Workspace')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')

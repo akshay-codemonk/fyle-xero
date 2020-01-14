@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'fyle_allauth',
     'apps.user',
     'apps.fyle_connect',
+    'apps.xero_connect',
     'apps.xero_workspace',
     'apps.expense',
     'apps.task',
@@ -192,6 +193,15 @@ FYLE_TOKEN_URI = os.environ.get('FYLE_TOKEN_URI', config('FYLE_TOKEN_URI'))
 FYLE_CLIENT_ID = os.environ.get('FYLE_CLIENT_ID', config('FYLE_CLIENT_ID'))
 FYLE_CLIENT_SECRET = os.environ.get('FYLE_CLIENT_SECRET', config('FYLE_CLIENT_SECRET'))
 FYLE_BASE_URL = os.environ.get('FYLE_BASE_URL', config('FYLE_BASE_URL'))
+
+# Xero OAuth2
+XERO_CLIENT_ID = os.environ.get('XERO_CLIENT_ID', config('XERO_CLIENT_ID'))
+XERO_CLIENT_SECRET = os.environ.get('XERO_CLIENT_SECRET', config('XERO_CLIENT_SECRET'))
+XERO_REDIRECT_URI = os.environ.get('XERO_REDIRECT_URI', config('XERO_REDIRECT_URI'))
+XERO_SCOPE = os.environ.get('XERO_SCOPE', config('XERO_SCOPE'))
+XERO_AUTHORIZE_URI = os.environ.get('XERO_AUTHORIZE_URI', config('XERO_AUTHORIZE_URI'))
+XERO_TOKEN_URI = os.environ.get('XERO_TOKEN_URI', config('XERO_TOKEN_URI'))
+XERO_BASE_URL = os.environ.get('XERO_BASE_URL', config('XERO_BASE_URL'))
 
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success',
