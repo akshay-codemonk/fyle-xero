@@ -41,7 +41,7 @@ class XeroDisconnectView(View):
 
     @staticmethod
     def post(request, workspace_id):
-        XeroAuth.objects.get(id=XeroCredential.objects.get(workspace__id=workspace_id).id).delete()
+        XeroAuth.objects.get(id=XeroCredential.objects.get(workspace__id=workspace_id).xero_auth.id).delete()
         return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
 
 
