@@ -10,12 +10,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
-from django_q.tasks import async_task
 
 from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, TransformForm, \
     ScheduleForm, ProjectMappingForm
-from apps.xero_workspace.hooks import update_activity_status
-from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
+from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
 
 
@@ -65,6 +63,8 @@ class CategoryMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(CategoryMappingView, self).dispatch(request, *args, **kwargs)
@@ -100,6 +100,18 @@ class CategoryMappingView(View):
             category_mapping.sub_category = sub_category
             category_mapping.account_code = account_code
             category_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = CategoryMappingForm(request.POST)
+        if form.is_valid:
+            category = request.POST.get('category')
+            sub_category = request.POST.get('sub_category')
+            account_code = request.POST.get('account_code')
+            mapping_id = request.POST.get('mapping_id')
+            CategoryMapping.objects.filter(id=mapping_id).update(category=category,
+                                                                 sub_category=sub_category,
+                                                                 account_code=account_code)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -146,6 +158,8 @@ class EmployeeMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(EmployeeMappingView, self).dispatch(request, *args, **kwargs)
@@ -174,6 +188,16 @@ class EmployeeMappingView(View):
                                                                                employee_email=employee_email)
             employee_mapping.contact_name = contact_name
             employee_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = EmployeeMappingForm(request.POST)
+        if form.is_valid:
+            employee_email = request.POST.get('employee_email')
+            contact_name = request.POST.get('contact_name')
+            mapping_id = request.POST.get('mapping_id')
+            EmployeeMapping.objects.filter(id=mapping_id).update(
+                employee_email=employee_email, contact_name=contact_name)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -214,6 +238,8 @@ class ProjectMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(ProjectMappingView, self).dispatch(request, *args, **kwargs)
@@ -249,6 +275,19 @@ class ProjectMappingView(View):
             project_mapping.tracking_category_name = tracking_category_name
             project_mapping.tracking_category_option = tracking_category_option
             project_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = ProjectMappingForm(request.POST)
+        if form.is_valid:
+            project_name = request.POST.get('project_name')
+            tracking_category_name = request.POST.get('tracking_category_name')
+            tracking_category_option = request.POST.get('tracking_category_option')
+            mapping_id = request.POST.get('mapping_id')
+            ProjectMapping.objects.filter(id=mapping_id)\
+                .update(project_name=project_name,
+                        tracking_category_name=tracking_category_name,
+                        tracking_category_option=tracking_category_option)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):

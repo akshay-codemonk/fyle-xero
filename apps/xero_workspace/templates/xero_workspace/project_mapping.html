@@ -14,7 +14,7 @@
         <div class="d-flex content-header">
             <h5 class="cardMainText">Project Mapping</h5>
             <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createProjectMappingModal">New Mapping
+                    data-target="#projectMappingModal">New Mapping
             </button>
             <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
                     data-target="#bulkAddMappingModal">Bulk Add/Update
@@ -48,7 +48,7 @@
                     <form id="delete-form" action="" method="post">
                         {% csrf_token %}
                         {% for mapping in mappings %}
-                        <tr>
+                        <tr onclick="openEditModal(this, {{mapping.id}})">
                             <td>{{mapping.project_name}}</td>
                             <td>{{mapping.tracking_category_name}}</td>
                             <td class="actions">{{mapping.tracking_category_option}}</td>
@@ -56,7 +56,7 @@
                                 <label class="checkbox-label">
                                     <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                            value='"{{mapping.id}}"'/>
-                                    <span class="checkmark"></span>
+                                    <span id="checkmark" class="checkmark"></span>
                                 </label>
                             </td>
                         </tr>
@@ -106,14 +106,15 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="createProjectMappingModal" tabindex="-1" role="dialog"
-         aria-labelledby="createProjectMappingModalTitle" aria-hidden="true"
+    <div class="modal fade" id="projectMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="projectMappingModalTitle" aria-hidden="true"
          data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createProjectMappingModalTitle">Create New Mapping</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="projectMappingModalTitle">Create New Mapping</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close" onclick="clearModalValues()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -122,20 +123,23 @@
                         {% csrf_token %}
                         <div class="floating-label">
                             {{ form.project_name }}
-                            <label class="input-label">Project Name*</label>
+                            <label class="input-label">{{ form.project_name.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.tracking_category_name }}
-                            <label class="input-label">Tracking Category Name*</label>
+                            <label class="input-label">{{ form.tracking_category_name.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.tracking_category_option }}
-                            <label class="input-label">Tracking Category Option*</label>
+                            <label class="input-label">{{ form.tracking_category_option.label }}</label>
                         </div>
+                        <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                        <button class="btn btnInline saveBtn" type="submit">Create</button>
+                        <button id="cancel-btn" class="btn btnInline cancelBtn" type="button"
+                                data-dismiss="modal" onclick="clearModalValues()">Cancel</button>
+                        <button id="submit-btn" class="btn btnInline saveBtn" type="submit"
+                                name="method">Create</button>
                     </div>
                 </form>
             </div>
@@ -174,5 +178,38 @@
             $(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
         });
     });
+
+    $(".mappingsCheckbox").click(function(e) {
+        if(e.target.type === 'checkbox') {
+            e.stopPropagation();
+        }
+    });
+
+    function openEditModal(table_row, mapping_id) {
+        if (event.target.id !== 'checkmark') {
+            const cells = table_row.getElementsByTagName('td');
+            $('#id_project_name').val(cells[0].innerHTML);
+            $('#id_tracking_category_name').val(cells[1].innerHTML);
+            $('#id_tracking_category_option').val(cells[2].innerHTML);
+            $('#projectMappingModalTitle').text('Edit Mapping');
+            $('#submit-btn').text('Update');
+            $('#submit-btn').val('update');
+            $('#mapping_id').val(mapping_id.toString());
+            $('#projectMappingModal').modal('show');
+        }
+    }
+
+    function clearModalValues() {
+        setTimeout(function() {
+            $('#projectMappingModalTitle').text('Create New Mapping');
+            $('#id_project_name').val('');
+            $('#id_tracking_category_name').val('');
+            $('#id_tracking_category_option').val('');
+            $('#submit-btn').text('Create');
+            $('#submit-btn').removeAttr('name');
+            $('#submit-btn').removeAttr('val');
+            $('#mapping_id').removeAttr('val');
+        }, 150);
+    }
 {% endblock %}
 

@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django_q.models import Schedule
-from model_utils import Choices
 
 from apps.fyle_connect.models import FyleAuth
 from apps.xero_connect.models import XeroAuth
@@ -177,15 +176,20 @@ class Invoice(models.Model):
 
     @staticmethod
     def create_invoice(expense_group):
+        """
+        Create invoice from expense group
+        :param expense_group
+        :return: invoice id
+        """
         description = json.loads(expense_group.description)
-        invoice_object = Invoice.objects.create(
+        invoice = Invoice.objects.create(
             invoice_number=description.get("report_id"),
             description=description.get("report_id"),
             contact_name=EmployeeMapping.objects.get(
                 employee_email=description.get("employee_email")).contact_name,
             date=description.get("approved_at")
         )
-        return invoice_object.id
+        return invoice.id
 
 
 class InvoiceLineItem(models.Model):
@@ -211,9 +215,15 @@ class InvoiceLineItem(models.Model):
 
     @staticmethod
     def create_invoice_line_item(invoice_id, expense_group):
+        """
+        Create Invoice line item from expenses and update ExpenseGroup
+        and Expense model fields
+        :param invoice_id
+        :param expense_group
+        """
         expenses = expense_group.expenses.all()
         for expense in expenses:
-            invoice_line_item_object = InvoiceLineItem.objects.create(
+            invoice_line_item = InvoiceLineItem.objects.create(
                 invoice=Invoice.objects.get(id=invoice_id),
                 account_code=CategoryMapping.objects.get(
                     category=expense.category).account_code,
@@ -225,13 +235,13 @@ class InvoiceLineItem(models.Model):
 
             if expense.project is not None:
                 project_mapping = ProjectMapping.objects.get(project_name=expense.project)
-                invoice_line_item_object.tracking_category_name = project_mapping.tracking_category_name
-                invoice_line_item_object.tracking_category_option = project_mapping.tracking_category_option
-                invoice_line_item_object.save()
+                invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
+                invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
+                invoice_line_item.save()
 
-            if invoice_line_item_object.id:
+            if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
-                    id=invoice_line_item_object.id)
+                    id=invoice_line_item.id)
                 expense.save()
                 expense_group.invoice = Invoice.objects.get(id=invoice_id)
                 expense_group.save()
