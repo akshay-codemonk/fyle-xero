@@ -23,7 +23,7 @@
 <body>
 <div class="container-fluid">
     <div class="main-layout">
-        <ul class="nav nav-pills navTabsUl flex-column">
+        <ul class="nav nav-pills navTabsUl flex-column ">
             <header class="sidenav-header">
                 <div class="site-logo">
                     <img src="{% static 'fyle_logo_white_new.png' %}"
@@ -31,28 +31,35 @@
                 </div>
             </header>
             <li class="nav-item">
-                <a class="nav-link tabitem {{ activity }}"
-                   href="{% url 'xero_workspace:activity' workspace_id %}">Activity</a>
+                <a class="nav-link tabitem {{ activity }}" href="{% url 'xero_workspace:activity' workspace_id %}">Activity</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link tabitem {{ expense_groups_tab }}"
-                   href="{% url 'xero_workspace:expense_groups' workspace_id %}">Expense Groups</a>
+                <a class="nav-link tabitem {{ source }}"
+                   href="{% url 'xero_workspace:source' workspace_id %}">Source</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link tabitem {{ mappings_tab }}"
-                   href="{% url 'xero_workspace:category_mapping' workspace_id %}">Mappings</a>
+                <a class="nav-link tabitem {{ destination }}"
+                   href="{% url 'xero_workspace:destination' workspace_id %}">Destination</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link tabitem {{ settings_tab }}"
-                   href="{% url 'xero_workspace:source' workspace_id %}">Settings</a>
+                <a class="nav-link tabitem {{ category_mapping }}"
+                   href="{% url 'xero_workspace:category_mapping' workspace_id %}">Category Mapping</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link tabitem {{ employee_mapping }}"
+                   href="{% url 'xero_workspace:employee_mapping' workspace_id %}">Employee Mapping</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link tabitem {{ transform }}" href="{% url 'xero_workspace:transform' workspace_id %}">Transform</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link tabitem {{ schedule }}" href="{% url 'xero_workspace:schedule' workspace_id %}">Schedule</a>
             </li>
             <li class="nav-item mt-auto">
-                <a class="nav-link tabitem"
-                   href="{% url 'xero_workspace:workspace' %}">Switch Workspace</a>
+                <a class="nav-link tabitem" href="{% url 'xero_workspace:workspace' %}">Switch Workspace</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link tabitem"
-                   onclick="document.getElementById('signout-form').submit()">Signout</a>
+                <a class="nav-link tabitem" onclick="document.getElementById('signout-form').submit()">Signout</a>
             </li>
         </ul>
         <div class="workspace-content">
@@ -97,15 +104,6 @@
                         </form>
                     </div>
                 </div>
-            </nav>
-            <nav class="sub-navbar navbar fixed-top navbar-light d-flex flex-column">
-                <div class="sub-navbar-heading">
-                    {% block back-button %}{% endblock %}
-                    <h1 class="navbar-brand">{% block sub-nav-heading %}{% endblock %}</h1>
-                </div>
-                <ul class="nav sub-nav-tabs d-flex flex-row" class="tabSection">
-                    {% block sub-nav-tabs %}{% endblock %}
-                </ul>
             </nav>
             <div class="tabitem-content">
                 {% block content %}{% endblock %}

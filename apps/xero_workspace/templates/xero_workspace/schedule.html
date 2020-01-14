@@ -1,4 +1,4 @@
-{% extends "xero_workspace/settings.html" %}
+{% extends "base.html" %}
 
 {% load static %}
 
@@ -13,6 +13,9 @@
     <div class="content">
         <form id="schedule-form" action="" method="post">
             {% csrf_token %}
+            <div class="content-header">
+                <h5 class="cardMainText">Schedule</h5>
+            </div>
             <div class="schedule-content">
                 <div class="d-flex enable-schedule">
                     {% if enabled != 0 %}
