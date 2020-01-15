@@ -79,10 +79,6 @@
 }
 
 .expense-groups-table td:hover {
-    cursor: default;
-}
-
-.expense-groups-table td:nth-child(1):hover {
     cursor: pointer;
 }
 

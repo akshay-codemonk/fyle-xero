@@ -58,12 +58,9 @@
                         </thead>
                         <tbody>
                             {% for expense_group_details in expense_groups_details %}
-                                <tr>
+                                <tr class="expense-groups-row" data-href="{{expense_group_details.id}}/expenses/">
                                     <td>
-                                        <a class="expenses-link"
-                                           href="{{expense_group_details.id}}/expenses/">
-                                            Grouped by report id: {{expense_group_details.description.report_id}}
-                                        </a>
+                                        Grouped by report id: {{expense_group_details.description.report_id}}
                                     </td>
                                     {% if expense_group_details.status %}
                                         <td>Complete</td>
@@ -72,13 +69,13 @@
                                     {% endif %}
                                     <td>{{expense_group_details.description.approved_at}}</td>
                                     <td>
-                                        <p class="view-invoice view-invoice-modal"
+                                        <p id="link" class="view-invoice view-invoice-modal"
                                            data-url="{{expense_group_details.id}}/invoice/">view</p>
                                     </td>
                                     <td>
                                         <label class="checkbox-label">
                                             <input type="checkbox" class="expenseCheckbox">
-                                            <span class="checkmark"></span>
+                                            <span id="checkmark" class="checkmark"></span>
                                         </label>
                                     </td>
                                 </tr>
@@ -101,5 +98,23 @@
 {% block script %}
     $("#select-all").click(function () {
         $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".expense-groups-row").click(function () {
+        if (event.target.id !== 'checkmark' && event.target.id !== 'link') {
+            window.location = $(this).data("href");
+        }
+    });
+
+    $(".expenseCheckbox").click(function(e) {
+        if(e.target.type === 'checkbox') {
+            e.stopPropagation();
+        }
+    });
+
+    $(".view-invoice").click(function(e) {
+        if(e.target.id === 'link') {
+            e.stopPropagation();
+        }
     });
 {% endblock %}
