@@ -194,14 +194,19 @@ class Invoice(models.Model):
         :return: invoice id
         """
         description = json.loads(expense_group.description)
-        invoice = Invoice.objects.create(
-            invoice_number=description.get("report_id"),
-            description=description.get("report_id"),
-            contact_name=EmployeeMapping.objects.get(
-                employee_email=description.get("employee_email")).contact_name,
-            date=description.get("approved_at")
-        )
-        return invoice.id
+        try:
+            invoice = Invoice.objects.create(
+                invoice_number=description.get("report_id"),
+                description=description.get("report_id"),
+                contact_name=EmployeeMapping.objects.get(
+                    employee_email=description.get("employee_email")).contact_name,
+                date=description.get("approved_at")
+            )
+            return invoice.id
+        except EmployeeMapping.DoesNotExist:
+            EmployeeMapping.objects.create(workspace=expense_group.workspace,
+                                           employee_email=description.get("employee_email"), invalid=True)
+            raise EmployeeMapping.DoesNotExist
 
 
 class InvoiceLineItem(models.Model):
@@ -235,22 +240,33 @@ class InvoiceLineItem(models.Model):
         """
         expenses = expense_group.expenses.all()
         for expense in expenses:
-            invoice_line_item = InvoiceLineItem.objects.create(
-                invoice=Invoice.objects.get(id=invoice_id),
-                account_code=CategoryMapping.objects.get(
-                    workspace=expense_group.workspace,
-                    category=expense.category).account_code,
-                account_name="",
-                description=expense.report_id,
-                amount=expense.amount
-            )
+            try:
+                invoice_line_item = InvoiceLineItem.objects.create(
+                    invoice=Invoice.objects.get(id=invoice_id),
+                    account_code=CategoryMapping.objects.get(
+                        workspace=expense_group.workspace,
+                        category=expense.category).account_code,
+                    account_name="",
+                    description=expense.report_id,
+                    amount=expense.amount
+                )
+            except CategoryMapping.DoesNotExist:
+                CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
+                                               sub_category=expense.sub_category,
+                                               invalid=True)
+                raise CategoryMapping.DoesNotExist
 
             if expense.project is not None:
-                project_mapping = ProjectMapping.objects.get(workspace=expense_group.workspace,
-                                                             project_name=expense.project)
-                invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
-                invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
-                invoice_line_item.save()
+                try:
+                    project_mapping = ProjectMapping.objects.get(workspace=expense_group.workspace,
+                                                                 project_name=expense.project)
+                    invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
+                    invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
+                    invoice_line_item.save()
+                except ProjectMapping.DoesNotExist:
+                    ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
+                                                  invalid=True)
+                    raise ProjectMapping.DoesNotExist
 
             if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
