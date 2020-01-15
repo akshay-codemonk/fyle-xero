@@ -146,13 +146,13 @@ def delete_schedule(instance, **kwargs):
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
 def create_workspace_(instance, created, **kwargs):
     if created:
-        schedule = Schedule.objects.create(func='apps.xero_workspace.tasks.sync_xero_scheduled',
-                                           hook='apps.xero_workspace.hooks.update_activity_status',
-                                           args=instance.id,
+        kwargs = {"workspace_id": instance.id}
+        schedule = Schedule.objects.create(func='apps.task.tasks.create_task',
                                            schedule_type=Schedule.MINUTES,
                                            repeats=0,
                                            minutes=5,
-                                           next_run=datetime.datetime.now(tz=pytz.UTC)
+                                           next_run=datetime.datetime.now(tz=pytz.UTC),
+                                           kwargs={"workspace_id": instance.id}
                                            )
         WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)
 
