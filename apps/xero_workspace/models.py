@@ -8,8 +8,8 @@ from django.dispatch import receiver
 from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
-from apps.xero_connect.models import XeroAuth
 from apps.user.models import UserProfile
+from apps.xero_connect.models import XeroAuth
 from fyle_xero_integration_web_app.settings import BASE_DIR
 
 
@@ -226,15 +226,16 @@ class InvoiceLineItem(models.Model):
             invoice_line_item = InvoiceLineItem.objects.create(
                 invoice=Invoice.objects.get(id=invoice_id),
                 account_code=CategoryMapping.objects.get(
+                    workspace=expense_group.workspace,
                     category=expense.category).account_code,
-                account_name=CategoryMapping.objects.get(
-                    category=expense.category).account_code,
+                account_name="",
                 description=expense.report_id,
                 amount=expense.amount
             )
 
             if expense.project is not None:
-                project_mapping = ProjectMapping.objects.get(project_name=expense.project)
+                project_mapping = ProjectMapping.objects.get(workspace=expense_group.workspace,
+                                                             project_name=expense.project)
                 invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
                 invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
                 invoice_line_item.save()
