@@ -10,7 +10,6 @@ from django_q.models import Schedule
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
 from apps.xero_connect.models import XeroAuth
-from fyle_xero_integration_web_app.settings import BASE_DIR
 
 
 def default_for_json_field():
@@ -24,22 +23,11 @@ class Workspace(models.Model):
     id = models.AutoField(primary_key=True, )
     name = models.CharField(max_length=20, help_text='Name of this workspace')
     user = models.ManyToManyField(UserProfile, help_text='Users belonging to this workspace')
-    transform_sql = models.TextField(null=True, blank=True, help_text='Transform SQL')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return self.name
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if self.pk is None:
-            file_path = '{}/resources/transform.sql'.format(BASE_DIR)
-            with open(file_path, 'r') as myfile:
-                transform_sql = myfile.read()
-                self.transform_sql = transform_sql
-        super(Workspace, self).save(force_insert=False, force_update=False, using=None,
-                                    update_fields=None)
 
 
 class EmployeeMapping(models.Model):
