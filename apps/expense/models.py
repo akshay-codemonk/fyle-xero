@@ -35,6 +35,10 @@ class Expense(models.Model):
     def __str__(self):
         return self.expense_id
 
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
+
     @staticmethod
     def fetch_paid_expenses(workspace_id, updated_after=None):
         """
@@ -91,6 +95,10 @@ class ExpenseGroup(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
 
     @staticmethod
     def group_expense_by_report_id(expense_objects, workspace_id, connection):

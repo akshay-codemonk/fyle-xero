@@ -24,3 +24,7 @@ class TaskLog(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
