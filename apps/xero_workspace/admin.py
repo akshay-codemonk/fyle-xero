@@ -41,16 +41,17 @@ class EmployeeMappingAdmin(admin.ModelAdmin):
     """
     Admin options EmployeeMapping Model
     """
-    list_display = ('workspace', 'id', 'employee_email', 'contact_name', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
+    list_display = ('workspace', 'id', 'employee_email', 'contact_name', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class CategoryMappingAdmin(admin.ModelAdmin):
     """
     Admin options CategoryMapping Model
     """
-    list_display = ('workspace', 'id', 'category', 'sub_category', 'account_code', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
+    list_display = (
+        'workspace', 'id', 'category', 'sub_category', 'account_code', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class ProjectMappingAdmin(admin.ModelAdmin):
@@ -58,8 +59,8 @@ class ProjectMappingAdmin(admin.ModelAdmin):
     Admin options CategoryMapping Model
     """
     list_display = ('workspace', 'id', 'project_name', 'tracking_category_name',
-                    'tracking_category_option', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
+                    'tracking_category_option', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class InvoiceAdmin(admin.ModelAdmin):

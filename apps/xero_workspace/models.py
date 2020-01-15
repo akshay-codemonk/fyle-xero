@@ -50,11 +50,15 @@ class EmployeeMapping(models.Model):
     employee_email = models.EmailField(max_length=255, unique=False, help_text='Email id of the Fyle employee')
     contact_name = models.CharField(max_length=255, help_text='Name of the Xero contact')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class CategoryMapping(models.Model):
@@ -66,11 +70,15 @@ class CategoryMapping(models.Model):
     sub_category = models.CharField(max_length=64, null=True, help_text='Fyle Expense Sub-Category')
     account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class ProjectMapping(models.Model):
@@ -82,11 +90,15 @@ class ProjectMapping(models.Model):
     tracking_category_name = models.CharField(max_length=64, help_text='Xero Tracking Category Name')
     tracking_category_option = models.CharField(max_length=64, help_text='Xero Tracking Category Option')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
+    invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class XeroCredential(models.Model):
