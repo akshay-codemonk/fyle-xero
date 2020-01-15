@@ -18,6 +18,12 @@ class ExpenseGroupView(View):
     template_name = "expense/expense_group.html"
 
     def get(self, request, workspace_id):
+        """
+        Render expense group screen with necessary fields
+        :param request
+        :param workspace_id
+        :return: render expense groups screen
+        """
         expense_groups_details = []
         expense_groups = ExpenseGroup.objects.filter(
             workspace=Workspace.objects.get(id=workspace_id)
@@ -44,6 +50,13 @@ class ExpenseView(View):
     template_name = "expense/expense.html"
 
     def get(self, request, workspace_id, group_id):
+        """
+        Render expenses screen with necessary fields
+        :param request
+        :param workspace_id
+        :param group_id
+        :return: render expenses screen
+        """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = json.loads(expense_group.description)["report_id"]
         expense_group_id = expense_group.id
@@ -60,6 +73,14 @@ class ExpenseDetailsView(View):
 
     @staticmethod
     def get(request, workspace_id, group_id, expense_id):
+        """
+        Return fields for expense details modal
+        :param request
+        :param workspace_id
+        :param group_id
+        :param expense_id
+        :return: expense fields JSON
+        """
         expense = Expense.objects.get(id=expense_id)
         serialized_expense = json.loads(serializers.serialize('json', [expense]))
         expense_fields = {k: v for d in serialized_expense for k, v in d.items()}["fields"]
@@ -79,6 +100,13 @@ class InvoiceDetailsView(View):
 
     @staticmethod
     def get(request, workspace_id, group_id):
+        """
+        Return fields for invoice details modal
+        :param request
+        :param workspace_id
+        :param group_id
+        :return: invoice fields JSON
+        """
         invoice = ExpenseGroup.objects.get(id=group_id).invoice
         serialized_invoice = json.loads(serializers.serialize('json', [invoice]))
         invoice_fields = {k: v for d in serialized_invoice for k, v in d.items()}["fields"]
