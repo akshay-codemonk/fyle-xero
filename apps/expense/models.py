@@ -44,7 +44,8 @@ class Expense(models.Model):
         if updated_after is None:
             expenses = connection.Expenses.get(state='PAID')
         else:
-            expenses = connection.Expenses.get(state='PAID', updated_at=f'gt:{updated_after}')
+            expenses = connection.Expenses.get(state='PAID',
+                                               updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}')
         return expenses
 
     @staticmethod
