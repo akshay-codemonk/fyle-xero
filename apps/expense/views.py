@@ -25,18 +25,13 @@ class ExpenseGroupView(View):
 
         for expense_group in expense_groups:
             serialized_expense_group = json.loads(serializers.serialize('json', [expense_group]))
-            serialized_expense_group = {k: v for d in serialized_expense_group for k, v in d.items()}
-            serialized_expense_group["fields"]["id"] = serialized_expense_group["pk"]
-            serialized_expense_group["fields"]["description"] = json.loads(
-                serialized_expense_group["fields"]["description"]
-            )
-            serialized_expense_group["fields"]["description"]["approved_at"] = parse(
-                serialized_expense_group["fields"]["description"]["approved_at"])
-            serialized_expense_group["fields"]["status"] = TaskLog.objects.get(
-                expense_group=expense_group).task.success
-
-            expense_groups_details.append(serialized_expense_group["fields"])
-
+            expense_group_fields = {k: v for d in serialized_expense_group for k, v in d.items()}["fields"]
+            expense_group_fields["id"] = expense_group.id
+            expense_group_fields["description"] = json.loads(expense_group_fields["description"])
+            expense_group_fields["description"]["approved_at"] = parse(
+                expense_group_fields["description"]["approved_at"])
+            expense_group_fields["status"] = TaskLog.objects.get(expense_group=expense_group).task.success
+            expense_groups_details.append(expense_group_fields)
         context = {"expense_groups_tab": "active", "expense_groups": "active",
                    "expense_groups_details": expense_groups_details}
         return render(request, self.template_name, context)
