@@ -123,6 +123,42 @@
         </div>
     </div>
 
+    <div class="nav-pagination">
+        {% if expenses.has_other_pages %}
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if expenses.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
+
+                    {% if expenses.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% for i in expenses.paginator.page_range %}
+                        {% if expenses.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                        {% elif i > expenses.number|add:'-5' and i < expenses.number|add:'5' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if expenses.paginator.num_pages > expenses.number|add:'4' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% if expenses.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+           </nav>
+        {% endif %}
+    </div>
+
     {% include 'xero_workspace/invoice.html' %}
 
 {% endblock %}

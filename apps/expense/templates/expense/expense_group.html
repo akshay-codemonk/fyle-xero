@@ -87,6 +87,56 @@
         </form>
     </div>
 
+    <div class="nav-pagination">
+        {% if expense_groups_details.has_other_pages %}
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if expense_groups_details.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ expense_groups_details.previous_page_number }}">&laquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
+
+                    {% if expense_groups_details.number|add:'-4' > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ expense_groups_details.number|add:'-5' }}">&hellip;</a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in expense_groups_details.paginator.page_range %}
+                        {% if expense_groups_details.number == i %}
+                            <li class="page-item active">
+                                <a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a>
+                            </li>
+                        {% elif i > expense_groups_details.number|add:'-5' and i < expense_groups_details.number|add:'5' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if expense_groups_details.paginator.num_pages > expense_groups_details.number|add:'4' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ expense_groups_details.number|add:'5' }}">&hellip;</a>
+                        </li>
+                    {% endif %}
+
+                    {% if expense_groups_details.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ expense_groups_details.next_page_number }}">&raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#"><span>&raquo;</span></a>
+                        </li>
+                    {% endif %}
+                </ul>
+           </nav>
+        {% endif %}
+    </div>
+
     {% include 'xero_workspace/invoice.html' %}
 
 {% endblock %}

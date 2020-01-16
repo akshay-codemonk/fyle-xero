@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 from django.core import serializers
 from django.http import JsonResponse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from apps.expense.models import ExpenseGroup, Expense
 from apps.xero_workspace.models import Workspace, CategoryMapping
@@ -38,6 +39,16 @@ class ExpenseGroupView(View):
                 expense_group_fields["description"]["approved_at"])
             expense_group_fields["status"] = TaskLog.objects.get(expense_group=expense_group).task.success
             expense_groups_details.append(expense_group_fields)
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(expense_groups_details, 10)
+        try:
+            expense_groups_details = paginator.page(page)
+        except PageNotAnInteger:
+            expense_groups_details = paginator.page(1)
+        except EmptyPage:
+            expense_groups_details = paginator.page(paginator.num_pages)
+
         context = {"expense_groups_tab": "active", "expense_groups": "active",
                    "expense_groups_details": expense_groups_details}
         return render(request, self.template_name, context)
@@ -61,6 +72,16 @@ class ExpenseView(View):
         report_id = json.loads(expense_group.description)["report_id"]
         expense_group_id = expense_group.id
         expenses = expense_group.expenses.all()
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(expenses, 10)
+        try:
+            expenses = paginator.page(page)
+        except PageNotAnInteger:
+            expenses = paginator.page(1)
+        except EmptyPage:
+            expenses = paginator.page(paginator.num_pages)
+
         context = {"expense_groups_tab": "active", "expenses": expenses,
                    "report_id": report_id, "expense_group_id": expense_group_id}
         return render(request, self.template_name, context)
