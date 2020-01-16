@@ -35,38 +35,44 @@
                         value="sync" type="submit">Sync Now</button>
             </div>
         </form>
-        <div class="table-layout">
-            <div class="table-responsive">
-                <table class="table tasks-table">
-                    <thead class="table-head">
-                        <tr class="colHeadings">
-                            <th style="width: 30%">Name</th>
-                            <th>Updated At</th>
-                            <th>Status</th>
-                            <th>Level</th>
-                            <th class="actions">Logs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for task_log in task_logs %}
-                            <tr class="tasks-table-row" data-url="{{task_log.id}}/details/">
-                                <td>{{task_log.task.name}}</td>
-                                <td>{{task_log.updated_at}}</td>
-                                {% if task_log.task.success %}
-                                    <td>Complete</td>
-                                {% else %}
-                                    <td>Failed</td>
-                                {% endif %}
-                                <td>{{task_log.level}}</td>
-                                <td class="actions">
-                                    <i class="material-icons">get_app</i>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        {% if task_logs|length == 0 %}
+            <div class="alert alert-light mx-auto warning" role="alert">
+                <p>Looks like you don't have any Task Logs</p>
             </div>
-        </div>
+        {% else %}
+            <div class="table-layout">
+                <div class="table-responsive">
+                    <table class="table tasks-table">
+                        <thead class="table-head">
+                            <tr class="colHeadings">
+                                <th style="width: 30%">Name</th>
+                                <th>Updated At</th>
+                                <th>Status</th>
+                                <th>Level</th>
+                                <th class="actions">Logs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task_log in task_logs %}
+                                <tr class="tasks-table-row" data-url="{{task_log.id}}/details/">
+                                    <td>{{task_log.task.name}}</td>
+                                    <td>{{task_log.updated_at}}</td>
+                                    {% if task_log.task.success %}
+                                        <td>Complete</td>
+                                    {% else %}
+                                        <td>Failed</td>
+                                    {% endif %}
+                                    <td>{{task_log.level}}</td>
+                                    <td class="actions">
+                                        <i class="material-icons">get_app</i>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
     </div>
 
     <div class="nav-pagination">

@@ -70,8 +70,8 @@
     margin-bottom: 0;
 }
 
-.sync-btn, .resync-btn {
-    width: 13%;
+ .resync-btn {
+    width: 10%;
 }
 
 .expenses-link, .expenses-link:hover {
