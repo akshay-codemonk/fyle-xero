@@ -1,17 +1,17 @@
-import json
 import ast
-from dateutil.parser import parse
+import json
 
+from dateutil.parser import parse
+from django.core import serializers
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
-from django.core import serializers
-from django.http import JsonResponse, HttpResponseRedirect
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from apps.expense.models import ExpenseGroup, Expense
-from apps.xero_workspace.models import Workspace, CategoryMapping
 from apps.task.models import TaskLog
 from apps.task.tasks import create_task
+from apps.xero_workspace.models import Workspace, CategoryMapping
 
 
 class ExpenseGroupView(View):
@@ -68,7 +68,7 @@ class ExpenseGroupView(View):
     def post(self, request, workspace_id):
         value = request.POST.get('submit')
         selected_expense_group_id = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
-        if value == 'resync' and len(selected_expense_group_id) > 0:
+        if value == 'resync' and selected_expense_group_id:
             for expense_group_id in selected_expense_group_id:
                 create_task(workspace_id, expense_group_id)
         return HttpResponseRedirect(self.request.path_info)
