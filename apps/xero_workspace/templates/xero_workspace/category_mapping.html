@@ -48,16 +48,20 @@
                         <form id="delete-form" action="" method="post">
                             {% csrf_token %}
                             {% for mapping in mappings %}
-                            <tr onclick="openEditModal(this, {{mapping.id}})" class="category-mapping-table">
+                            <tr onclick="openEditModal(this, {{mapping.id}})"
+                                class="category-mapping-table{% if mapping.invalid %} highlight{% endif %}">
                                 <td>{{mapping.category}}</td>
                                 <td>{{mapping.sub_category}}</td>
                                 <td class="actions">{{mapping.account_code}}</td>
-                                <td>
+                                <td class="checkbox-error">
                                     <label class="checkbox-label">
                                         <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                                value='"{{mapping.id}}"'/>
                                         <span id="checkmark" class="checkmark"></span>
                                     </label>
+                                    {% if mapping.invalid %}
+                                        <i class="material-icons error-icon">error</i>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
