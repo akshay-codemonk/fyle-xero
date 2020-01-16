@@ -39,7 +39,8 @@ class ExpenseGroupView(View):
             expense_group_fields["description"] = json.loads(expense_group_fields["description"])
             expense_group_fields["description"]["approved_at"] = parse(
                 expense_group_fields["description"]["approved_at"])
-            expense_group_fields["status"] = TaskLog.objects.get(expense_group=expense_group).task.success
+            expense_group_fields["status"] = TaskLog.objects.filter(
+                expense_group=expense_group).first().task.success
             expense_groups_details.append(expense_group_fields)
 
         page = request.GET.get('page', 1)
