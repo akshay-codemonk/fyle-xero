@@ -28,20 +28,30 @@ class ExpenseGroupView(View):
         :return: render expense groups screen
         """
         expense_groups_details = []
-        expense_groups = ExpenseGroup.objects.filter(
-            workspace=Workspace.objects.get(id=workspace_id)
-        )
+        context = {"expense_groups_tab": "active"}
+
+        if request.GET.get('state') == 'complete':
+            expense_groups = ExpenseGroup.objects.filter(
+                workspace=Workspace.objects.get(id=workspace_id),
+                tasklog__task__success=True
+            )
+            context["complete"] = "active"
+        elif request.GET.get('state') == 'failed':
+            expense_groups = ExpenseGroup.objects.filter(
+                workspace=Workspace.objects.get(id=workspace_id),
+                tasklog__task__success=False
+            )
+            context["failed"] = "active"
+        else:
+            expense_groups = ExpenseGroup.objects.filter(
+                workspace=Workspace.objects.get(id=workspace_id),
+            )
+            context["all"] = "active"
 
         for expense_group in expense_groups:
-            serialized_expense_group = json.loads(serializers.serialize('json', [expense_group]))
-            expense_group_fields = {k: v for d in serialized_expense_group for k, v in d.items()}["fields"]
-            expense_group_fields["id"] = expense_group.id
-            expense_group_fields["description"] = json.loads(expense_group_fields["description"])
-            expense_group_fields["description"]["approved_at"] = parse(
-                expense_group_fields["description"]["approved_at"])
-            expense_group_fields["status"] = TaskLog.objects.filter(
+            expense_group.description["status"] = TaskLog.objects.filter(
                 expense_group=expense_group).first().task.success
-            expense_groups_details.append(expense_group_fields)
+            expense_groups_details.append(expense_group)
 
         page = request.GET.get('page', 1)
         paginator = Paginator(expense_groups_details, 10)
@@ -52,8 +62,7 @@ class ExpenseGroupView(View):
         except EmptyPage:
             expense_groups_details = paginator.page(paginator.num_pages)
 
-        context = {"expense_groups_tab": "active", "expense_groups": "active",
-                   "expense_groups_details": expense_groups_details}
+        context["expense_groups_details"] = expense_groups_details
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -80,7 +89,7 @@ class ExpenseView(View):
         :return: render expenses screen
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
-        report_id = json.loads(expense_group.description)["report_id"]
+        report_id = expense_group.description["report_id"]
         expense_group_id = expense_group.id
         expenses = expense_group.expenses.all()
 

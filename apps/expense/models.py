@@ -119,7 +119,7 @@ class ExpenseGroup(models.Model):
             }
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
-                description=str(json.dumps(report_data))
+                description=report_data
             ))
         return expense_groups
 
@@ -128,7 +128,7 @@ class ExpenseGroup(models.Model):
         expense_group_objects = ExpenseGroup.objects.bulk_create(expense_groups)
         through_model_objects = []
         for expense_group_object in expense_group_objects:
-            report_id = json.loads(expense_group_object.description)['report_id']
+            report_id = expense_group_object.description['report_id']
             expenses = Expense.objects.filter(report_id=report_id)
             for expense in expenses:
                 through_model_objects.append(ExpenseGroup.expenses.through(

@@ -181,7 +181,7 @@ class Invoice(models.Model):
         :param expense_group
         :return: invoice id
         """
-        description = json.loads(expense_group.description)
+        description = expense_group.description
         try:
             invoice = Invoice.objects.create(
                 invoice_number=description.get("report_id"),

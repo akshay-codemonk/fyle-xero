@@ -68,6 +68,6 @@ class TaskLogDetailsView(View):
         task_log_fields["started_at"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
         task_log_fields["stopped_at"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %p')
         task_log_fields["invoice"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
-        task_log_fields["expense_group"] = '-' if task_log.expense_group is None else json.loads(
-            task_log.expense_group.description).get('report_id')
+        task_log_fields["expense_group"] = '-' if task_log.expense_group is None else task_log.expense_group.\
+            description.get('report_id')
         return JsonResponse(task_log_fields)
