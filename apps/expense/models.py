@@ -49,8 +49,10 @@ class Expense(models.Model):
         if updated_after is None:
             expenses = connection.Expenses.get(state='PAID')
         else:
-            expenses = connection.Expenses.get(state='PAID',
-                                               updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}')
+            expenses = connection.Expenses.get(
+                state='PAID',
+                updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}'
+            )
         return expenses
 
     @staticmethod
@@ -90,7 +92,7 @@ class ExpenseGroup(models.Model):
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
-    description = JSONField(help_text="Description")
+    description = JSONField(default=dict, help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
