@@ -64,7 +64,10 @@
                                     {% endif %}
                                     <td>{{task_log.level}}</td>
                                     <td class="actions">
-                                        <i class="material-icons">get_app</i>
+                                        <i id="download-log" class="material-icons download-icon"
+                                           title="Download log">
+                                            get_app
+                                        </i>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -188,5 +191,11 @@
                 $("#level").html(data.level || '-');
             }
         })
+    });
+
+    $(".download-icon").click(function(e) {
+        if(e.target.id === 'download-log') {
+            e.stopPropagation();
+        }
     });
 {% endblock %}

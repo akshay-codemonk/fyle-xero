@@ -72,8 +72,12 @@
                                         {% endif %}
                                         <td>{{expense_group_details.description.approved_at}}</td>
                                         <td>
-                                            <p id="link" class="view-invoice view-invoice-modal"
-                                               data-url="{{expense_group_details.id}}/invoice/">view</p>
+                                            {% if expense_group_details.description.status %}
+                                                <p id="link" class="view-invoice view-invoice-modal"
+                                                   data-url="{{expense_group_details.id}}/invoice/">view</p>
+                                            {% else %}
+                                                <p class="no-invoice">-</p>
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {% if not expense_group_details.description.status %}

@@ -92,6 +92,7 @@ class ExpenseView(View):
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
         expense_group_id = expense_group.id
+        status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
         expenses = expense_group.expenses.all()
 
         page = request.GET.get('page', 1)
@@ -104,7 +105,8 @@ class ExpenseView(View):
             expenses = paginator.page(paginator.num_pages)
 
         context = {"expense_groups_tab": "active", "expenses": expenses,
-                   "report_id": report_id, "expense_group_id": expense_group_id}
+                   "report_id": report_id, "expense_group_id": expense_group_id,
+                   "status": status}
         return render(request, self.template_name, context)
 
 
