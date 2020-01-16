@@ -1,5 +1,6 @@
 import datetime
 
+import psycopg2
 import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
@@ -141,13 +142,12 @@ def delete_schedule(instance, **kwargs):
     """
     Delete the schedule related to workspace
     """
-    # instance.schedule.delete()
+    instance.schedule.delete()
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
 def create_workspace_(instance, created, **kwargs):
     if created:
-        kwargs = {"workspace_id": instance.id}
         schedule = Schedule.objects.create(func='apps.task.tasks.create_task',
                                            schedule_type=Schedule.MINUTES,
                                            repeats=0,
@@ -193,8 +193,11 @@ class Invoice(models.Model):
             )
             return invoice.id
         except EmployeeMapping.DoesNotExist:
-            EmployeeMapping.objects.create(workspace=expense_group.workspace,
-                                           employee_email=description.get("employee_email"), invalid=True)
+            try:
+                EmployeeMapping.objects.create(workspace=expense_group.workspace,
+                                               employee_email=description.get("employee_email"), invalid=True)
+            except psycopg2.Error:
+                raise EmployeeMapping.DoesNotExist
             raise EmployeeMapping.DoesNotExist
 
 
@@ -253,9 +256,13 @@ class InvoiceLineItem(models.Model):
                     amount=expense.amount
                 )
             except CategoryMapping.DoesNotExist:
-                CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
-                                               sub_category=expense.sub_category,
-                                               invalid=True)
+                try:
+                    CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
+                                                   sub_category=expense.sub_category,
+                                                   invalid=True)
+                except psycopg2.Error:
+                    InvoiceLineItem.delete_invoice(expense_group)
+                    raise CategoryMapping.DoesNotExist
                 InvoiceLineItem.delete_invoice(expense_group)
                 raise CategoryMapping.DoesNotExist
 
@@ -267,8 +274,12 @@ class InvoiceLineItem(models.Model):
                     invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
                     invoice_line_item.save()
                 except ProjectMapping.DoesNotExist:
-                    ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
-                                                  invalid=True)
+                    try:
+                        ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
+                                                      invalid=True)
+                    except psycopg2.Error:
+                        InvoiceLineItem.delete_invoice(expense_group)
+                        raise ProjectMapping.DoesNotExist
                     InvoiceLineItem.delete_invoice(expense_group)
                     raise ProjectMapping.DoesNotExist
 
