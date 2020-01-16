@@ -69,6 +69,42 @@
         </div>
     </div>
 
+    <div class="nav-pagination">
+        {% if task_logs.has_other_pages %}
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if task_logs.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ task_logs.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
+
+                    {% if task_logs.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ task_logs.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% for i in task_logs.paginator.page_range %}
+                        {% if task_logs.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                        {% elif i > task_logs.number|add:'-5' and i < task_logs.number|add:'5' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if task_logs.paginator.num_pages > task_logs.number|add:'4' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ task_logs.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% if task_logs.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ task_logs.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+           </nav>
+        {% endif %}
+    </div>
+
     <div class="modal right fade" id="taskModal" tabindex="-1" role="dialog"
          aria-labelledby="taskModalTitle">
         <div class="modal-dialog modal-dialog-centered" role="document">
