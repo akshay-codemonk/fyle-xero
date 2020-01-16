@@ -2,6 +2,7 @@ import json
 from itertools import groupby
 
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 from apps.xero_workspace.models import Workspace, InvoiceLineItem, Invoice
 from apps.xero_workspace.utils import connect_to_fyle
@@ -89,7 +90,7 @@ class ExpenseGroup(models.Model):
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
-    description = models.CharField(max_length=255, help_text="Description")
+    description = JSONField(help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
