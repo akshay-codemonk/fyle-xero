@@ -34,7 +34,7 @@ class EmployeeMapping(models.Model):
     Mapping table for Fyle Employee to Xero Contact
     """
     id = models.AutoField(primary_key=True)
-    employee_email = models.EmailField(max_length=255, unique=False, help_text='Email id of the Fyle employee')
+    employee_email = models.EmailField(max_length=255, unique=True, help_text='Email id of the Fyle employee')
     contact_name = models.CharField(max_length=255, help_text='Name of the Xero contact')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
@@ -54,7 +54,8 @@ class CategoryMapping(models.Model):
     """
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=64, help_text='Fyle Expense Category')
-    sub_category = models.CharField(max_length=64, null=True, help_text='Fyle Expense Sub-Category')
+    sub_category = models.CharField(max_length=64, null=True, default='Unspecified',
+                                    help_text='Fyle Expense Sub-Category')
     account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
@@ -66,6 +67,7 @@ class CategoryMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['category', 'sub_category']
 
 
 class ProjectMapping(models.Model):
@@ -73,7 +75,7 @@ class ProjectMapping(models.Model):
     Mapping table for Fyle Project, Xero Tracking Category and Tracking Category options
     """
     id = models.AutoField(primary_key=True)
-    project_name = models.CharField(max_length=64, help_text='Fyle Project Name')
+    project_name = models.CharField(max_length=64, unique=True, help_text='Fyle Project Name')
     tracking_category_name = models.CharField(max_length=64, help_text='Xero Tracking Category Name')
     tracking_category_option = models.CharField(max_length=64, help_text='Xero Tracking Category Option')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
@@ -139,7 +141,7 @@ def delete_schedule(instance, **kwargs):
     """
     Delete the schedule related to workspace
     """
-    instance.schedule.delete()
+    # instance.schedule.delete()
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
