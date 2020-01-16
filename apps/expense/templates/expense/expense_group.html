@@ -36,8 +36,8 @@
         <form action="" method="post">
             {% csrf_token %}
             <div class="d-flex content-header">
-                <button class="btn ml-auto main-btn sync-btn" name="submit" type="submit" value="sync">Sync</button>
-                <button class="btn main-btn-outline ml-4 resync-btn">Resync</button>
+                <button class="btn main-btn ml-auto resync-btn" name="submit"
+                        type="submit" value="resync">Resync</button>
             </div>
             <div class="table-layout">
                 <div class="table-responsive">
@@ -74,7 +74,8 @@
                                     </td>
                                     <td>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" class="expenseCheckbox">
+                                            <input type="checkbox" class="expenseCheckbox"
+                                                   name="expense_group_ids" value="{{expense_group_details.id}}">
                                             <span id="checkmark" class="checkmark"></span>
                                         </label>
                                     </td>
