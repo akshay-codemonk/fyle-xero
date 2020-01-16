@@ -51,6 +51,7 @@ class ExpenseGroupView(View):
         for expense_group in expense_groups:
             expense_group.description["status"] = TaskLog.objects.filter(
                 expense_group=expense_group).first().task.success
+            expense_group.description["approved_at"] = parse(expense_group.description["approved_at"])
             expense_groups_details.append(expense_group)
 
         page = request.GET.get('page', 1)
