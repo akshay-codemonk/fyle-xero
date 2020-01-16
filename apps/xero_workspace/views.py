@@ -110,7 +110,8 @@ class CategoryMappingView(View):
             mapping_id = request.POST.get('mapping_id')
             CategoryMapping.objects.filter(id=mapping_id).update(category=category,
                                                                  sub_category=sub_category,
-                                                                 account_code=account_code)
+                                                                 account_code=account_code,
+                                                                 invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -196,7 +197,7 @@ class EmployeeMappingView(View):
             contact_name = request.POST.get('contact_name')
             mapping_id = request.POST.get('mapping_id')
             EmployeeMapping.objects.filter(id=mapping_id).update(
-                employee_email=employee_email, contact_name=contact_name)
+                employee_email=employee_email, contact_name=contact_name, invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -286,7 +287,8 @@ class ProjectMappingView(View):
             ProjectMapping.objects.filter(id=mapping_id) \
                 .update(project_name=project_name,
                         tracking_category_name=tracking_category_name,
-                        tracking_category_option=tracking_category_option)
+                        tracking_category_option=tracking_category_option,
+                        invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):

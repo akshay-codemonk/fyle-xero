@@ -33,7 +33,7 @@
                     <table class="table">
                         <thead class="table-head">
                         <tr class="colHeadings">
-                            <th style="width: 75%">Employee Email (Fyle)</th>
+                            <th style="width: 60%">Employee Email (Fyle)</th>
                             <th class="actions">Contact Name (Xero)</th>
                             <th>
                                 <label class="checkbox-label">
@@ -47,15 +47,19 @@
                         <form id="delete-form" action="" method="post">
                             {% csrf_token %}
                             {% for mapping in mappings %}
-                            <tr onclick="openEditModal(this, {{mapping.id}})">
+                            <tr onclick="openEditModal(this, {{mapping.id}})"
+                                class="{% if mapping.invalid %} highlight{% endif %}">
                                 <td>{{mapping.employee_email}}</td>
                                 <td class="actions">{{mapping.contact_name}}</td>
-                                <td>
+                                <td class="checkbox-error">
                                     <label class="checkbox-label">
                                         <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                                value='"{{mapping.id}}"'/>
                                         <span id="checkmark" class="checkmark"></span>
                                     </label>
+                                    {% if mapping.invalid %}
+                                        <i class="material-icons error-icon">error</i>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
