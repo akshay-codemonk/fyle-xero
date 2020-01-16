@@ -219,6 +219,19 @@ class InvoiceLineItem(models.Model):
         return str(self.id)
 
     @staticmethod
+    def delete_invoice(expense_group):
+        """
+        Delete invoice and it's line items
+        """
+        invoice_id = expense_group.invoice.id
+        expense_group.invoice = None
+        expense_group.save()
+        for expense in expense_group.expenses.all():
+            expense.invoice_line_item = None
+            expense.save()
+        Invoice.objects.filter(id=invoice_id).delete()
+
+    @staticmethod
     def create_invoice_line_item(invoice_id, expense_group):
         """
         Create Invoice line item from expenses and update ExpenseGroup
@@ -242,6 +255,7 @@ class InvoiceLineItem(models.Model):
                 CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
                                                sub_category=expense.sub_category,
                                                invalid=True)
+                InvoiceLineItem.delete_invoice(expense_group)
                 raise CategoryMapping.DoesNotExist
 
             if expense.project is not None:
@@ -254,6 +268,7 @@ class InvoiceLineItem(models.Model):
                 except ProjectMapping.DoesNotExist:
                     ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
                                                   invalid=True)
+                    InvoiceLineItem.delete_invoice(expense_group)
                     raise ProjectMapping.DoesNotExist
 
             if invoice_line_item.id:
