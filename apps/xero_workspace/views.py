@@ -11,9 +11,9 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm, \
+from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, TransformForm, \
     ScheduleForm, ProjectMappingForm
-from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
+from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
 
 
@@ -52,47 +52,6 @@ class WorkspaceView(View):
         selected_workspace = [ast.literal_eval(x) for x in request.POST.getlist('workspace_ids')]
         Workspace.objects.filter(id__in=selected_workspace).delete()
         return HttpResponseRedirect(self.request.path_info)
-
-
-class DestinationView(View):
-    """
-    Destination (xero) view
-    """
-    template_name = "xero_workspace/destination.html"
-
-    def get(self, request, workspace_id):
-        form = XeroCredentialsForm()
-        connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"destination": "active", "form": form,
-                   "connected": connected, "settings_tab": "active"}
-        return render(request, self.template_name, context)
-
-
-class XeroConnectView(View):
-    """
-    Xero (destination) connect view
-    """
-
-    @staticmethod
-    def post(request, workspace_id):
-        form = XeroCredentialsForm(request.POST, request.FILES)
-        if form.is_valid:
-            consumer_key = request.POST.get('consumer_key')
-            private_key = str(request.FILES['pem_file'].read(), 'utf-8')
-            XeroCredential.objects.create(private_key=private_key, consumer_key=consumer_key,
-                                          workspace=Workspace.objects.get(id=workspace_id))
-        return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
-
-
-class XeroDisconnectView(View):
-    """
-    Xero (destination) disconnect view
-    """
-
-    @staticmethod
-    def post(request, workspace_id):
-        XeroCredential.objects.get(workspace__id=workspace_id).delete()
-        return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
 
 
 class CategoryMappingView(View):
@@ -325,7 +284,7 @@ class ProjectMappingView(View):
             tracking_category_name = request.POST.get('tracking_category_name')
             tracking_category_option = request.POST.get('tracking_category_option')
             mapping_id = request.POST.get('mapping_id')
-            ProjectMapping.objects.filter(id=mapping_id)\
+            ProjectMapping.objects.filter(id=mapping_id) \
                 .update(project_name=project_name,
                         tracking_category_name=tracking_category_name,
                         tracking_category_option=tracking_category_option)

@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
+from apps.xero_connect.models import XeroAuth
 from apps.user.models import UserProfile
 from fyle_xero_integration_web_app.settings import BASE_DIR
 
@@ -93,8 +94,8 @@ class XeroCredential(models.Model):
     Xero credentials
     """
     id = models.AutoField(primary_key=True, help_text='id')
-    private_key = models.TextField(help_text='Xero Application Private Key')
-    consumer_key = models.CharField(max_length=256, help_text='Xero Consumer key')
+    xero_auth = models.OneToOneField(XeroAuth, on_delete=models.CASCADE,
+                                     help_text='FK to Xero Auth')
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE, help_text='Workspace')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
@@ -175,15 +176,20 @@ class Invoice(models.Model):
 
     @staticmethod
     def create_invoice(expense_group):
+        """
+        Create invoice from expense group
+        :param expense_group
+        :return: invoice id
+        """
         description = json.loads(expense_group.description)
-        invoice_object = Invoice.objects.create(
+        invoice = Invoice.objects.create(
             invoice_number=description.get("report_id"),
             description=description.get("report_id"),
             contact_name=EmployeeMapping.objects.get(
                 employee_email=description.get("employee_email")).contact_name,
             date=description.get("approved_at")
         )
-        return invoice_object.id
+        return invoice.id
 
 
 class InvoiceLineItem(models.Model):
@@ -209,9 +215,15 @@ class InvoiceLineItem(models.Model):
 
     @staticmethod
     def create_invoice_line_item(invoice_id, expense_group):
+        """
+        Create Invoice line item from expenses and update ExpenseGroup
+        and Expense model fields
+        :param invoice_id
+        :param expense_group
+        """
         expenses = expense_group.expenses.all()
         for expense in expenses:
-            invoice_line_item_object = InvoiceLineItem.objects.create(
+            invoice_line_item = InvoiceLineItem.objects.create(
                 invoice=Invoice.objects.get(id=invoice_id),
                 account_code=CategoryMapping.objects.get(
                     category=expense.category).account_code,
@@ -223,13 +235,13 @@ class InvoiceLineItem(models.Model):
 
             if expense.project is not None:
                 project_mapping = ProjectMapping.objects.get(project_name=expense.project)
-                invoice_line_item_object.tracking_category_name = project_mapping.tracking_category_name
-                invoice_line_item_object.tracking_category_option = project_mapping.tracking_category_option
-                invoice_line_item_object.save()
+                invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
+                invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
+                invoice_line_item.save()
 
-            if invoice_line_item_object.id:
+            if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
-                    id=invoice_line_item_object.id)
+                    id=invoice_line_item.id)
                 expense.save()
                 expense_group.invoice = Invoice.objects.get(id=invoice_id)
                 expense_group.save()

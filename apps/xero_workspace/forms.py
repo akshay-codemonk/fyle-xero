@@ -2,16 +2,6 @@ from django import forms
 from tempus_dominus.widgets import DateTimePicker
 
 
-class XeroCredentialsForm(forms.Form):
-    """
-    Form for getting xero credentials
-    """
-    consumer_key = forms.CharField(max_length=256, label='', help_text=None,
-                                   widget=forms.TextInput(attrs={'placeholder': ' '}))
-    pem_file = forms.FileField(label='', help_text=None,
-                               widget=forms.FileInput(attrs={'accept': '.pem'}))
-
-
 class CategoryMappingForm(forms.Form):
     """
     Form for getting category mapping key and value
