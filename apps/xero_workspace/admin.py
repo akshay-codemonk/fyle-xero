@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from apps.xero_workspace.models import Workspace, FyleCredential, WorkspaceSchedule, \
-    XeroCredential, CategoryMapping, EmployeeMapping, Activity, ProjectMapping
+    XeroCredential, CategoryMapping, EmployeeMapping, Activity, ProjectMapping, \
+    Invoice, InvoiceLineItem
 
 
 class WorkspaceAdmin(admin.ModelAdmin):
@@ -69,6 +70,24 @@ class ActivityAdmin(admin.ModelAdmin):
     list_filter = ['status', 'triggered_by', 'created_at', 'updated_at']
 
 
+class InvoiceAdmin(admin.ModelAdmin):
+    """
+    Admin options for Invoice Model
+    """
+    list_display = ('invoice_number', 'invoice_id', 'contact_name', 'date',
+                    'due_date', 'created_at', 'updated_at')
+    list_filter = ['invoice_number', 'date', 'created_at', 'updated_at']
+
+
+class InvoiceLineItemAdmin(admin.ModelAdmin):
+    """
+    Admin options for InvoiceLineItem Model
+    """
+    list_display = ('id', 'account_name', 'account_code', 'amount',
+                    'created_at', 'updated_at')
+    list_filter = ['account_code', 'account_name', 'created_at', 'updated_at']
+
+
 # Register Models with Admin
 admin.site.register(Workspace, WorkspaceAdmin)
 admin.site.register(XeroCredential, XeroCredentialAdmin)
@@ -78,3 +97,5 @@ admin.site.register(EmployeeMapping, EmployeeMappingAdmin)
 admin.site.register(CategoryMapping, CategoryMappingAdmin)
 admin.site.register(ProjectMapping, ProjectMappingAdmin)
 admin.site.register(Activity, ActivityAdmin)
+admin.site.register(Invoice, InvoiceAdmin)
+admin.site.register(InvoiceLineItem, InvoiceLineItemAdmin)
