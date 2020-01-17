@@ -178,6 +178,20 @@ class Invoice(models.Model):
         return str(self.id)
 
     @staticmethod
+    def delete_invoice(expense_group):
+        """
+        Delete invoice and it's line items
+        """
+        invoice_id = expense_group.invoice.id
+        expense_group.invoice = None
+        expense_group.save()
+        for expense in expense_group.expenses.all():
+            expense.invoice_line_item = None
+            expense.save()
+
+        Invoice.objects.filter(id=invoice_id).delete()
+
+    @staticmethod
     def create_invoice(expense_group):
         """
         Create invoice from expense group
@@ -193,6 +207,8 @@ class Invoice(models.Model):
                     employee_email=description.get("employee_email")).contact_name,
                 date=description.get("approved_at")
             )
+            expense_group.invoice = invoice
+            expense_group.save()
             return invoice.id
         except EmployeeMapping.DoesNotExist:
             try:
@@ -225,19 +241,6 @@ class InvoiceLineItem(models.Model):
         return str(self.id)
 
     @staticmethod
-    def delete_invoice(expense_group):
-        """
-        Delete invoice and it's line items
-        """
-        invoice_id = expense_group.invoice.id
-        expense_group.invoice = None
-        expense_group.save()
-        for expense in expense_group.expenses.all():
-            expense.invoice_line_item = None
-            expense.save()
-        Invoice.objects.filter(id=invoice_id).delete()
-
-    @staticmethod
     def create_invoice_line_item(invoice_id, expense_group):
         """
         Create Invoice line item from expenses and update ExpenseGroup
@@ -263,9 +266,7 @@ class InvoiceLineItem(models.Model):
                                                    sub_category=expense.sub_category,
                                                    invalid=True)
                 except psycopg2.Error:
-                    InvoiceLineItem.delete_invoice(expense_group)
                     raise CategoryMapping.DoesNotExist
-                InvoiceLineItem.delete_invoice(expense_group)
                 raise CategoryMapping.DoesNotExist
 
             if expense.project is not None:
@@ -280,14 +281,10 @@ class InvoiceLineItem(models.Model):
                         ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
                                                       invalid=True)
                     except psycopg2.Error:
-                        InvoiceLineItem.delete_invoice(expense_group)
                         raise ProjectMapping.DoesNotExist
-                    InvoiceLineItem.delete_invoice(expense_group)
                     raise ProjectMapping.DoesNotExist
 
             if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
                     id=invoice_line_item.id)
                 expense.save()
-                expense_group.invoice = Invoice.objects.get(id=invoice_id)
-                expense_group.save()

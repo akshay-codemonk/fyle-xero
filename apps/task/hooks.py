@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 
 from apps.expense.models import ExpenseGroup
 from apps.task.models import TaskLog
-from apps.xero_workspace.models import Workspace
+from apps.xero_workspace.models import Workspace, Invoice
 from fyle_xero_integration_web_app.settings import SENDER_EMAIL
 
 
@@ -48,12 +48,13 @@ def update_create_invoice_task(task):
     )
 
     task_log.expense_group = expense_group
-    task_log.invoice = expense_group.invoice
     if task.success:
+        task_log.invoice = expense_group.invoice
         task_log.level = '-'
         task_log.detail = task.result
         task_log.save()
     else:
+        Invoice.delete_invoice(expense_group)
         task_log.level = 'Error'
         task_log.detail = task.result
         task_log.save()
