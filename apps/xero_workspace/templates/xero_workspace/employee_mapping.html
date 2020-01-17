@@ -1,4 +1,4 @@
-{% extends "xero_workspace/mappings.html" %}
+{% extends "base.html" %}
 
 {% load static %}
 
@@ -10,98 +10,95 @@
 {% block title %}Employee Mapping{% endblock %}
 
 {% block content %}
-    <div class="content">
-        <div class="d-flex content-header">
-            <h5 class="cardMainText">Employee Mapping</h5>
-            <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createEmployeeMappingModal">New Mapping
-            </button>
-            <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
-                    data-target="#bulkAddMappingModal">Bulk Add/Update
-            </button>
-            <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
-                    name="method" value="delete">Delete
-            </button>
+<div class="content">
+    <div class="d-flex content-header">
+        <h5 class="cardMainText">Employee Mapping</h5>
+        <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
+                data-target="#createEmployeeMappingModal">New Mapping
+        </button>
+        <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
+                data-target="#bulkAddMappingModal">Bulk Add/Update
+        </button>
+        <button class="main-btn-outline delete-btn ml-3" type="submit" form="delete-form"
+                name="method" value="delete">Delete
+        </button>
+    </div>
+    {% if mappings|length == 0 %}
+        <div class="alert alert-light mx-auto warning" role="alert">
+            <p>Looks like you don't have any Employee Mappings</p>
         </div>
-        {% if mappings|length == 0 %}
-            <div class="alert alert-light mx-auto warning" role="alert">
-                <p>Looks like you don't have any Employee Mappings</p>
-            </div>
-        {% else %}
-            <div class="table-layout">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="table-head">
-                        <tr class="colHeadings">
-                            <th style="width: 75%">Employee Email (Fyle)</th>
-                            <th class="actions">Contact Name (Xero)</th>
-                            <th>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="select-all"/>
-                                    <span class="checkmark"></span>
-                                </label>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <form id="delete-form" action="" method="post">
-                            {% csrf_token %}
-                            {% for mapping in mappings %}
-                            <tr>
-                                <td>{{mapping.employee_email}}</td>
-                                <td class="actions">{{mapping.contact_name}}</td>
-                                <td>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
-                                               value='"{{mapping.id}}"'/>
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </form>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-
-    <div class="nav-pagination">
-        {% if mappings.has_other_pages %}
-           <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    {% if mappings.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.previous_page_number }}">&laquo;</a></li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
-                    {% endif %}
-
-                    {% if mappings.number|add:'-4' > 1 %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'-5' }}">&hellip;</a></li>
-                    {% endif %}
-
-                    {% for i in mappings.paginator.page_range %}
-                        {% if mappings.number == i %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                        {% endif %}
+    {% else %}
+    <div class="table-layout">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="table-head">
+                <tr class="colHeadings">
+                    <th style="width: 75%">Employee Email (Fyle)</th>
+                    <th class="actions">Contact Name (Xero)</th>
+                    <th>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="select-all"/>
+                            <span class="checkmark"></span>
+                        </label>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <form id="delete-form" action="" method="post">
+                    {% csrf_token %}
+                    {% for mapping in mappings %}
+                    <tr>
+                        <td>{{mapping.employee_email}}</td>
+                        <td class="actions">{{mapping.contact_name}}</td>
+                        <td>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
+                                       value='"{{mapping.id}}"'/>
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                    </tr>
                     {% endfor %}
-
-                    {% if mappings.paginator.num_pages > mappings.number|add:'4' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'5' }}">&hellip;</a></li>
-                    {% endif %}
-
-                    {% if mappings.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ mappings.next_page_number }}">&raquo;</a></li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
-                    {% endif %}
-                </ul>
-           </nav>
-        {% endif %}
+                </form>
+                </tbody>
+            </table>
+        </div>
     </div>
+    {% endif %}
+
+    {% if mappings.has_other_pages %}
+       <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if mappings.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                {% endif %}
+
+                {% if mappings.number|add:'-4' > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}
+
+                {% for i in mappings.paginator.page_range %}
+                    {% if mappings.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if mappings.paginator.num_pages > mappings.number|add:'4' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+
+                {% if mappings.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ mappings.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+       </nav>
+    {% endif %}
 
     <!-- Modal -->
     <div class="modal fade" id="createEmployeeMappingModal" tabindex="-1" role="dialog"
@@ -160,6 +157,7 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %}
