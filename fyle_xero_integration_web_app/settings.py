@@ -208,3 +208,8 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+# SendGrid Email configuration
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', config('SENDGRID_API_KEY'))
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', config('SENDER_EMAIL'))

@@ -1,6 +1,9 @@
+from django.core.mail import send_mail
+
 from apps.expense.models import ExpenseGroup
 from apps.task.models import TaskLog
 from apps.xero_workspace.models import Workspace
+from fyle_xero_integration_web_app.settings import SENDER_EMAIL
 
 
 def update_fetch_expense_task(task):
@@ -10,8 +13,9 @@ def update_fetch_expense_task(task):
     """
 
     workspace_id = task.kwargs.get("workspace_id")
+    workspace = Workspace.objects.get(id=workspace_id)
     task_log = TaskLog.objects.create(
-        workspace=Workspace.objects.get(id=workspace_id),
+        workspace=workspace,
         task_id=task.id
     )
     if task.success:
@@ -22,6 +26,13 @@ def update_fetch_expense_task(task):
         task_log.level = 'Error'
         task_log.detail = task.result
         task_log.save()
+        send_mail(
+            'Error fetching expenses from Fyle',
+            task.result,
+            SENDER_EMAIL,
+            [workspace.user.all().first().email],
+            fail_silently=False,
+        )
 
 
 def update_create_invoice_task(task):
@@ -46,3 +57,8 @@ def update_create_invoice_task(task):
         task_log.level = 'Error'
         task_log.detail = task.result
         task_log.save()
+        send_mail('Error fetching expenses from Fyle', task.result,
+                  SENDER_EMAIL,
+                  [expense_group.workspace.user.all().first().email],
+                  fail_silently=False,
+                  )

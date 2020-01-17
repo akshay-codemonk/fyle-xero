@@ -51,18 +51,6 @@ class ProjectMappingForm(forms.Form):
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 
 
-class TransformForm(forms.Form):
-    """
-    Form for writing sql queries
-    """
-
-    transform_sql = forms.CharField(label=None, help_text=None,
-                                    widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control",
-                                                                 "disabled": "True"}))
-    test_sql = forms.CharField(label=None, help_text=None,
-                               widget=forms.Textarea(attrs={"rows": 6, "columns": 5, "class": "form-control"}))
-
-
 class ScheduleForm(forms.Form):
     """
     Form to get schedule data

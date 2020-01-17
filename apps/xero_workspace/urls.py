@@ -7,7 +7,7 @@ from django.urls import path, include
 from apps.fyle_connect.views import FyleTokenView
 from apps.xero_connect.views import XeroTokenView
 from apps.xero_workspace.views import WorkspaceView, EmployeeMappingView, \
-    CategoryMappingView, TransformView, CategoryMappingBulkUploadView, \
+    CategoryMappingView, CategoryMappingBulkUploadView, \
     EmployeeMappingBulkUploadView, ScheduleView, ProjectMappingView, \
     ProjectMappingBulkUploadView
 
@@ -26,8 +26,6 @@ urlpatterns = [
          name="project_mapping"),
     path('<int:workspace_id>/mappings/project_mapping/upload/', ProjectMappingBulkUploadView.as_view(),
          name="project_mapping_bulk_upload"),
-    path('<int:workspace_id>/settings/transform/', TransformView.as_view(),
-         name="transform"),
     path('<int:workspace_id>/settings/source/', include('apps.fyle_connect.urls')),
     path('<int:workspace_id>/settings/destination/', include('apps.xero_connect.urls')),
     path('<int:workspace_id>/settings/schedule/', ScheduleView.as_view(), name="schedule"),

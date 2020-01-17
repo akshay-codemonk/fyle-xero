@@ -11,8 +11,7 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, TransformForm, \
-    ScheduleForm, ProjectMappingForm
+from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, ScheduleForm, ProjectMappingForm
 from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
 
@@ -111,7 +110,8 @@ class CategoryMappingView(View):
             mapping_id = request.POST.get('mapping_id')
             CategoryMapping.objects.filter(id=mapping_id).update(category=category,
                                                                  sub_category=sub_category,
-                                                                 account_code=account_code)
+                                                                 account_code=account_code,
+                                                                 invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -197,7 +197,7 @@ class EmployeeMappingView(View):
             contact_name = request.POST.get('contact_name')
             mapping_id = request.POST.get('mapping_id')
             EmployeeMapping.objects.filter(id=mapping_id).update(
-                employee_email=employee_email, contact_name=contact_name)
+                employee_email=employee_email, contact_name=contact_name, invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -287,7 +287,8 @@ class ProjectMappingView(View):
             ProjectMapping.objects.filter(id=mapping_id) \
                 .update(project_name=project_name,
                         tracking_category_name=tracking_category_name,
-                        tracking_category_option=tracking_category_option)
+                        tracking_category_option=tracking_category_option,
+                        invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -318,46 +319,6 @@ class ProjectMappingBulkUploadView(View):
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:project_mapping', args=[workspace_id]))
-
-
-class TransformView(View):
-    """
-    Transform View
-    """
-    template_name = "xero_workspace/transform.html"
-    context = None
-    workspace = None
-    form = None
-
-    def dispatch(self, request, *args, **kwargs):
-        method = self.request.POST.get('method', '').lower()
-        if method == 'update':
-            return self.update(request, *args, **kwargs)
-        return super(TransformView, self).dispatch(request, *args, **kwargs)
-
-    def setup(self, request, *args, **kwargs):
-        workspace_id = kwargs['workspace_id']
-        self.form = TransformForm()
-        self.workspace = Workspace.objects.get(id=workspace_id)
-        self.form.fields['transform_sql'].initial = self.workspace.transform_sql
-        self.context = {"transform": "active", "form": self.form,
-                        "settings_tab": "active"}
-        super(TransformView, self).setup(request)
-
-    def get(self, request, workspace_id):
-        return render(request, self.template_name, self.context)
-
-    def post(self, request, workspace_id):
-        self.form = TransformForm(request.POST)
-        if self.form.is_valid:
-            self.workspace.transform_sql = request.POST.get('transform_sql')
-            self.workspace.save()
-        return HttpResponseRedirect(self.request.path_info)
-
-    def update(self, request, workspace_id):
-        self.form.fields['transform_sql'].widget.attrs['disabled'] = False
-        self.context['save_button'] = True
-        return render(request, self.template_name, self.context)
 
 
 class ScheduleView(View):

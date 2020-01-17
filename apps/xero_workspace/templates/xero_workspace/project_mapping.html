@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 {% endblock %}
 
-{% block title %}Category Mapping{% endblock %}
+{% block title %}Project Mapping{% endblock %}
 
 {% block content %}
     <div class="content">
@@ -33,8 +33,8 @@
                 <table class="table">
                     <thead class="table-head">
                     <tr class="colHeadings">
-                        <th style="width: 35%">Project name (Fyle)</th>
-                        <th style="width: 35%">Tracking Category Name (Xero)</th>
+                        <th style="width: 30%">Project name (Fyle)</th>
+                        <th style="width: 30%">Tracking Category Name (Xero)</th>
                         <th class="actions">Tracking Category Option (Xero)</th>
                         <th>
                             <label class="checkbox-label">
@@ -48,16 +48,21 @@
                     <form id="delete-form" action="" method="post">
                         {% csrf_token %}
                         {% for mapping in mappings %}
-                        <tr onclick="openEditModal(this, {{mapping.id}})">
+                        <tr onclick="openEditModal(this, {{mapping.id}})"
+                            class="{% if mapping.invalid %} highlight{% endif %}">
                             <td>{{mapping.project_name}}</td>
                             <td>{{mapping.tracking_category_name}}</td>
                             <td class="actions">{{mapping.tracking_category_option}}</td>
-                            <td>
+                            <td class="checkbox-error">
                                 <label class="checkbox-label">
                                     <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                            value='"{{mapping.id}}"'/>
                                     <span id="checkmark" class="checkmark"></span>
                                 </label>
+                                {% if mapping.invalid %}
+                                    <i class="material-icons error-icon"
+                                       title="Please update this mapping">error</i>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
