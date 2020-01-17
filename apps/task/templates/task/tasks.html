@@ -13,16 +13,16 @@
 
 {% block sub-nav-tabs %}
     <li class="sub-nav-item">
-        <a class="sub-nav-link {{ tasks }}"
+        <a class="sub-nav-link {{ all }}"
            href="{% url 'xero_workspace:tasks' workspace_id %}">All</a>
     </li>
     <li class="sub-nav-item">
-        <a class="sub-nav-link"
-           href="#complete">Complete</a>
+        <a class="sub-nav-link {{ complete }}"
+           href="?state=complete">Complete</a>
     </li>
     <li class="sub-nav-item">
-            <a class="sub-nav-link"
-               href="#failed">Failed</a>
+            <a class="sub-nav-link {{ failed }}"
+               href="?state=failed">Failed</a>
     </li>
 {% endblock %}
 
@@ -35,6 +35,38 @@
                         value="sync" type="submit">Sync Now</button>
             </div>
         </form>
+        <div class="table-layout">
+            <div class="table-responsive">
+                <table class="table tasks-table">
+                    <thead class="table-head">
+                        <tr class="colHeadings">
+                            <th style="width: 30%">Name</th>
+                            <th>Updated At</th>
+                            <th>Status</th>
+                            <th>Level</th>
+                            <th class="actions">Logs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task_log in task_logs %}
+                            <tr class="tasks-table-row" data-url="{{task_log.id}}/details/">
+                                <td>{{task_log.task.name}}</td>
+                                <td>{{task_log.updated_at}}</td>
+                                {% if task_log.task.success %}
+                                    <td>Complete</td>
+                                {% else %}
+                                    <td>Failed</td>
+                                {% endif %}
+                                <td>{{task_log.level}}</td>
+                                <td class="actions">
+                                    <i class="material-icons">get_app</i>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="modal right fade" id="taskModal" tabindex="-1" role="dialog"
@@ -47,8 +79,72 @@
                     </button>
                     <h5 class="modal-title" id="taskModalTitle">Task Details</h5>
                 </div>
+                <div class="modal-body task-details">
+                    <p id="task-name" class="task-name">Task Name</p>
+                    <div class="table-responsive">
+                        <table class="table task-details-table">
+                            <tbody>
+                                <tr>
+                                    <td>Task ID</td>
+                                    <td id="task-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Expense Group ID</td>
+                                    <td id="expense-group-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Invoice ID</td>
+                                    <td id="invoice-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Started at</td>
+                                    <td id="started-at"></td>
+                                </tr>
+                                <tr>
+                                    <td>Stopped at</td>
+                                    <td id="stopped-at"></td>
+                                </tr>
+                                <tr>
+                                    <td>Status</td>
+                                    <td id="status"></td>
+                                </tr>
+                                <tr>
+                                    <td>Level</td>
+                                    <td id="level"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="task-logs">
+                        <a href="#view-logs">View logs</a>
+                        <a href="#download-logs">Download logs</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    $(".tasks-table-row").click(function() {
+        $.ajax({
+            url: $(this).attr("data-url"),
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function() {
+                $("#taskModal").modal("show");
+            },
+            success: function(data) {
+                $('#task-name').html(data.task_name);
+                $("#task-id").html(data.task);
+                $("#expense-group-id").html(data.expense_group || '-');
+                $("#invoice-id").html(data.invoice || '-');
+                $("#started-at").html(data.started_at);
+                $("#stopped-at").html(data.stopped_at);
+                $("#status").html(data.status);
+                $("#level").html(data.level || '-');
+            }
+        })
+    });
 {% endblock %}

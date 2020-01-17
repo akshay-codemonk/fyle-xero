@@ -1,4 +1,5 @@
 from django.db import models
+from django_q.models import Task
 
 from apps.expense.models import ExpenseGroup
 from apps.xero_workspace.models import Workspace, Invoice
@@ -11,7 +12,7 @@ class TaskLog(models.Model):
     id = models.AutoField(primary_key=True)
     workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
                                   help_text="FK to Workspace")
-    task_id = models.CharField(max_length=64, help_text="Django Q task id")
+    task = models.ForeignKey(Task, on_delete=models.PROTECT, help_text="FK to Django Q Task")
     expense_group = models.ForeignKey(ExpenseGroup, null=True, blank=True,
                                       on_delete=models.PROTECT, help_text="FK to ExpenseGroup")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
