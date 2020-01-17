@@ -35,7 +35,7 @@ class EmployeeMapping(models.Model):
     Mapping table for Fyle Employee to Xero Contact
     """
     id = models.AutoField(primary_key=True)
-    employee_email = models.EmailField(max_length=255, unique=True, help_text='Email id of the Fyle employee')
+    employee_email = models.EmailField(max_length=255, help_text='Email id of the Fyle employee')
     contact_name = models.CharField(max_length=255, help_text='Name of the Xero contact')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
@@ -47,6 +47,7 @@ class EmployeeMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['employee_email', 'workspace']
 
 
 class CategoryMapping(models.Model):
@@ -68,7 +69,7 @@ class CategoryMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = ['category', 'sub_category']
+        unique_together = ['category', 'sub_category', 'workspace']
 
 
 class ProjectMapping(models.Model):
@@ -76,7 +77,7 @@ class ProjectMapping(models.Model):
     Mapping table for Fyle Project, Xero Tracking Category and Tracking Category options
     """
     id = models.AutoField(primary_key=True)
-    project_name = models.CharField(max_length=64, unique=True, help_text='Fyle Project Name')
+    project_name = models.CharField(max_length=64, help_text='Fyle Project Name')
     tracking_category_name = models.CharField(max_length=64, help_text='Xero Tracking Category Name')
     tracking_category_option = models.CharField(max_length=64, help_text='Xero Tracking Category Option')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
@@ -89,6 +90,7 @@ class ProjectMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['project_name', 'workspace']
 
 
 class XeroCredential(models.Model):
