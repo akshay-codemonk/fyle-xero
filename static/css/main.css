@@ -160,6 +160,13 @@ button:focus{
   box-shadow: none;
 }
 
+.btn:disabled, .btn:disabled:hover {
+    cursor: default;
+    background-color: var(--primaryColor);
+    border-color: var(--primaryColor);
+    opacity: 0.65;
+}
+
 .profile-content {
   width:300px;
   position:absolute;

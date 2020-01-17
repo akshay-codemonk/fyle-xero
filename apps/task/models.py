@@ -10,11 +10,11 @@ class TaskLog(models.Model):
     Task log model
     """
     id = models.AutoField(primary_key=True)
-    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE,
                                   help_text="FK to Workspace")
-    task = models.ForeignKey(Task, on_delete=models.PROTECT, help_text="FK to Django Q Task")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, help_text="FK to Django Q Task")
     expense_group = models.ForeignKey(ExpenseGroup, null=True, blank=True,
-                                      on_delete=models.PROTECT, help_text="FK to ExpenseGroup")
+                                      on_delete=models.CASCADE, help_text="FK to ExpenseGroup")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
     level = models.CharField(max_length=64, null=True, blank=True, help_text="Level")

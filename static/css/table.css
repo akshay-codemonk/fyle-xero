@@ -71,6 +71,10 @@ th {
     margin-bottom: 0;
 }
 
+.table th {
+    border-top: None;
+}
+
 .table-responsive {
     position: relative;
 }

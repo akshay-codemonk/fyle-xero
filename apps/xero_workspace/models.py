@@ -1,6 +1,6 @@
 import datetime
-import json
 
+import psycopg2
 import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
@@ -35,7 +35,7 @@ class EmployeeMapping(models.Model):
     Mapping table for Fyle Employee to Xero Contact
     """
     id = models.AutoField(primary_key=True)
-    employee_email = models.EmailField(max_length=255, unique=False, help_text='Email id of the Fyle employee')
+    employee_email = models.EmailField(max_length=255, help_text='Email id of the Fyle employee')
     contact_name = models.CharField(max_length=255, help_text='Name of the Xero contact')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
@@ -47,6 +47,7 @@ class EmployeeMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['employee_email', 'workspace']
 
 
 class CategoryMapping(models.Model):
@@ -55,7 +56,8 @@ class CategoryMapping(models.Model):
     """
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=64, help_text='Fyle Expense Category')
-    sub_category = models.CharField(max_length=64, null=True, help_text='Fyle Expense Sub-Category')
+    sub_category = models.CharField(max_length=64, null=True, default='Unspecified',
+                                    help_text='Fyle Expense Sub-Category')
     account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
@@ -67,6 +69,7 @@ class CategoryMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['category', 'sub_category', 'workspace']
 
 
 class ProjectMapping(models.Model):
@@ -87,6 +90,7 @@ class ProjectMapping(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ['project_name', 'workspace']
 
 
 class XeroCredential(models.Model):
@@ -146,7 +150,6 @@ def delete_schedule(instance, **kwargs):
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
 def create_workspace_(instance, created, **kwargs):
     if created:
-        kwargs = {"workspace_id": instance.id}
         schedule = Schedule.objects.create(func='apps.task.tasks.create_task',
                                            schedule_type=Schedule.MINUTES,
                                            repeats=0,
@@ -175,13 +178,27 @@ class Invoice(models.Model):
         return str(self.id)
 
     @staticmethod
+    def delete_invoice(expense_group):
+        """
+        Delete invoice and it's line items
+        """
+        invoice_id = expense_group.invoice.id
+        expense_group.invoice = None
+        expense_group.save()
+        for expense in expense_group.expenses.all():
+            expense.invoice_line_item = None
+            expense.save()
+
+        Invoice.objects.filter(id=invoice_id).delete()
+
+    @staticmethod
     def create_invoice(expense_group):
         """
         Create invoice from expense group
         :param expense_group
         :return: invoice id
         """
-        description = json.loads(expense_group.description)
+        description = expense_group.description
         try:
             invoice = Invoice.objects.create(
                 invoice_number=description.get("report_id"),
@@ -190,10 +207,15 @@ class Invoice(models.Model):
                     employee_email=description.get("employee_email")).contact_name,
                 date=description.get("approved_at")
             )
+            expense_group.invoice = invoice
+            expense_group.save()
             return invoice.id
         except EmployeeMapping.DoesNotExist:
-            EmployeeMapping.objects.create(workspace=expense_group.workspace,
-                                           employee_email=description.get("employee_email"), invalid=True)
+            try:
+                EmployeeMapping.objects.create(workspace=expense_group.workspace,
+                                               employee_email=description.get("employee_email"), invalid=True)
+            except psycopg2.Error:
+                raise EmployeeMapping.DoesNotExist
             raise EmployeeMapping.DoesNotExist
 
 
@@ -239,9 +261,12 @@ class InvoiceLineItem(models.Model):
                     amount=expense.amount
                 )
             except CategoryMapping.DoesNotExist:
-                CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
-                                               sub_category=expense.sub_category,
-                                               invalid=True)
+                try:
+                    CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
+                                                   sub_category=expense.sub_category,
+                                                   invalid=True)
+                except psycopg2.Error:
+                    raise CategoryMapping.DoesNotExist
                 raise CategoryMapping.DoesNotExist
 
             if expense.project is not None:
@@ -252,13 +277,14 @@ class InvoiceLineItem(models.Model):
                     invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
                     invoice_line_item.save()
                 except ProjectMapping.DoesNotExist:
-                    ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
-                                                  invalid=True)
+                    try:
+                        ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
+                                                      invalid=True)
+                    except psycopg2.Error:
+                        raise ProjectMapping.DoesNotExist
                     raise ProjectMapping.DoesNotExist
 
             if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
                     id=invoice_line_item.id)
                 expense.save()
-                expense_group.invoice = Invoice.objects.get(id=invoice_id)
-                expense_group.save()
