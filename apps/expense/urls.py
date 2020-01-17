@@ -3,9 +3,12 @@ expense app URL Configuration
 """
 from django.urls import path
 
-from apps.expense.views import ExpenseGroupView, ExpenseView
+from apps.expense.views import ExpenseGroupView, ExpenseView, InvoiceDetailsView, ExpenseDetailsView
 
 urlpatterns = [
     path('', ExpenseGroupView.as_view(), name="expense_groups"),
-    path('<group_id>/expenses/', ExpenseView.as_view(), name='expenses'),
+    path('<int:group_id>/expenses/', ExpenseView.as_view(), name='expenses'),
+    path('<int:group_id>/expenses/<int:expense_id>/details/', ExpenseDetailsView.as_view(),
+         name='expenses_details'),
+    path('<int:group_id>/invoice/', InvoiceDetailsView.as_view(), name='invoice'),
 ]

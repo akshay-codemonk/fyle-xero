@@ -65,7 +65,9 @@
 
 .view-invoice, .view-invoice:hover {
     text-decoration: underline;
-    color: #212529
+    color: #212529;
+    cursor: pointer;
+    margin-bottom: 0;
 }
 
 .sync-btn, .resync-btn {
@@ -77,10 +79,6 @@
 }
 
 .expense-groups-table td:hover {
-    cursor: default;
-}
-
-.expense-groups-table td:nth-child(1):hover {
     cursor: pointer;
 }
 

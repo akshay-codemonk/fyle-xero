@@ -39,6 +39,51 @@
                 <button class="btn ml-auto main-btn sync-btn" name="submit" type="submit" value="sync">Sync</button>
                 <button class="btn main-btn-outline ml-4 resync-btn">Resync</button>
             </div>
+            <div class="table-layout">
+                <div class="table-responsive">
+                    <table class="table expense-groups-table">
+                        <thead class="table-head">
+                            <tr class="colHeadings">
+                                <th style="width: 30%">Description</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Invoice</th>
+                                <th>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="select-all"/>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense_group_details in expense_groups_details %}
+                                <tr class="expense-groups-row" data-href="{{expense_group_details.id}}/expenses/">
+                                    <td>
+                                        Grouped by report id: {{expense_group_details.description.report_id}}
+                                    </td>
+                                    {% if expense_group_details.status %}
+                                        <td>Complete</td>
+                                    {% else %}
+                                        <td>Failed</td>
+                                    {% endif %}
+                                    <td>{{expense_group_details.description.approved_at}}</td>
+                                    <td>
+                                        <p id="link" class="view-invoice view-invoice-modal"
+                                           data-url="{{expense_group_details.id}}/invoice/">view</p>
+                                    </td>
+                                    <td>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="expenseCheckbox">
+                                            <span id="checkmark" class="checkmark"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -46,10 +91,30 @@
 
 {% endblock %}
 
+{% block include-script %}
+    <script src="{% static 'js/expense/open_invoice_modal.js' %}"></script>
+{% endblock %}
+
 {% block script %}
-    $(document).ready(function () {
-        $("#select-all").click(function () {
-            $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
-        });
+    $("#select-all").click(function () {
+        $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".expense-groups-row").click(function () {
+        if (event.target.id !== 'checkmark' && event.target.id !== 'link') {
+            window.location = $(this).data("href");
+        }
+    });
+
+    $(".expenseCheckbox").click(function(e) {
+        if(e.target.type === 'checkbox') {
+            e.stopPropagation();
+        }
+    });
+
+    $(".view-invoice").click(function(e) {
+        if(e.target.id === 'link') {
+            e.stopPropagation();
+        }
     });
 {% endblock %}
