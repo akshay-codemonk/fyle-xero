@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/task/tasks.css' %}">
+{% endblock %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block sub-nav-heading %}Tasks{% endblock %}
+
+{% block sub-nav-tabs %}
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ tasks }}"
+           href="{% url 'xero_workspace:tasks' workspace_id %}">All</a>
+    </li>
+    <li class="sub-nav-item">
+        <a class="sub-nav-link"
+           href="#complete">Complete</a>
+    </li>
+    <li class="sub-nav-item">
+            <a class="sub-nav-link"
+               href="#failed">Failed</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex content-header">
+                <button class="btn ml-auto main-btn sync-btn" name="submit"
+                        value="sync" type="submit">Sync Now</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal right fade" id="taskModal" tabindex="-1" role="dialog"
+         aria-labelledby="taskModalTitle">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="taskModalTitle">Task Details</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
