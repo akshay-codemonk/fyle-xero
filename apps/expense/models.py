@@ -86,7 +86,7 @@ class ExpenseGroup(models.Model):
     Expense Group
     """
     id = models.AutoField(primary_key=True)
-    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE,
                                   help_text="To which workspace this expense group belongs to")
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
