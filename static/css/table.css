@@ -27,11 +27,6 @@ td:hover {
   background-color: none !important;
 }
 
-td {
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.87);
-}
-
 th {
   color: var(--darkGrey) !important;
   vertical-align: middle !important;
@@ -76,10 +71,37 @@ th {
     margin-bottom: 0;
 }
 
+.table th {
+    border-top: None;
+}
+
 .table-responsive {
     position: relative;
 }
 
 .nav-pagination {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    bottom: 0;
+    position: absolute;
+    margin-bottom: 1%;
+}
+
+ul.pagination {
+    margin-bottom: 0;
+}
+
+.highlight {
+    background-color: rgb(255, 0, 0, 0.2);
+}
+
+.checkbox-error {
+    display: flex;
+    justify-content: space-between;
+}
+
+.error-icon {
+    color: var(--primaryColor);
+    font-size: 20px;
 }

@@ -1,0 +1,53 @@
+<div class="modal right fade" id="invoiceModal" tabindex="-1" role="dialog"
+     aria-labelledby="invoiceModalTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title" id="invoiceModalTitle">Invoice Details</h5>
+            </div>
+            <div class="modal-body invoice-details">
+                <div class="invoice-info">
+                    <div class="invoice-id-date">
+                        <p>
+                            <span>Invoice Id:</span>
+                            <span id="invoice-id"></span>
+                        </p>
+                        <p class="invoice-date">
+                            <span>Date:</span>
+                            <span id="invoice-date"></span>
+                        </p>
+                    </div>
+                    <p>
+                        <span>Invoice Number:</span>
+                        <span id="invoice-number"></span>
+                    </p>
+                    <p>
+                        <span>Contact Name:</span>
+                        <span id="contact-name"></span>
+                    </p>
+                    <p>
+                        <span>Description:</span>
+                        <span id="description"></span>
+                    </p>
+                </div>
+                <div class="table-layout">
+                    <div class="table-responsive">
+                        <table class="table invoice-details-table">
+                            <thead class="table-head">
+                                <tr class="colHeadings">
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

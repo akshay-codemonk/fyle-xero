@@ -16,8 +16,9 @@ class SourceView(View):
     template_name = "fyle_connect/source.html"
 
     def get(self, request, workspace_id):
-        is_connected = FyleCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"source": "active", "is_connected": is_connected}
+        connected = FyleCredential.objects.filter(workspace__id=workspace_id).exists()
+        context = {"source": "active", "connected": connected,
+                   "settings_tab": "active"}
         return render(request, self.template_name, context)
 
 
@@ -40,7 +41,7 @@ class FyleDisconnectView(View):
 
     @staticmethod
     def post(request, workspace_id):
-        FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).id).delete()
+        FyleAuth.objects.get(id=FyleCredential.objects.get(workspace__id=workspace_id).fyle_auth.id).delete()
         return HttpResponseRedirect(reverse('xero_workspace:source', args=[workspace_id]))
 
 

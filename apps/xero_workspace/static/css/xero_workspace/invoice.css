@@ -1,0 +1,22 @@
+.invoice-info {
+    padding: 0 10px;
+}
+
+.invoice-id-date {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.invoice-info p {
+    display: flex;
+}
+
+.invoice-info p span:nth-child(1) {
+    width: 140px;
+}
+
+.invoice-info .invoice-id-date
+p:nth-child(2) span:nth-child(1) {
+    width: 50px;
+}

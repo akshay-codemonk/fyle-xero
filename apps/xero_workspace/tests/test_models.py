@@ -1,12 +1,13 @@
-import datetime
+from datetime import datetime
 
+import pytz
 from django.test import TestCase
-from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
+from apps.xero_connect.models import XeroAuth
 from apps.user.models import UserProfile
 from apps.xero_workspace.models import Workspace, XeroCredential, WorkspaceSchedule, EmployeeMapping, \
-    CategoryMapping, FyleCredential, Activity
+    CategoryMapping, FyleCredential, ProjectMapping, Invoice, InvoiceLineItem
 
 
 class WorkspaceTestCases(TestCase):
@@ -50,22 +51,15 @@ class XeroCredentialTestCases(TestCase):
         Set up test data
         """
         workspace = Workspace.objects.create(name='workspace1')
+        xero_auth = XeroAuth.objects.create(client_id='12345', client_secret='abcd#1234', refresh_token='qwerty')
+        XeroCredential.objects.create(xero_auth=xero_auth, workspace=workspace)
 
-        XeroCredential.objects.create(private_key='private_key', consumer_key='consumer_key', workspace=workspace)
-
-    def test_private_key_value(self):
+    def test_xero_credential_creation(self):
         """
-        Test for private_key value
+        Test model creation
         """
         xero_credential = XeroCredential.objects.get(id=1)
-        self.assertEqual(xero_credential.private_key, 'private_key')
-
-    def test_consumer_key_value(self):
-        """
-        Test for pem_file value
-        """
-        xero_credential = XeroCredential.objects.get(id=1)
-        self.assertEqual(xero_credential.consumer_key, 'consumer_key')
+        self.assertEqual(xero_credential.workspace.name, 'workspace1')
 
     def test_string_representation(self):
         """
@@ -132,6 +126,37 @@ class CategoryMappingTestCases(TestCase):
         self.assertEqual(str(category_mapping), '1')
 
 
+class ProjectMappingTestCases(TestCase):
+    """
+    Test cases for ProjectMapping model
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Set up test data
+        """
+        workspace = Workspace.objects.create(name='workspace1')
+        ProjectMapping.objects.create(project_name='project',
+                                      tracking_category_name='tracking_category_name',
+                                      tracking_category_option='tracking_category_option',
+                                      workspace=workspace)
+
+    def test_project_mapping_creation(self):
+        """
+        Test project mapping creation
+        """
+        project_mapping = ProjectMapping.objects.get(id=1)
+        self.assertEqual(project_mapping.workspace.name, 'workspace1')
+
+    def test_string_representation(self):
+        """
+        Test model string representation
+        """
+        project_mapping = ProjectMapping.objects.get(id=1)
+        self.assertEqual(str(project_mapping), '1')
+
+
 class FyleCredentialTestCases(TestCase):
     """
     Test model string representation
@@ -163,7 +188,7 @@ class FyleCredentialTestCases(TestCase):
 
 class WorkspaceScheduleTestCases(TestCase):
     """
-    Test cases for the WorksapceSchedule model
+    Test cases for the WorkspaceSchedule model
     """
 
     @classmethod
@@ -171,99 +196,62 @@ class WorkspaceScheduleTestCases(TestCase):
         """
         Set up test data
         """
-        workspace = Workspace.objects.create(name='workspace1')
-        schedule = Schedule.objects.create(func='module.tasks.function', schedule_type=Schedule.MINUTES,
-                                           repeats=0, minutes=5, next_run=datetime.datetime.now())
-        WorkspaceSchedule.objects.create(workspace=workspace, schedule=schedule)
+        Workspace.objects.create(name='schedule_creation')
 
     def test_workspace_schedule_creation(self):
         """
         Test creation
         """
-        workspace_schedule = WorkspaceSchedule.objects.get(id=1)
-        self.assertEqual(workspace_schedule.schedule.id, 1)
-
-    def test_string_representation(self):
-        """
-        Test model string representation
-        """
-        workspace_schedule = WorkspaceSchedule.objects.get(id=1)
-        self.assertEqual(str(workspace_schedule), '1')
+        workspace_schedule = WorkspaceSchedule.objects.get(workspace__name='schedule_creation')
+        self.assertEqual(workspace_schedule.workspace.name, 'schedule_creation')
 
 
-class ActivityTestCases(TestCase):
+class InvoiceTestCases(TestCase):
     """
-    Test cases for Activity model
+    Invoice model test cases
     """
 
     @classmethod
     def setUpTestData(cls):
-        """
-        Set up test data
-        """
+        Invoice.objects.create(
+            invoice_number="inv123",
+            contact_name="employee",
+            date=datetime.now(tz=pytz.utc),
+            description="rep123"
+        )
 
-        success = Activity.STATUS.success
-        triggerd_by = Activity.TRIGGERS.user
-        workspace = Workspace.objects.create(name='workspace1')
+    def test_invoice_creation(self):
+        """
+        Test invoice creation
+        """
+        invoice = Invoice.objects.get(invoice_number="inv123")
+        self.assertEqual(invoice.contact_name, "employee")
 
-        Activity.objects.create(workspace=workspace, transform_sql='transform_sql', status=success,
-                                triggered_by=triggerd_by,
-                                sync_db_file_id='1a2b', request_data='{request: 1}', response_data='{response: 1}',
-                                error_msg='error')
-        Activity.objects.create()
 
-    def test_transform_sql_value(self):
-        """
-        Test transform_sql value
-        """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.transform_sql, 'transform_sql')
+class InvoiceLineItemTestCases(TestCase):
+    """
+    InvoiceLineItem model test cases
+    """
 
-    def test_sync_db_value(self):
-        """
-        Test sync_db_file_id value
-        """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.sync_db_file_id, '1a2b')
+    @classmethod
+    def setUpTestData(cls):
+        invoice = Invoice.objects.create(
+            invoice_number="inv123",
+            contact_name="employee",
+            date=datetime.now(tz=pytz.utc),
+            description="rep123"
+        )
+        InvoiceLineItem.objects.create(
+            invoice=invoice,
+            account_code=123,
+            account_name="acc_name",
+            description="rep123",
+            amount=100.00
+        )
 
-    def test_status_value(self):
+    def test_invoice_lineitem_creation(self):
         """
-        Test status value
+        Test invoice lineitem creation
         """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.status, 'success')
-
-    def test_triggered_by_value(self):
-        """
-        Test triggered_by value
-        """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.triggered_by, 'user')
-
-    def test_request_data_value(self):
-        """
-        Test request_data value
-        """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.request_data, '{request: 1}')
-
-    def test_response_data_value(self):
-        """
-        Test response_data value
-        """
-        activity = Activity.objects.get(id=1)
-        self.assertEqual(activity.response_data, '{response: 1}')
-
-    def test_default_status_value(self):
-        """
-        Test default status value
-        """
-        activity = Activity.objects.get(id=2)
-        self.assertEqual(activity.status, 'in_progress')
-
-    def test_default_triggered_by_value(self):
-        """
-        Test default triggered_by value
-        """
-        activity = Activity.objects.get(id=2)
-        self.assertEqual(activity.triggered_by, 'user')
+        invoice_lineitem = InvoiceLineItem.objects.get(account_code=123)
+        self.assertEqual(invoice_lineitem.account_name, "acc_name")

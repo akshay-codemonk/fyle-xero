@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/expense/expense.css' %}">
+    <link rel="stylesheet" href="{% static 'css/xero_workspace/invoice.css' %}">
+{% endblock %}
+
+{% block title %}Expense Groups{% endblock %}
+
+{% block back-button %}
+    <a class="back-btn" href="{% url 'xero_workspace:expense_groups' workspace_id %}">
+        <i class="material-icons">arrow_back</i>
+    </a>
+{% endblock %}
+
+{% block sub-nav-heading %}Expenses{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="d-flex content-header">
+                <p class="employee-email">Report ID: {{report_id}}</p>
+                <button class="view-invoice-modal ml-auto btn main-btn" type="button"
+                        data-url="{% url 'xero_workspace:invoice' workspace_id expense_group_id %}"
+                        {% if not status %} disabled{% endif %}>View Invoice
+                </button>
+            </div>
+            <div class="table-layout">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-head">
+                            <tr class="colHeadings">
+                                <th>Expense Number</th>
+                                <th>Spend Date</th>
+                                <th>Created on</th>
+                                <th>Amount</th>
+                                <th>Project</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                                <tr class="expenses-table-row" data-url="{{expense.id}}/details/">
+                                    <td>{{expense.expense_number}}</td>
+                                    <td>{{expense.spent_at}}</td>
+                                    <td>{{expense.expense_created_at}}</td>
+                                    <td>{{expense.amount}}</td>
+                                    <td>{{expense.project}}</td>
+                                    <td>{{expense.purpose}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal right fade" id="expenseModal" tabindex="-1" role="dialog"
+         aria-labelledby="expenseModalTitle">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="expenseModalTitle">Expense Details</h5>
+                </div>
+                <div class="modal-body expense-details">
+                    <p id="employee-email" class="employee-email"></p>
+                    <div class="table-responsive">
+                        <table class="table expenses-table">
+                            <tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td id="expense-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Created Date</td>
+                                    <td id="created-date"></td>
+                                </tr>
+                                <tr>
+                                    <td>Spend Date</td>
+                                    <td id="spent-date"></td>
+                                </tr>
+                                <tr>
+                                    <td>Category</td>
+                                    <td id="category"></td>
+                                </tr>
+                                <tr>
+                                    <td>Category Code</td>
+                                    <td id="category-code"></td>
+                                </tr>
+                                <tr>
+                                    <td>Merchant</td>
+                                    <td id="merchant"></td>
+                                </tr>
+                                <tr>
+                                    <td>Purpose</td>
+                                    <td id="purpose"></td>
+                                </tr>
+                                <tr>
+                                    <td>Project</td>
+                                    <td id="project"></td>
+                                </tr>
+                                <tr>
+                                    <td>Reimbursable</td>
+                                    <td id="reimbursable"></td>
+                                </tr>
+                                <tr>
+                                    <td>State</td>
+                                    <td id="state"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-pagination">
+        {% if expenses.has_other_pages %}
+           <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if expenses.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                    {% endif %}
+
+                    {% if expenses.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% for i in expenses.paginator.page_range %}
+                        {% if expenses.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                        {% elif i > expenses.number|add:'-5' and i < expenses.number|add:'5' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if expenses.paginator.num_pages > expenses.number|add:'4' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+
+                    {% if expenses.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ expenses.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+           </nav>
+        {% endif %}
+    </div>
+
+    {% include 'xero_workspace/invoice.html' %}
+
+{% endblock %}
+
+{% block include-script %}
+    <script src="{% static 'js/expense/open_invoice_modal.js' %}"></script>
+{% endblock %}
+
+{% block script %}
+    $("#select-all").click(function () {
+        $(".expenseCheckbox").prop('checked', $(this).prop('checked'));
+    });
+
+    $(".expenses-table-row").click(function() {
+        $.ajax({
+            url: $(this).attr("data-url"),
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function() {
+                $("#expenseModal").modal("show");
+            },
+            success: function(data) {
+                $('#employee-email').html(`Email: ${data.employee_email}`);
+                $("#expense-id").html(data.expense_id);
+                $("#created-date").html(data.expense_created_at);
+                $("#spent-date").html(data.spent_at);
+                $("#category").html(data.category);
+                $("#category-code").html(data.category_code);
+                $("#merchant").html(data.vendor || '-');
+                $("#purpose").html(data.purpose || '-');
+                $("#project").html(data.project || '-');
+                $("#reimbursable").html(data.reimbursable);
+                $("#state").html(data.state);
+            }
+        })
+    });
+{% endblock %}

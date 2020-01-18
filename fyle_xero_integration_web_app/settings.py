@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'fyle_allauth',
     'apps.user',
     'apps.fyle_connect',
+    'apps.xero_connect',
     'apps.xero_workspace',
+    'apps.expense',
+    'apps.task',
     'tempus_dominus',
 
 ]
@@ -191,8 +194,22 @@ FYLE_CLIENT_ID = os.environ.get('FYLE_CLIENT_ID', config('FYLE_CLIENT_ID'))
 FYLE_CLIENT_SECRET = os.environ.get('FYLE_CLIENT_SECRET', config('FYLE_CLIENT_SECRET'))
 FYLE_BASE_URL = os.environ.get('FYLE_BASE_URL', config('FYLE_BASE_URL'))
 
+# Xero OAuth2
+XERO_CLIENT_ID = os.environ.get('XERO_CLIENT_ID', config('XERO_CLIENT_ID'))
+XERO_CLIENT_SECRET = os.environ.get('XERO_CLIENT_SECRET', config('XERO_CLIENT_SECRET'))
+XERO_REDIRECT_URI = os.environ.get('XERO_REDIRECT_URI', config('XERO_REDIRECT_URI'))
+XERO_SCOPE = os.environ.get('XERO_SCOPE', config('XERO_SCOPE'))
+XERO_AUTHORIZE_URI = os.environ.get('XERO_AUTHORIZE_URI', config('XERO_AUTHORIZE_URI'))
+XERO_TOKEN_URI = os.environ.get('XERO_TOKEN_URI', config('XERO_TOKEN_URI'))
+XERO_BASE_URL = os.environ.get('XERO_BASE_URL', config('XERO_BASE_URL'))
+
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+# SendGrid Email configuration
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', config('SENDGRID_API_KEY'))
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', config('SENDER_EMAIL'))
