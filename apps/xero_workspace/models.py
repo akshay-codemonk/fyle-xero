@@ -144,13 +144,14 @@ def delete_schedule(instance, **kwargs):
     """
     Delete the schedule related to workspace
     """
-    instance.schedule.delete()
+    if instance.schedule is not None:
+        instance.schedule.delete()
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
 def create_workspace_(instance, created, **kwargs):
     if created:
-        schedule = Schedule.objects.create(func='apps.task.tasks.create_task',
+        schedule = Schedule.objects.create(func='apps.task_log.tasks.create_fetch_expense_task',
                                            schedule_type=Schedule.MINUTES,
                                            repeats=0,
                                            minutes=5,
