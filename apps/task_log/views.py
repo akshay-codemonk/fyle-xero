@@ -1,13 +1,13 @@
 import json
 
 from django.core import serializers
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks import create_task
+from apps.task_log.tasks import create_fetch_expense_task
 
 
 class TaskLogView(View):
@@ -49,7 +49,7 @@ class TaskLogView(View):
         """
         value = request.POST.get('submit')
         if value == 'sync':
-            create_task(workspace_id)
+            create_fetch_expense_task(workspace_id)
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -68,6 +68,6 @@ class TaskLogDetailsView(View):
         task_log_fields["started_at"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
         task_log_fields["stopped_at"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %p')
         task_log_fields["invoice"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
-        task_log_fields["expense_group"] = '-' if task_log.expense_group is None else task_log.expense_group.\
+        task_log_fields["expense_group"] = '-' if task_log.expense_group is None else task_log.expense_group. \
             description.get('report_id')
         return JsonResponse(task_log_fields)

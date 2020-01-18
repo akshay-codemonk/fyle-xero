@@ -10,7 +10,7 @@ from django.views import View
 
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks import create_task
+from apps.task_log.tasks import create_invoice_task
 from apps.xero_workspace.models import Workspace, CategoryMapping
 
 
@@ -71,7 +71,7 @@ class ExpenseGroupView(View):
         selected_expense_group_id = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
         if value == 'resync' and selected_expense_group_id:
             for expense_group_id in selected_expense_group_id:
-                create_task(workspace_id, expense_group_id)
+                create_invoice_task(expense_group_id)
         return HttpResponseRedirect(self.request.path_info)
 
 

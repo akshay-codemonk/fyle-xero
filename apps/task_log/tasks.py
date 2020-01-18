@@ -6,27 +6,30 @@ from apps.xero_workspace.models import Invoice, InvoiceLineItem
 from apps.xero_workspace.utils import connect_to_fyle, connect_to_xero
 
 
-def create_task(workspace_id, expense_group_id=None):
+def create_fetch_expense_task(workspace_id):
     """
     Create django Q task to pull expenses and sync to Xero
     :param workspace_id
+    """
+    kwargs = {"workspace_id": workspace_id}
+    async_task(fetch_expenses_and_create_groups, **kwargs,
+               q_options={"task_name": "Fetching Expenses",
+                          "hook": "apps.task_log.hooks.update_fetch_expense_task",
+                          }
+               )
+
+
+def create_invoice_task(expense_group_id):
+    """
+    Create django Q task to generate invoice and sync to Xero
     :param expense_group_id
     """
-    if expense_group_id is None:
-        kwargs = {"workspace_id": workspace_id}
-        async_task(fetch_expenses_and_create_groups, **kwargs,
-                   q_options={"task_name": "Fetching Expenses",
-                              "hook": "apps.task.hooks.update_fetch_expense_task",
-                              }
-                   )
-
-    else:
-        kwargs = {"expense_group_id": expense_group_id}
-        async_task(sync_to_xero, **kwargs,
-                   q_options={"task_name": "Creating Invoice",
-                              "hook": "apps.task.hooks.update_create_invoice_task"
-                              }
-                   )
+    kwargs = {"expense_group_id": expense_group_id}
+    async_task(sync_to_xero, **kwargs,
+               q_options={"task_name": "Creating Invoice",
+                          "hook": "apps.task_log.hooks.update_create_invoice_task"
+                          }
+               )
 
 
 def fetch_expenses_and_create_groups(workspace_id):
@@ -46,7 +49,7 @@ def fetch_expenses_and_create_groups(workspace_id):
     expense_groups = ExpenseGroup.group_expense_by_report_id(expense_objects, workspace_id, connection)
     expense_group_objects = ExpenseGroup.create_expense_groups(expense_groups)
     for expense_group in expense_group_objects:
-        create_task(workspace_id, expense_group.id)
+        create_invoice_task(expense_group.id)
     return workspace_id
 
 
