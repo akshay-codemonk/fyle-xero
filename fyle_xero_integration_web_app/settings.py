@@ -173,7 +173,7 @@ SITE_ID = 1
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/workspace'
 
-# Using custom usermodel
+# Using custom user model
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -194,7 +194,7 @@ FYLE_CLIENT_ID = os.environ.get('FYLE_CLIENT_ID', config('FYLE_CLIENT_ID'))
 FYLE_CLIENT_SECRET = os.environ.get('FYLE_CLIENT_SECRET', config('FYLE_CLIENT_SECRET'))
 FYLE_BASE_URL = os.environ.get('FYLE_BASE_URL', config('FYLE_BASE_URL'))
 
-# Xero OAuth2
+# Xero Workspace OAuth2
 XERO_CLIENT_ID = os.environ.get('XERO_CLIENT_ID', config('XERO_CLIENT_ID'))
 XERO_CLIENT_SECRET = os.environ.get('XERO_CLIENT_SECRET', config('XERO_CLIENT_SECRET'))
 XERO_REDIRECT_URI = os.environ.get('XERO_REDIRECT_URI', config('XERO_REDIRECT_URI'))
@@ -203,6 +203,7 @@ XERO_AUTHORIZE_URI = os.environ.get('XERO_AUTHORIZE_URI', config('XERO_AUTHORIZE
 XERO_TOKEN_URI = os.environ.get('XERO_TOKEN_URI', config('XERO_TOKEN_URI'))
 XERO_BASE_URL = os.environ.get('XERO_BASE_URL', config('XERO_BASE_URL'))
 
+#
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
