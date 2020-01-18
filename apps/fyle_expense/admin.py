@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.expense.models import Expense, ExpenseGroup
+from apps.fyle_expense.models import Expense, ExpenseGroup
 
 
 class ExpenseAdmin(admin.ModelAdmin):

@@ -8,9 +8,9 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 
-from apps.expense.models import ExpenseGroup, Expense
-from apps.task.models import TaskLog
-from apps.task.tasks import create_task
+from apps.fyle_expense.models import ExpenseGroup, Expense
+from apps.task_log.models import TaskLog
+from apps.task_log.tasks import create_task
 from apps.xero_workspace.models import Workspace, CategoryMapping
 
 

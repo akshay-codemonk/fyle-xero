@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'apps.fyle_connect',
     'apps.xero_connect',
     'apps.xero_workspace',
-    'apps.expense',
-    'apps.task',
+    'apps.fyle_expense',
+    'apps.task_log',
     'tempus_dominus',
 
 ]

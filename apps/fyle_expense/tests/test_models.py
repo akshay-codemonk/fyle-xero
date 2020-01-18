@@ -3,7 +3,7 @@ from datetime import datetime
 import pytz
 from django.test import TestCase
 
-from apps.expense.models import Expense, ExpenseGroup
+from apps.fyle_expense.models import Expense, ExpenseGroup
 from apps.xero_workspace.models import Workspace
 
 

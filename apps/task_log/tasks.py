@@ -1,7 +1,7 @@
 from django_q.models import Task
 from django_q.tasks import async_task
 
-from apps.expense.models import Expense, ExpenseGroup
+from apps.fyle_expense.models import Expense, ExpenseGroup
 from apps.xero_workspace.models import Invoice, InvoiceLineItem
 from apps.xero_workspace.utils import connect_to_fyle, connect_to_xero
 

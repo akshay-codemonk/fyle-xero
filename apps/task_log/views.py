@@ -6,8 +6,8 @@ from django.shortcuts import render
 from django.views import View
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from apps.task.models import TaskLog
-from apps.task.tasks import create_task
+from apps.task_log.models import TaskLog
+from apps.task_log.tasks import create_task
 
 
 class TaskLogView(View):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.task.models import TaskLog
+from apps.task_log.models import TaskLog
 
 
 class TaskLogAdmin(admin.ModelAdmin):

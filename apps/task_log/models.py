@@ -1,7 +1,7 @@
 from django.db import models
 from django_q.models import Task
 
-from apps.expense.models import ExpenseGroup
+from apps.fyle_expense.models import ExpenseGroup
 from apps.xero_workspace.models import Workspace, Invoice
 
 

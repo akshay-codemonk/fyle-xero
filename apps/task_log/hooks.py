@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 
-from apps.expense.models import ExpenseGroup
-from apps.task.models import TaskLog
+from apps.fyle_expense.models import ExpenseGroup
+from apps.task_log.models import TaskLog
 from apps.xero_workspace.models import Workspace, Invoice
 from fyle_xero_integration_web_app.settings import SENDER_EMAIL
 
