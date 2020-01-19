@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
@@ -50,6 +51,7 @@ class TaskLogView(View):
         value = request.POST.get('submit')
         if value == 'sync':
             create_fetch_expense_task(workspace_id)
+            messages.success(request, 'Sync scheduled. Please refresh your window!')
         return HttpResponseRedirect(self.request.path_info)
 
 
