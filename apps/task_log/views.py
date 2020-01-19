@@ -81,9 +81,16 @@ class TaskLogTextView(View):
     """
 
     @staticmethod
-    def get(request, workspace_id, task_log_id):
+    def get(request, workspace_id):
+        task_log = None
         task_log_info = {}
-        task_log = TaskLog.objects.get(id=task_log_id)
+        if request.GET.get('type') == "task_log":
+            task_log_id = request.GET.get('id')
+            task_log = TaskLog.objects.get(id=task_log_id)
+        elif request.GET.get('type') == "expense_group":
+            expense_group_id = request.GET.get('id')
+            task_log = TaskLog.objects.filter(expense_group__id=expense_group_id).latest()
+
         task_log_info["workspace_name"] = task_log.workspace.name
         task_log_info["task_id"] = task_log.task.id
         task_log_info["task_name"] = task_log.task.name

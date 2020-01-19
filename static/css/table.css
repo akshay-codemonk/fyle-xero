@@ -105,3 +105,7 @@ ul.pagination {
     color: var(--primaryColor);
     font-size: 20px;
 }
+
+.view-icon {
+    font-size: 22px;
+}
