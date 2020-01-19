@@ -51,7 +51,7 @@ class TaskLogView(View):
         value = request.POST.get('submit')
         if value == 'sync':
             create_fetch_expense_task(workspace_id)
-            messages.success(request, 'Sync scheduled. Please refresh your window!')
+            messages.success(request, 'Sync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
 

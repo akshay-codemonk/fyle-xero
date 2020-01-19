@@ -73,7 +73,7 @@ class ExpenseGroupView(View):
         if value == 'resync' and selected_expense_group_id:
             for expense_group_id in selected_expense_group_id:
                 create_invoice_task(expense_group_id)
-            messages.success(request, 'Resync scheduled. Please refresh your window!')
+            messages.success(request, 'Resync started successfully. Invoice will be created soon!')
         return HttpResponseRedirect(self.request.path_info)
 
 
