@@ -284,11 +284,11 @@ class ProjectMappingView(View):
             tracking_category_name = request.POST.get('tracking_category_name')
             tracking_category_option = request.POST.get('tracking_category_option')
             mapping_id = request.POST.get('mapping_id')
-            ProjectMapping.objects.filter(id=mapping_id) \
-                .update(project_name=project_name,
-                        tracking_category_name=tracking_category_name,
-                        tracking_category_option=tracking_category_option,
-                        invalid=False)
+            ProjectMapping.objects.filter(id=mapping_id).update(project_name=project_name,
+                                                                tracking_category_name=tracking_category_name,
+                                                                tracking_category_option=tracking_category_option,
+                                                                invalid=False)
+
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
