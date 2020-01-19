@@ -33,18 +33,18 @@ class ExpenseGroupView(View):
         if request.GET.get('state') == 'complete':
             expense_groups = ExpenseGroup.objects.filter(
                 workspace=Workspace.objects.get(id=workspace_id),
-                tasklog__task__success=True
+                status="Complete"
             )
             context["complete"] = "active"
         elif request.GET.get('state') == 'failed':
             expense_groups = ExpenseGroup.objects.filter(
                 workspace=Workspace.objects.get(id=workspace_id),
-                tasklog__task__success=False
+                status="Failed"
             )
             context["failed"] = "active"
         else:
             expense_groups = ExpenseGroup.objects.filter(
-                workspace=Workspace.objects.get(id=workspace_id),
+                workspace=Workspace.objects.get(id=workspace_id)
             )
             context["all"] = "active"
 

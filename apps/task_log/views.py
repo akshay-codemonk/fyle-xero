@@ -2,7 +2,7 @@ import json
 
 from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
 
@@ -71,3 +71,24 @@ class TaskLogDetailsView(View):
         task_log_fields["expense_group"] = '-' if task_log.expense_group is None else task_log.expense_group. \
             description.get('report_id')
         return JsonResponse(task_log_fields)
+
+
+class TaskLogTextView(View):
+    """
+    Task log text view
+    """
+
+    @staticmethod
+    def get(request, workspace_id, task_log_id):
+        task_log_info = {}
+        task_log = TaskLog.objects.get(id=task_log_id)
+        task_log_info["workspace_name"] = task_log.workspace.name
+        task_log_info["task_id"] = task_log.task.id
+        task_log_info["task_name"] = task_log.task.name
+        task_log_info["expense_group_id"] = task_log.expense_group.description.get("report_id")
+        task_log_info["invoice_id"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
+        task_log_info["task_start_time"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
+        task_log_info["task_stop_time"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %-p')
+        task_log_info["Success"] = task_log.task.success
+        task_log_info["Task Result"] = task_log.detail
+        return HttpResponse(json.dumps(task_log_info, indent=4), content_type='text/plain')

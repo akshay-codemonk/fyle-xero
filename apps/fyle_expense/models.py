@@ -92,6 +92,7 @@ class ExpenseGroup(models.Model):
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
     description = JSONField(default=dict, help_text="Description")
+    status = models.CharField(max_length=10, help_text="Status")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 

@@ -1,9 +1,9 @@
-.tasks-table td:nth-child(5):hover {
-    cursor: default;
-}
-
 .material-icons:hover {
     cursor: pointer;
+}
+
+.material-icons {
+    font-size: 22px;
 }
 
 .modal.right .modal-dialog {
