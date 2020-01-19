@@ -64,10 +64,10 @@
                                     {% endif %}
                                     <td>{{task_log.level}}</td>
                                     <td class="actions">
-                                        <i id="download-log" class="material-icons download-icon"
-                                           title="Download log">
-                                            get_app
-                                        </i>
+                                        <a target="_blank" href="{{task_log.id}}/log/">
+                                            <i id="view-log" class="material-icons view-icon"
+                                               title="View Log">open_in_new</i>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -160,10 +160,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="task-logs">
-                        <a href="#view-logs">View logs</a>
-                        <a href="#download-logs">Download logs</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -193,8 +189,8 @@
         })
     });
 
-    $(".download-icon").click(function(e) {
-        if(e.target.id === 'download-log') {
+    $(".view-icon").click(function(e) {
+        if(e.target.id === 'view-log') {
             e.stopPropagation();
         }
     });

@@ -20,7 +20,7 @@ def update_fetch_expense_task(task):
     )
     if task.success:
         task_log.level = '-'
-        task_log.detail = task.result
+        task_log.detail = '-'
         task_log.save()
     else:
         task_log.level = 'Error'
@@ -52,7 +52,7 @@ def update_create_invoice_task(task):
         expense_group.status = "Complete"
         task_log.invoice = expense_group.invoice
         task_log.level = '-'
-        task_log.detail = task.result
+        task_log.detail = '-'
         task_log.save()
     else:
         expense_group.status = "Failed"
