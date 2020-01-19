@@ -49,6 +49,7 @@
                                     <th>Status</th>
                                     <th>Created at</th>
                                     <th>Invoice</th>
+                                    <th class="actions">Logs</th>
                                     <th style="width: 10%">
                                         {% if not complete %}
                                             <label class="checkbox-label">
@@ -78,6 +79,13 @@
                                             {% else %}
                                                 <p class="no-invoice">-</p>
                                             {% endif %}
+                                        </td>
+                                        <td class="actions">
+                                            <a target="_blank"
+                                               href="{% url 'xero_workspace:task_log_text' workspace_id %}?type=expense_group&id={{expense_group_details.id}}">
+                                                <i id="view-log" class="material-icons view-icon"
+                                                   title="View Log">open_in_new</i>
+                                            </a>
                                         </td>
                                         <td>
                                             {% if not expense_group_details.description.status %}
@@ -175,6 +183,12 @@
 
     $(".view-invoice").click(function(e) {
         if(e.target.id === 'link') {
+            e.stopPropagation();
+        }
+    });
+
+    $(".view-icon").click(function(e) {
+        if(e.target.id === 'view-log') {
             e.stopPropagation();
         }
     });
