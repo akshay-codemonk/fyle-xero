@@ -17,8 +17,8 @@ class ExpenseGroupAdmin(admin.ModelAdmin):
     """
     Admin options for ExpenseGroup model
     """
-    list_display = ('id', 'created_at', 'updated_at')
-    list_filter = ['created_at', 'updated_at']
+    list_display = ('id', 'status', 'created_at', 'updated_at')
+    list_filter = ['status', 'created_at', 'updated_at']
 
 
 admin.site.register(Expense, ExpenseAdmin)
