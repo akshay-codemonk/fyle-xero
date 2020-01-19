@@ -54,7 +54,8 @@ def update_create_invoice_task(task):
         task_log.detail = task.result
         task_log.save()
     else:
-        Invoice.delete_invoice(expense_group)
+        if expense_group.invoice is not None:
+            Invoice.delete_invoice(expense_group)
         task_log.level = 'Error'
         task_log.detail = task.result
         task_log.save()

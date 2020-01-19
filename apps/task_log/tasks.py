@@ -1,9 +1,51 @@
+import psycopg2
+from django.db import IntegrityError
 from django_q.models import Task
 from django_q.tasks import async_task
 
 from apps.fyle_expense.models import Expense, ExpenseGroup
-from apps.xero_workspace.models import Invoice, InvoiceLineItem
+from apps.xero_workspace.models import Invoice, InvoiceLineItem, EmployeeMapping, CategoryMapping, ProjectMapping
 from apps.xero_workspace.utils import connect_to_fyle, connect_to_xero
+
+
+def check_mappings(expense_group):
+    mappings_error = ""
+    employee_email = expense_group.description.get("employee_email")
+    if not EmployeeMapping.objects.filter(workspace=expense_group.workspace,
+                                          employee_email=employee_email).exists():
+        mappings_error += f"Employee mapping missing for employee_email: {employee_email} \n"
+
+        try:
+            EmployeeMapping.objects.create(workspace=expense_group.workspace,
+                                           employee_email=employee_email, invalid=True)
+        except (psycopg2.errors.UniqueViolation, IntegrityError):
+            pass
+
+    for expense in expense_group.expenses.all():
+        if not CategoryMapping.objects.filter(workspace=expense_group.workspace,
+                                              category=expense.category).exists():
+            mappings_error += f"Category mapping missing for category name: {expense.category} \n"
+
+            try:
+                CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
+                                               sub_category=expense.sub_category,
+                                               invalid=True)
+            except (psycopg2.errors.UniqueViolation, IntegrityError):
+                pass
+
+        if expense.project is not None:
+            if not ProjectMapping.objects.filter(workspace=expense_group.workspace,
+                                                 project_name=expense.project).exists():
+                mappings_error += f"Project mapping missing for project_name: {expense.project}"
+
+                try:
+                    ProjectMapping.objects.create(workspace=expense_group.workspace,
+                                                  project_name=expense.project, invalid=True)
+                except (psycopg2.errors.UniqueViolation, IntegrityError):
+                    pass
+
+    if mappings_error:
+        raise Exception(mappings_error)
 
 
 def create_fetch_expense_task(workspace_id):
@@ -60,6 +102,7 @@ def sync_to_xero(expense_group_id):
     :return:
     """
     expense_group = ExpenseGroup.objects.get(id=expense_group_id)
+    check_mappings(expense_group)
     invoice_id = Invoice.create_invoice(expense_group)
     InvoiceLineItem.create_invoice_line_item(invoice_id, expense_group)
     xero = connect_to_xero(expense_group.workspace.id)

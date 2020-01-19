@@ -1,6 +1,5 @@
 import datetime
 
-import psycopg2
 import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
@@ -200,24 +199,16 @@ class Invoice(models.Model):
         :return: invoice id
         """
         description = expense_group.description
-        try:
-            invoice = Invoice.objects.create(
-                invoice_number=description.get("report_id"),
-                description=description.get("report_id"),
-                contact_name=EmployeeMapping.objects.get(
-                    employee_email=description.get("employee_email")).contact_name,
-                date=description.get("approved_at")
-            )
-            expense_group.invoice = invoice
-            expense_group.save()
-            return invoice.id
-        except EmployeeMapping.DoesNotExist:
-            try:
-                EmployeeMapping.objects.create(workspace=expense_group.workspace,
-                                               employee_email=description.get("employee_email"), invalid=True)
-            except psycopg2.Error:
-                raise EmployeeMapping.DoesNotExist
-            raise EmployeeMapping.DoesNotExist
+        invoice = Invoice.objects.create(
+            invoice_number=description.get("report_id"),
+            description=description.get("report_id"),
+            contact_name=EmployeeMapping.objects.get(
+                employee_email=description.get("employee_email")).contact_name,
+            date=description.get("approved_at")
+        )
+        expense_group.invoice = invoice
+        expense_group.save()
+        return invoice.id
 
 
 class InvoiceLineItem(models.Model):
@@ -251,39 +242,22 @@ class InvoiceLineItem(models.Model):
         """
         expenses = expense_group.expenses.all()
         for expense in expenses:
-            try:
-                invoice_line_item = InvoiceLineItem.objects.create(
-                    invoice=Invoice.objects.get(id=invoice_id),
-                    account_code=CategoryMapping.objects.get(
-                        workspace=expense_group.workspace,
-                        category=expense.category).account_code,
-                    account_name="",
-                    description=expense.report_id,
-                    amount=expense.amount
-                )
-            except CategoryMapping.DoesNotExist:
-                try:
-                    CategoryMapping.objects.create(workspace=expense_group.workspace, category=expense.category,
-                                                   sub_category=expense.sub_category,
-                                                   invalid=True)
-                except psycopg2.Error:
-                    raise CategoryMapping.DoesNotExist
-                raise CategoryMapping.DoesNotExist
+            invoice_line_item = InvoiceLineItem.objects.create(
+                invoice=Invoice.objects.get(id=invoice_id),
+                account_code=CategoryMapping.objects.get(
+                    workspace=expense_group.workspace,
+                    category=expense.category).account_code,
+                account_name="",
+                description=expense.report_id,
+                amount=expense.amount
+            )
 
             if expense.project is not None:
-                try:
-                    project_mapping = ProjectMapping.objects.get(workspace=expense_group.workspace,
-                                                                 project_name=expense.project)
-                    invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
-                    invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
-                    invoice_line_item.save()
-                except ProjectMapping.DoesNotExist:
-                    try:
-                        ProjectMapping.objects.create(workspace=expense_group.workspace, project_name=expense.project,
-                                                      invalid=True)
-                    except psycopg2.Error:
-                        raise ProjectMapping.DoesNotExist
-                    raise ProjectMapping.DoesNotExist
+                project_mapping = ProjectMapping.objects.get(workspace=expense_group.workspace,
+                                                             project_name=expense.project)
+                invoice_line_item.tracking_category_name = project_mapping.tracking_category_name
+                invoice_line_item.tracking_category_option = project_mapping.tracking_category_option
+                invoice_line_item.save()
 
             if invoice_line_item.id:
                 expense.invoice_line_item = InvoiceLineItem.objects.get(
