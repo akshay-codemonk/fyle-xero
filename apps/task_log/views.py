@@ -1,8 +1,8 @@
 import json
 
 from django.contrib import messages
-from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -63,8 +63,7 @@ class TaskLogDetailsView(View):
     @staticmethod
     def get(request, workspace_id, task_log_id):
         task_log = TaskLog.objects.get(id=task_log_id)
-        serialized_task_log = json.loads(serializers.serialize('json', [task_log]))
-        task_log_fields = {k: v for d in serialized_task_log for k, v in d.items()}["fields"]
+        task_log_fields = model_to_dict(task_log)
         task_log_fields["task_name"] = task_log.task.name
         task_log_fields["status"] = 'Complete' if task_log.task.success else 'Failed'
         task_log_fields["started_at"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')

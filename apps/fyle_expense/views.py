@@ -1,10 +1,9 @@
 import ast
-import json
 
 from dateutil.parser import parse
 from django.contrib import messages
-from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
@@ -28,43 +27,39 @@ class ExpenseGroupView(View):
         :param workspace_id
         :return: render expense groups screen
         """
-        expense_groups_details = []
         context = {"expense_groups_tab": "active"}
 
         if request.GET.get('state') == 'complete':
             expense_groups = ExpenseGroup.objects.filter(
-                workspace=Workspace.objects.get(id=workspace_id),
+                workspace__id=workspace_id,
                 status="Complete"
             )
             context["complete"] = "active"
         elif request.GET.get('state') == 'failed':
             expense_groups = ExpenseGroup.objects.filter(
-                workspace=Workspace.objects.get(id=workspace_id),
+                workspace__id=workspace_id,
                 status="Failed"
             )
             context["failed"] = "active"
         else:
             expense_groups = ExpenseGroup.objects.filter(
-                workspace=Workspace.objects.get(id=workspace_id)
+                workspace__id=workspace_id
             )
             context["all"] = "active"
 
         for expense_group in expense_groups:
-            expense_group.description["status"] = TaskLog.objects.filter(
-                expense_group=expense_group).first().task.success
             expense_group.description["approved_at"] = parse(expense_group.description["approved_at"])
-            expense_groups_details.append(expense_group)
 
         page = request.GET.get('page', 1)
-        paginator = Paginator(expense_groups_details, 10)
+        paginator = Paginator(expense_groups, 10)
         try:
-            expense_groups_details = paginator.page(page)
+            expense_groups = paginator.page(page)
         except PageNotAnInteger:
-            expense_groups_details = paginator.page(1)
+            expense_groups = paginator.page(1)
         except EmptyPage:
-            expense_groups_details = paginator.page(paginator.num_pages)
+            expense_groups = paginator.page(paginator.num_pages)
 
-        context["expense_groups_details"] = expense_groups_details
+        context["expense_groups"] = expense_groups
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
@@ -93,7 +88,6 @@ class ExpenseView(View):
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
-        expense_group_id = expense_group.id
         status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
         expenses = expense_group.expenses.all()
 
@@ -107,7 +101,7 @@ class ExpenseView(View):
             expenses = paginator.page(paginator.num_pages)
 
         context = {"expense_groups_tab": "active", "expenses": expenses,
-                   "report_id": report_id, "expense_group_id": expense_group_id,
+                   "report_id": report_id, "expense_group_id": expense_group.id,
                    "status": status}
         return render(request, self.template_name, context)
 
@@ -128,14 +122,11 @@ class ExpenseDetailsView(View):
         :return: expense fields JSON
         """
         expense = Expense.objects.get(id=expense_id)
-        serialized_expense = json.loads(serializers.serialize('json', [expense]))
-        expense_fields = {k: v for d in serialized_expense for k, v in d.items()}["fields"]
+        expense_fields = model_to_dict(expense)
         expense_fields["category_code"] = CategoryMapping.objects.get(
-            workspace__id=workspace_id, category=expense_fields["category"]).account_code
-        expense_fields["expense_created_at"] = parse(expense_fields["expense_created_at"]).strftime(
-            '%b. %d, %Y, %-I:%M %-p')
-        expense_fields["spent_at"] = parse(expense_fields["spent_at"]).strftime(
-            '%b. %d, %Y, %-I:%M %-p')
+            workspace__id=workspace_id, category=expense.category).account_code
+        expense_fields["expense_created_at"] = expense.expense_created_at.strftime('%b. %d, %Y, %-I:%M %-p')
+        expense_fields["spent_at"] = expense.spent_at.strftime('%b. %d, %Y, %-I:%M %-p')
         return JsonResponse(expense_fields)
 
 
@@ -154,12 +145,9 @@ class InvoiceDetailsView(View):
         :return: invoice fields JSON
         """
         invoice = ExpenseGroup.objects.get(id=group_id).invoice
-        serialized_invoice = json.loads(serializers.serialize('json', [invoice]))
-        invoice_fields = {k: v for d in serialized_invoice for k, v in d.items()}["fields"]
-        invoice_fields["date"] = parse(invoice_fields["date"]).strftime('%b. %d, %Y, %-I:%M %-p')
+        invoice_fields = model_to_dict(invoice)
+        invoice_fields["date"] = invoice.date.strftime('%b. %d, %Y, %-I:%M %-p')
         invoice_fields["line_items"] = []
         for invoice_line_item in invoice.invoice_line_items.all():
-            serialized_invoice_line_item = json.loads(serializers.serialize('json', [invoice_line_item]))
-            serialized_invoice_line_item = {k: v for d in serialized_invoice_line_item for k, v in d.items()}
-            invoice_fields["line_items"].append(serialized_invoice_line_item["fields"])
+            invoice_fields["line_items"].append(model_to_dict(invoice_line_item))
         return JsonResponse(invoice_fields)
