@@ -1,9 +1,7 @@
-import json
-
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views import View
 
@@ -100,4 +98,4 @@ class TaskLogTextView(View):
         task_log_info["task_stop_time"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %-p')
         task_log_info["Success"] = task_log.task.success
         task_log_info["Task Result"] = task_log.detail
-        return HttpResponse(json.dumps(task_log_info, indent=4), content_type='text/plain')
+        return JsonResponse(task_log_info)
