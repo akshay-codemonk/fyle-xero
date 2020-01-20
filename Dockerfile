@@ -25,9 +25,6 @@ WORKDIR /code
 # Run lint checks
 RUN pylint --load-plugins pylint_django apps/**/
 
-# Run tests
-RUN python manage.py test
-
 # listen on this port
 EXPOSE 8000
 
