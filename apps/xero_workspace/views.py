@@ -3,8 +3,10 @@ from datetime import datetime
 from zipfile import BadZipFile
 
 import openpyxl
+import psycopg2
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -101,11 +103,13 @@ class CategoryMappingView(View):
             category = request.POST.get('category')
             sub_category = request.POST.get('sub_category')
             account_code = request.POST.get('account_code')
-            category_mapping, _created = CategoryMapping.objects.get_or_create(workspace=self.workspace,
-                                                                               category=category)
-            category_mapping.sub_category = sub_category
-            category_mapping.account_code = account_code
-            category_mapping.save()
+            try:
+                CategoryMapping.objects.create(workspace=self.workspace,
+                                               category=category,
+                                               sub_category=sub_category,
+                                               account_code=account_code)
+            except (psycopg2.errors.UniqueViolation, IntegrityError):
+                messages.error(request, 'Mapping already exists')
         return HttpResponseRedirect(self.request.path_info)
 
     def update(self, request, workspace_id):
@@ -191,10 +195,12 @@ class EmployeeMappingView(View):
         if form.is_valid:
             employee_email = request.POST.get('employee_email')
             contact_name = request.POST.get('contact_name')
-            employee_mapping, _created = EmployeeMapping.objects.get_or_create(workspace=self.workspace,
-                                                                               employee_email=employee_email)
-            employee_mapping.contact_name = contact_name
-            employee_mapping.save()
+            try:
+                EmployeeMapping.objects.create(workspace=self.workspace,
+                                               employee_email=employee_email,
+                                               contact_name=contact_name)
+            except (psycopg2.errors.UniqueViolation, IntegrityError):
+                messages.error(request, 'Mapping already exists')
         return HttpResponseRedirect(self.request.path_info)
 
     def update(self, request, workspace_id):
@@ -277,11 +283,13 @@ class ProjectMappingView(View):
             project_name = request.POST.get('project_name')
             tracking_category_name = request.POST.get('tracking_category_name')
             tracking_category_option = request.POST.get('tracking_category_option')
-            project_mapping, _created = ProjectMapping.objects.get_or_create(workspace=self.workspace,
-                                                                             project_name=project_name)
-            project_mapping.tracking_category_name = tracking_category_name
-            project_mapping.tracking_category_option = tracking_category_option
-            project_mapping.save()
+            try:
+                ProjectMapping.objects.create(workspace=self.workspace,
+                                              project_name=project_name,
+                                              tracking_category_name=tracking_category_name,
+                                              tracking_category_option=tracking_category_option)
+            except (psycopg2.errors.UniqueViolation, IntegrityError):
+                messages.error(request, 'Mapping already exists')
         return HttpResponseRedirect(self.request.path_info)
 
     def update(self, request, workspace_id):
