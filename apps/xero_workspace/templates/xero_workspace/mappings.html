@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block sub-nav-heading %}Mappings{% endblock %}
+
+{% block sub-nav-tabs %}
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ category_mapping }}"
+           href="{% url 'xero_workspace:category_mapping' workspace_id %}">Category</a>
+    </li>
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ employee_mapping }}"
+           href="{% url 'xero_workspace:employee_mapping' workspace_id %}">Employee</a>
+    </li>
+    <li class="sub-nav-item">
+        <a class="sub-nav-link {{ project_mapping }}"
+           href="{% url 'xero_workspace:project_mapping' workspace_id %}">Project</a>
+    </li>
+{% endblock %}

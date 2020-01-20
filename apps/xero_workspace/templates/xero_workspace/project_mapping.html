@@ -12,9 +12,9 @@
 {% block content %}
     <div class="content">
         <div class="d-flex content-header">
-            <h5 class="cardMainText">Category Mapping</h5>
+            <h5 class="cardMainText">Project Mapping</h5>
             <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createCategoryMappingModal">New Mapping
+                    data-target="#createProjectMappingModal">New Mapping
             </button>
             <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
                     data-target="#bulkAddMappingModal">Bulk Add/Update
@@ -25,47 +25,47 @@
         </div>
         {% if mappings|length == 0 %}
             <div class="alert alert-light mx-auto warning" role="alert">
-                <p>Looks like you don't have any Category Mappings</p>
+                <p>Looks like you don't have any Project Mappings</p>
             </div>
         {% else %}
-            <div class="table-layout">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="table-head">
-                        <tr class="colHeadings">
-                            <th style="width: 35%">category name (Fyle)</th>
-                            <th style="width: 35%">Sub-category name (Fyle)</th>
-                            <th class="actions">Account Code (Xero)</th>
-                            <th>
+        <div class="table-layout">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-head">
+                    <tr class="colHeadings">
+                        <th style="width: 35%">Project name (Fyle)</th>
+                        <th style="width: 35%">Tracking Category Name (Xero)</th>
+                        <th class="actions">Tracking Category Option (Xero)</th>
+                        <th>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="select-all"/>
+                                <span class="checkmark"></span>
+                            </label>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <form id="delete-form" action="" method="post">
+                        {% csrf_token %}
+                        {% for mapping in mappings %}
+                        <tr>
+                            <td>{{mapping.project_name}}</td>
+                            <td>{{mapping.tracking_category_name}}</td>
+                            <td class="actions">{{mapping.tracking_category_option}}</td>
+                            <td>
                                 <label class="checkbox-label">
-                                    <input type="checkbox" id="select-all"/>
+                                    <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
+                                           value='"{{mapping.id}}"'/>
                                     <span class="checkmark"></span>
                                 </label>
-                            </th>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <form id="delete-form" action="" method="post">
-                            {% csrf_token %}
-                            {% for mapping in mappings %}
-                            <tr>
-                                <td>{{mapping.category}}</td>
-                                <td>{{mapping.sub_category}}</td>
-                                <td class="actions">{{mapping.account_code}}</td>
-                                <td>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
-                                               value='"{{mapping.id}}"'/>
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </form>
-                        </tbody>
-                    </table>
-                </div>
+                        {% endfor %}
+                    </form>
+                    </tbody>
+                </table>
             </div>
+        </div>
         {% endif %}
     </div>
 
@@ -106,13 +106,13 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="createCategoryMappingModal" tabindex="-1" role="dialog"
-         aria-labelledby="createCategoryMappingModalTitle" aria-hidden="true"
+    <div class="modal fade" id="createProjectMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="createProjectMappingModalTitle" aria-hidden="true"
          data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createCategoryMappingModalTitle">Create New Mapping</h5>
+                    <h5 class="modal-title" id="createProjectMappingModalTitle">Create New Mapping</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -121,16 +121,16 @@
                     <div class="modal-body">
                         {% csrf_token %}
                         <div class="floating-label">
-                            {{ form.category }}
-                            <label class="input-label">Category Name*</label>
+                            {{ form.project_name }}
+                            <label class="input-label">Project Name*</label>
                         </div>
                         <div class="floating-label">
-                            {{ form.sub_category }}
-                            <label class="input-label">Subcategory Name</label>
+                            {{ form.tracking_category_name }}
+                            <label class="input-label">Tracking Category Name*</label>
                         </div>
                         <div class="floating-label">
-                            {{ form.account_code }}
-                            <label class="input-label">Account Code*</label>
+                            {{ form.tracking_category_option }}
+                            <label class="input-label">Tracking Category Option*</label>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -141,6 +141,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="bulkAddMappingModal" tabindex="-1" role="dialog"
          aria-labelledby="bulkAddMappingModalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -151,7 +152,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{% url 'xero_workspace:category_mapping_bulk_upload' workspace_id %}"
+                <form action="{% url 'xero_workspace:project_mapping_bulk_upload' workspace_id %}"
                       method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         {% csrf_token %}
@@ -174,3 +175,4 @@
         });
     });
 {% endblock %}
+
