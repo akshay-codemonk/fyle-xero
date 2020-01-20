@@ -35,7 +35,7 @@
                 <button class="btn main-btn ml-auto resync-btn" name="submit"
                         type="submit" value="resync">Resync</button>
             </div>
-            {% if expense_groups_details|length == 0 %}
+            {% if expense_groups|length == 0 %}
                 <div class="alert alert-light mx-auto warning" role="alert">
                     <p>Looks like you don't have any Expense Groups</p>
                 </div>
@@ -61,37 +61,33 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for expense_group_details in expense_groups_details %}
-                                    <tr class="expense-groups-row" data-href="{{expense_group_details.id}}/expenses/">
+                                {% for expense_group in expense_groups %}
+                                    <tr class="expense-groups-row" data-href="{{expense_group.id}}/expenses/">
                                         <td>
-                                            Grouped by report id: {{expense_group_details.description.report_id}}
+                                            Grouped by report id: {{expense_group.description.report_id}}
                                         </td>
-                                        {% if expense_group_details.description.status %}
-                                            <td>Complete</td>
-                                        {% else %}
-                                            <td>Failed</td>
-                                        {% endif %}
-                                        <td>{{expense_group_details.description.approved_at}}</td>
+                                        <td>{{expense_group.status}}</td>
+                                        <td>{{expense_group.description.approved_at}}</td>
                                         <td>
-                                            {% if expense_group_details.description.status %}
+                                            {% if expense_group.status == 'Complete' %}
                                                 <p id="link" class="view-invoice view-invoice-modal"
-                                                   data-url="{{expense_group_details.id}}/invoice/">view</p>
+                                                   data-url="{{expense_group.id}}/invoice/">view</p>
                                             {% else %}
                                                 <p class="no-invoice">-</p>
                                             {% endif %}
                                         </td>
                                         <td class="actions">
                                             <a target="_blank"
-                                               href="{% url 'xero_workspace:task_log_text' workspace_id %}?type=expense_group&id={{expense_group_details.id}}">
+                                               href="{% url 'xero_workspace:task_log_text' workspace_id %}?type=expense_group&id={{expense_group.id}}">
                                                 <i id="view-log" class="material-icons view-icon"
                                                    title="View Log">open_in_new</i>
                                             </a>
                                         </td>
                                         <td>
-                                            {% if not expense_group_details.description.status %}
+                                            {% if expense_group.status == 'Failed' %}
                                                 <label class="checkbox-label">
                                                     <input type="checkbox" class="expenseCheckbox" name="expense_group_ids"
-                                                           value="{{expense_group_details.id}}">
+                                                           value="{{expense_group.id}}">
                                                     <span id="checkmark" class="checkmark"></span>
                                                 </label>
                                             {% endif %}
@@ -107,44 +103,44 @@
     </div>
 
     <div class="nav-pagination">
-        {% if expense_groups_details.has_other_pages %}
+        {% if expense_groups.has_other_pages %}
            <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
-                    {% if expense_groups_details.has_previous %}
+                    {% if expense_groups.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ expense_groups_details.previous_page_number }}">&laquo;</a>
+                            <a class="page-link" href="?page={{ expense_groups.previous_page_number }}">&laquo;</a>
                         </li>
                     {% else %}
                         <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
                     {% endif %}
 
-                    {% if expense_groups_details.number|add:'-4' > 1 %}
+                    {% if expense_groups.number|add:'-4' > 1 %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ expense_groups_details.number|add:'-5' }}">&hellip;</a>
+                            <a class="page-link" href="?page={{ expense_groups.number|add:'-5' }}">&hellip;</a>
                         </li>
                     {% endif %}
 
-                    {% for i in expense_groups_details.paginator.page_range %}
-                        {% if expense_groups_details.number == i %}
+                    {% for i in expense_groups.paginator.page_range %}
+                        {% if expense_groups.number == i %}
                             <li class="page-item active">
                                 <a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a>
                             </li>
-                        {% elif i > expense_groups_details.number|add:'-5' and i < expense_groups_details.number|add:'5' %}
+                        {% elif i > expense_groups.number|add:'-5' and i < expense_groups.number|add:'5' %}
                             <li class="page-item">
                                 <a class="page-link" href="?page={{ i }}">{{ i }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
 
-                    {% if expense_groups_details.paginator.num_pages > expense_groups_details.number|add:'4' %}
+                    {% if expense_groups.paginator.num_pages > expense_groups.number|add:'4' %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ expense_groups_details.number|add:'5' }}">&hellip;</a>
+                            <a class="page-link" href="?page={{ expense_groups.number|add:'5' }}">&hellip;</a>
                         </li>
                     {% endif %}
 
-                    {% if expense_groups_details.has_next %}
+                    {% if expense_groups.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ expense_groups_details.next_page_number }}">&raquo;</a>
+                            <a class="page-link" href="?page={{ expense_groups.next_page_number }}">&raquo;</a>
                         </li>
                     {% else %}
                         <li class="page-item disabled">

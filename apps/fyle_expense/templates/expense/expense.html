@@ -50,7 +50,11 @@
                                     <td>{{expense.expense_created_at}}</td>
                                     <td>{{expense.amount}}</td>
                                     <td>{{expense.project}}</td>
-                                    <td>{{expense.purpose}}</td>
+                                    {% if expense.purpose %}
+                                        <td>{{expense.purpose}}</td>
+                                    {% else %}
+                                        <td>None</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -187,7 +191,7 @@
                 $("#created-date").html(data.expense_created_at);
                 $("#spent-date").html(data.spent_at);
                 $("#category").html(data.category);
-                $("#category-code").html(data.category_code);
+                $("#category-code").html(data.category_code || '-')
                 $("#merchant").html(data.vendor || '-');
                 $("#purpose").html(data.purpose || '-');
                 $("#project").html(data.project || '-');
