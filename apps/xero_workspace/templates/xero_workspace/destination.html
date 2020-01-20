@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "xero_workspace/settings.html" %}
 
 {% load static %}
 
@@ -13,7 +13,7 @@
 
 {% block content %}
     <div class="login center-div">
-        {% if is_connected %}
+        {% if connected %}
             <p>Connected to your Xero account</p>
             <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#XeroDisconnectModal">Disconnect</button>
         {% else %}
