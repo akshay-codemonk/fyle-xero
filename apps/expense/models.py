@@ -1,6 +1,6 @@
-import json
 from itertools import groupby
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from apps.xero_workspace.models import Workspace, InvoiceLineItem, Invoice
@@ -35,6 +35,10 @@ class Expense(models.Model):
     def __str__(self):
         return self.expense_id
 
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
+
     @staticmethod
     def fetch_paid_expenses(workspace_id, updated_after=None):
         """
@@ -44,7 +48,10 @@ class Expense(models.Model):
         if updated_after is None:
             expenses = connection.Expenses.get(state='PAID')
         else:
-            expenses = connection.Expenses.get(state='PAID', updated_at=f'gt:{updated_after}')
+            expenses = connection.Expenses.get(
+                state='PAID',
+                updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}'
+            )
         return expenses
 
     @staticmethod
@@ -79,17 +86,21 @@ class ExpenseGroup(models.Model):
     Expense Group
     """
     id = models.AutoField(primary_key=True)
-    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE,
                                   help_text="To which workspace this expense group belongs to")
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
     invoice = models.ForeignKey(Invoice, null=True, blank=True,
                                 on_delete=models.PROTECT, help_text="FK to Invoice")
-    description = models.CharField(max_length=255, help_text="Description")
+    description = JSONField(default=dict, help_text="Description")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
 
     @staticmethod
     def group_expense_by_report_id(expense_objects, workspace_id, connection):
@@ -107,7 +118,7 @@ class ExpenseGroup(models.Model):
             }
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
-                description=str(json.dumps(report_data))
+                description=report_data
             ))
         return expense_groups
 
@@ -116,7 +127,7 @@ class ExpenseGroup(models.Model):
         expense_group_objects = ExpenseGroup.objects.bulk_create(expense_groups)
         through_model_objects = []
         for expense_group_object in expense_group_objects:
-            report_id = json.loads(expense_group_object.description)['report_id']
+            report_id = expense_group_object.description['report_id']
             expenses = Expense.objects.filter(report_id=report_id)
             for expense in expenses:
                 through_model_objects.append(ExpenseGroup.expenses.through(
@@ -124,3 +135,4 @@ class ExpenseGroup(models.Model):
                     expense_id=expense.id
                 ))
         ExpenseGroup.expenses.through.objects.bulk_create(through_model_objects)
+        return expense_group_objects

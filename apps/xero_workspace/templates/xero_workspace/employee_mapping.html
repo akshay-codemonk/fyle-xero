@@ -14,7 +14,7 @@
         <div class="d-flex content-header">
             <h5 class="cardMainText">Employee Mapping</h5>
             <button class="ml-auto btn main-btn" type="button" data-toggle="modal"
-                    data-target="#createEmployeeMappingModal">New Mapping
+                    data-target="#employeeMappingModal">New Mapping
             </button>
             <button class="btn main-btn-outline ml-3" type="button" data-toggle="modal"
                     data-target="#bulkAddMappingModal">Bulk Add/Update
@@ -33,7 +33,7 @@
                     <table class="table">
                         <thead class="table-head">
                         <tr class="colHeadings">
-                            <th style="width: 75%">Employee Email (Fyle)</th>
+                            <th style="width: 60%">Employee Email (Fyle)</th>
                             <th class="actions">Contact Name (Xero)</th>
                             <th>
                                 <label class="checkbox-label">
@@ -47,15 +47,20 @@
                         <form id="delete-form" action="" method="post">
                             {% csrf_token %}
                             {% for mapping in mappings %}
-                            <tr>
+                            <tr onclick="openEditModal(this, {{mapping.id}})"
+                                class="{% if mapping.invalid %} highlight{% endif %}">
                                 <td>{{mapping.employee_email}}</td>
                                 <td class="actions">{{mapping.contact_name}}</td>
-                                <td>
+                                <td class="checkbox-error">
                                     <label class="checkbox-label">
                                         <input type="checkbox" class="mappingsCheckbox" name="mapping_ids"
                                                value='"{{mapping.id}}"'/>
-                                        <span class="checkmark"></span>
+                                        <span id="checkmark" class="checkmark"></span>
                                     </label>
+                                    {% if mapping.invalid %}
+                                        <i class="material-icons error-icon"
+                                           title="Please update this mapping">error</i>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -104,14 +109,15 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="createEmployeeMappingModal" tabindex="-1" role="dialog"
-         aria-labelledby="createEmployeeMappingModalTitle" aria-hidden="true"
+    <div class="modal fade" id="employeeMappingModal" tabindex="-1" role="dialog"
+         aria-labelledby="employeeMappingModalTitle" aria-hidden="true"
          data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createEmployeeMappingModalTitle">Create New Mapping</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="employeeMappingModalTitle">Create New Mapping</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close" onclick="clearModalValues()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -120,16 +126,19 @@
                         {% csrf_token %}
                         <div class="floating-label">
                             {{ form.employee_email }}
-                            <label class="input-label">Employee Email*</label>
+                            <label class="input-label">{{ form.employee_email.label }}</label>
                         </div>
                         <div class="floating-label">
                             {{ form.contact_name }}
-                            <label class="input-label">Contact Name*</label>
+                            <label class="input-label">{{ form.contact_name.label }}</label>
                         </div>
+                        <input type="hidden" id="mapping_id" name="mapping_id">
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">Cancel</button>
-                        <button class="btn btnInline saveBtn" type="submit">Create</button>
+                        <button id="cancel-btn" class="btn btnInline cancelBtn" type="button"
+                                data-dismiss="modal" onclick="clearModalValues()">Cancel</button>
+                        <button id="submit-btn" class="btn btnInline saveBtn" type="submit"
+                                name="method">Create</button>
                     </div>
                 </form>
             </div>
@@ -168,4 +177,36 @@
             $(".mappingsCheckbox").prop('checked', $(this).prop('checked'));
         });
     });
+
+    $(".mappingsCheckbox").click(function(e) {
+        if(e.target.type === 'checkbox') {
+            e.stopPropagation();
+        }
+    });
+
+    function openEditModal(table_row, mapping_id) {
+        if (event.target.id !== 'checkmark') {
+            const cells = table_row.getElementsByTagName('td');
+            $('#id_employee_email').val(cells[0].innerHTML);
+            $('#id_contact_name').val(cells[1].innerHTML);
+            $('#employeeMappingModalTitle').text('Edit Mapping');
+            $('#submit-btn').text('Update');
+            $('#submit-btn').val('update');
+            $('#mapping_id').val(mapping_id.toString());
+            $('#employeeMappingModal').modal('show');
+        }
+    }
+
+    function clearModalValues() {
+        setTimeout(function() {
+            $('#employeeMappingModalTitle').text('Create New Mapping');
+            $('#id_employee_email').val('');
+            $('#id_contact_name').val('');
+            $('#submit-btn').text('Create');
+            $('#submit-btn').removeAttr('name');
+            $('#submit-btn').removeAttr('val');
+            $('#mapping_id').removeAttr('val');
+        }, 150);
+    }
+
 {% endblock %}

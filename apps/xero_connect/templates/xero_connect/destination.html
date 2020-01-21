@@ -1,0 +1,51 @@
+{% extends "xero_workspace/settings.html" %}
+
+{% load static %}
+
+{% load socialaccount %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/connect.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+{% endblock %}
+
+{% block title %}Destination{% endblock %}
+
+{% block content %}
+    <div class="login center-div">
+        {% if connected %}
+            <p>Connected to your Xero account</p>
+            <button class="btn btn-lg main-btn" type="button" data-toggle="modal" data-target="#XeroDisconnectModal">Disconnect</button>
+        {% else %}
+            <p>Connect to your Xero account</p>
+            <form action="{% url 'xero_workspace:xero_connect' workspace_id %}" method="post">
+            {% csrf_token %}
+                <button class="btn btn-lg main-btn" type="submit">Connect</button>
+            </form>
+        {% endif %}
+    </div>
+    <div class="modal fade" id="XeroDisconnectModal" tabindex="-1" role="dialog"
+         aria-labelledby="XeroDisconnectModalTitle" aria-hidden="true"
+         data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="XeroDisconnectModalTitle">Warning!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="{% url 'xero_workspace:xero_disconnect' workspace_id %}" method="post">
+              {% csrf_token %}
+              <div class="modal-body">
+                  <p>Are you sure you want to disconnect your Xero account from this workspace?</p>
+              </div>
+              <div class="modal-footer">
+                  <button class="btn btnInline cancelBtn" type="button" data-dismiss="modal">No</button>
+                  <button class="btn btnInline saveBtn" type="submit">Yes</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}

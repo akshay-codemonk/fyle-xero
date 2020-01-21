@@ -71,6 +71,10 @@ th {
     margin-bottom: 0;
 }
 
+.table th {
+    border-top: None;
+}
+
 .table-responsive {
     position: relative;
 }
@@ -86,4 +90,18 @@ th {
 
 ul.pagination {
     margin-bottom: 0;
+}
+
+.highlight {
+    background-color: rgb(255, 0, 0, 0.2);
+}
+
+.checkbox-error {
+    display: flex;
+    justify-content: space-between;
+}
+
+.error-icon {
+    color: var(--primaryColor);
+    font-size: 20px;
 }

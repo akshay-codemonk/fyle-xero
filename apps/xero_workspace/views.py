@@ -10,14 +10,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
-from django_q.tasks import async_task
 
-from apps.xero_workspace.forms import XeroCredentialsForm, CategoryMappingForm, EmployeeMappingForm, TransformForm, \
-    ScheduleForm, ProjectMappingForm
-from apps.xero_workspace.hooks import update_activity_status
-from apps.xero_workspace.models import Workspace, XeroCredential, CategoryMapping, EmployeeMapping, \
-    WorkspaceSchedule, Activity, ProjectMapping
-from apps.xero_workspace.tasks import sync_xero
+from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, ScheduleForm, ProjectMappingForm
+from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
+    WorkspaceSchedule, ProjectMapping
 
 
 class WorkspaceView(View):
@@ -42,11 +38,6 @@ class WorkspaceView(View):
             user_workspaces = paginator.page(1)
         except EmptyPage:
             user_workspaces = paginator.page(paginator.num_pages)
-        for workspace in user_workspaces:
-            try:
-                workspace.last_sync = Activity.objects.filter(workspace=workspace).latest('updated_at').updated_at
-            except Activity.DoesNotExist:
-                workspace.last_sync = '-'
         return render(request, self.template_name, {"workspaces": user_workspaces})
 
     def post(self, request):
@@ -62,47 +53,6 @@ class WorkspaceView(View):
         return HttpResponseRedirect(self.request.path_info)
 
 
-class DestinationView(View):
-    """
-    Destination (xero) view
-    """
-    template_name = "xero_workspace/destination.html"
-
-    def get(self, request, workspace_id):
-        form = XeroCredentialsForm()
-        connected = XeroCredential.objects.filter(workspace__id=workspace_id).exists()
-        context = {"destination": "active", "form": form,
-                   "connected": connected, "settings_tab": "active"}
-        return render(request, self.template_name, context)
-
-
-class XeroConnectView(View):
-    """
-    Xero (destination) connect view
-    """
-
-    @staticmethod
-    def post(request, workspace_id):
-        form = XeroCredentialsForm(request.POST, request.FILES)
-        if form.is_valid:
-            consumer_key = request.POST.get('consumer_key')
-            private_key = str(request.FILES['pem_file'].read(), 'utf-8')
-            XeroCredential.objects.create(private_key=private_key, consumer_key=consumer_key,
-                                          workspace=Workspace.objects.get(id=workspace_id))
-        return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
-
-
-class XeroDisconnectView(View):
-    """
-    Xero (destination) disconnect view
-    """
-
-    @staticmethod
-    def post(request, workspace_id):
-        XeroCredential.objects.get(workspace__id=workspace_id).delete()
-        return HttpResponseRedirect(reverse('xero_workspace:destination', args=[workspace_id]))
-
-
 class CategoryMappingView(View):
     """
     Category Mapping View
@@ -112,6 +62,8 @@ class CategoryMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(CategoryMappingView, self).dispatch(request, *args, **kwargs)
@@ -147,6 +99,19 @@ class CategoryMappingView(View):
             category_mapping.sub_category = sub_category
             category_mapping.account_code = account_code
             category_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = CategoryMappingForm(request.POST)
+        if form.is_valid:
+            category = request.POST.get('category')
+            sub_category = request.POST.get('sub_category')
+            account_code = request.POST.get('account_code')
+            mapping_id = request.POST.get('mapping_id')
+            CategoryMapping.objects.filter(id=mapping_id).update(category=category,
+                                                                 sub_category=sub_category,
+                                                                 account_code=account_code,
+                                                                 invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -193,6 +158,8 @@ class EmployeeMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(EmployeeMappingView, self).dispatch(request, *args, **kwargs)
@@ -221,6 +188,16 @@ class EmployeeMappingView(View):
                                                                                employee_email=employee_email)
             employee_mapping.contact_name = contact_name
             employee_mapping.save()
+        return HttpResponseRedirect(self.request.path_info)
+
+    def update(self, request, workspace_id):
+        form = EmployeeMappingForm(request.POST)
+        if form.is_valid:
+            employee_email = request.POST.get('employee_email')
+            contact_name = request.POST.get('contact_name')
+            mapping_id = request.POST.get('mapping_id')
+            EmployeeMapping.objects.filter(id=mapping_id).update(
+                employee_email=employee_email, contact_name=contact_name, invalid=False)
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):
@@ -261,6 +238,8 @@ class ProjectMappingView(View):
 
     def dispatch(self, request, *args, **kwargs):
         method = self.request.POST.get('method', '').lower()
+        if method == 'update':
+            return self.update(request, *args, **kwargs)
         if method == 'delete':
             return self.delete(request, *args, **kwargs)
         return super(ProjectMappingView, self).dispatch(request, *args, **kwargs)
@@ -298,6 +277,20 @@ class ProjectMappingView(View):
             project_mapping.save()
         return HttpResponseRedirect(self.request.path_info)
 
+    def update(self, request, workspace_id):
+        form = ProjectMappingForm(request.POST)
+        if form.is_valid:
+            project_name = request.POST.get('project_name')
+            tracking_category_name = request.POST.get('tracking_category_name')
+            tracking_category_option = request.POST.get('tracking_category_option')
+            mapping_id = request.POST.get('mapping_id')
+            ProjectMapping.objects.filter(id=mapping_id) \
+                .update(project_name=project_name,
+                        tracking_category_name=tracking_category_name,
+                        tracking_category_option=tracking_category_option,
+                        invalid=False)
+        return HttpResponseRedirect(self.request.path_info)
+
     def delete(self, request, workspace_id):
         selected_mappings = [ast.literal_eval(x) for x in request.POST.getlist('mapping_ids')]
         ProjectMapping.objects.filter(id__in=selected_mappings).delete()
@@ -326,46 +319,6 @@ class ProjectMappingBulkUploadView(View):
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:project_mapping', args=[workspace_id]))
-
-
-class TransformView(View):
-    """
-    Transform View
-    """
-    template_name = "xero_workspace/transform.html"
-    context = None
-    workspace = None
-    form = None
-
-    def dispatch(self, request, *args, **kwargs):
-        method = self.request.POST.get('method', '').lower()
-        if method == 'update':
-            return self.update(request, *args, **kwargs)
-        return super(TransformView, self).dispatch(request, *args, **kwargs)
-
-    def setup(self, request, *args, **kwargs):
-        workspace_id = kwargs['workspace_id']
-        self.form = TransformForm()
-        self.workspace = Workspace.objects.get(id=workspace_id)
-        self.form.fields['transform_sql'].initial = self.workspace.transform_sql
-        self.context = {"transform": "active", "form": self.form,
-                        "settings_tab": "active"}
-        super(TransformView, self).setup(request)
-
-    def get(self, request, workspace_id):
-        return render(request, self.template_name, self.context)
-
-    def post(self, request, workspace_id):
-        self.form = TransformForm(request.POST)
-        if self.form.is_valid:
-            self.workspace.transform_sql = request.POST.get('transform_sql')
-            self.workspace.save()
-        return HttpResponseRedirect(self.request.path_info)
-
-    def update(self, request, workspace_id):
-        self.form.fields['transform_sql'].widget.attrs['disabled'] = False
-        self.context['save_button'] = True
-        return render(request, self.template_name, self.context)
 
 
 class ScheduleView(View):
@@ -400,43 +353,3 @@ class ScheduleView(View):
         schedule.save()
 
         return HttpResponseRedirect(self.request.path_info)
-
-
-class SyncActivityView(View):
-    """
-    Sync Activity View
-    """
-    template_name = "xero_workspace/activity.html"
-    workspace = None
-    context = None
-
-    def setup(self, request, *args, **kwargs):
-        workspace_id = kwargs['workspace_id']
-        self.workspace = Workspace.objects.get(id=workspace_id)
-        activity = Activity.objects.filter(workspace=self.workspace).order_by(
-            '-updated_at')
-        self.context = {"activity": "active", "workspace_activity": activity}
-        super(SyncActivityView, self).setup(request)
-
-    def get(self, request, workspace_id):
-        activity = Activity.objects.filter(workspace=self.workspace).order_by('-updated_at')
-        page = request.GET.get('page', 1)
-        paginator = Paginator(activity, 10)
-        try:
-            activity = paginator.page(page)
-        except PageNotAnInteger:
-            activity = paginator.page(1)
-        except EmptyPage:
-            activity = paginator.page(paginator.num_pages)
-        self.context['workspace_activity'] = activity
-        return render(request, self.template_name, self.context)
-
-    def post(self, request, workspace_id):
-        value = request.POST.get('submit')
-        if value == 'sync':
-            activity = Activity.objects.create(workspace=self.workspace, transform_sql=self.workspace.transform_sql,
-                                               error_msg='Synchronisation in progress')
-            activity_id = activity.id
-            async_task(sync_xero, workspace_id, activity_id, hook=update_activity_status)
-            return render(request, self.template_name, self.context)
-        return render(request, self.template_name, self.context)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from apps.xero_workspace.models import Workspace, FyleCredential, WorkspaceSchedule, \
-    XeroCredential, CategoryMapping, EmployeeMapping, Activity, ProjectMapping, \
+    XeroCredential, CategoryMapping, EmployeeMapping, ProjectMapping, \
     Invoice, InvoiceLineItem
 
 
@@ -41,16 +41,17 @@ class EmployeeMappingAdmin(admin.ModelAdmin):
     """
     Admin options EmployeeMapping Model
     """
-    list_display = ('workspace', 'id', 'employee_email', 'contact_name', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
+    list_display = ('workspace', 'id', 'employee_email', 'contact_name', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class CategoryMappingAdmin(admin.ModelAdmin):
     """
     Admin options CategoryMapping Model
     """
-    list_display = ('workspace', 'id', 'category', 'sub_category', 'account_code', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
+    list_display = (
+        'workspace', 'id', 'category', 'sub_category', 'account_code', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class ProjectMappingAdmin(admin.ModelAdmin):
@@ -58,16 +59,8 @@ class ProjectMappingAdmin(admin.ModelAdmin):
     Admin options CategoryMapping Model
     """
     list_display = ('workspace', 'id', 'project_name', 'tracking_category_name',
-                    'tracking_category_option', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'created_at', 'updated_at']
-
-
-class ActivityAdmin(admin.ModelAdmin):
-    """
-    Admin options for Activity Model
-    """
-    list_display = ('id', 'status', 'triggered_by', 'created_at', 'updated_at')
-    list_filter = ['status', 'triggered_by', 'created_at', 'updated_at']
+                    'tracking_category_option', 'invalid', 'created_at', 'updated_at')
+    list_filter = ['workspace', 'created_at', 'updated_at', 'invalid']
 
 
 class InvoiceAdmin(admin.ModelAdmin):
@@ -96,6 +89,5 @@ admin.site.register(WorkspaceSchedule, WorkspaceScheduleAdmin)
 admin.site.register(EmployeeMapping, EmployeeMappingAdmin)
 admin.site.register(CategoryMapping, CategoryMappingAdmin)
 admin.site.register(ProjectMapping, ProjectMappingAdmin)
-admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(InvoiceLineItem, InvoiceLineItemAdmin)
