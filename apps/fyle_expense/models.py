@@ -18,7 +18,7 @@ class Expense(models.Model):
     vendor = models.CharField(max_length=64, null=True, blank=True, help_text="Vendor")
     purpose = models.CharField(max_length=64, null=True, blank=True, help_text='Purpose')
     expense_id = models.CharField(max_length=64, unique=True, help_text="Expense ID")
-    expense_number = models.CharField(max_length=64, unique=True, help_text="Expense Number")
+    expense_number = models.CharField(max_length=64, help_text="Expense Number")
     amount = models.FloatField(help_text="Amount")
     settlement_id = models.CharField(max_length=64, help_text="Settlement ID")
     report_id = models.CharField(max_length=64, help_text="Report ID")
