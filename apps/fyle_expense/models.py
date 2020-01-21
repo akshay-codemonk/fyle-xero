@@ -1,8 +1,9 @@
 from itertools import groupby
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
-from apps.xero_workspace.models import Workspace
+from apps.xero_workspace.models import Workspace, InvoiceLineItem, Invoice
 from apps.xero_workspace.utils import connect_to_fyle
 
 
@@ -26,11 +27,17 @@ class Expense(models.Model):
     spent_at = models.DateTimeField(help_text="Expense spent at")
     reimbursable = models.BooleanField(help_text="Expense reimbursable or not")
     state = models.CharField(max_length=64, help_text="Expense state")
+    invoice_line_item = models.ForeignKey(InvoiceLineItem, null=True, blank=True,
+                                          on_delete=models.PROTECT, help_text="FK to InvoiceLineItem")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return self.expense_id
+
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
 
     @staticmethod
     def fetch_paid_expenses(workspace_id, updated_after=None):
@@ -41,7 +48,10 @@ class Expense(models.Model):
         if updated_after is None:
             expenses = connection.Expenses.get(state='PAID')
         else:
-            expenses = connection.Expenses.get(state='PAID', updated_at=f'gt:{updated_after}')
+            expenses = connection.Expenses.get(
+                state='PAID',
+                updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}'
+            )
         return expenses
 
     @staticmethod
@@ -76,39 +86,54 @@ class ExpenseGroup(models.Model):
     Expense Group
     """
     id = models.AutoField(primary_key=True)
-    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT,
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE,
                                   help_text="To which workspace this expense group belongs to")
     expenses = models.ManyToManyField(Expense, help_text="Expenses under this Expense Group")
-    description = models.CharField(max_length=255, help_text="Description")
+    invoice = models.ForeignKey(Invoice, null=True, blank=True,
+                                on_delete=models.PROTECT, help_text="FK to Invoice")
+    description = JSONField(default=dict, help_text="Description")
+    status = models.CharField(max_length=10, help_text="Status")
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
     def __str__(self):
         return str(self.id)
 
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "created_at"
+
     @staticmethod
-    def group_expense_by_report_id(expense_objects, workspace_id):
+    def group_expense_by_report_id(expense_objects, workspace_id, connection):
         """
         Group expense by report_id
         """
         expense_groups = []
+        reports = connection.Reports.get(state='PAID')
         for report_id, _expense_group in groupby(expense_objects, key=lambda x: x.report_id):
+            report = [report for report in reports['data'] if report_id == report['id']].pop()
+            report_data = {
+                "report_id": report['id'],
+                "employee_email": report['employee_email'],
+                "approved_at": report['approved_at']
+            }
             expense_groups.append(ExpenseGroup(
                 workspace=Workspace.objects.get(id=workspace_id),
-                description=report_id
+                description=report_data
             ))
         return expense_groups
 
     @staticmethod
     def create_expense_groups(expense_groups):
         expense_group_objects = ExpenseGroup.objects.bulk_create(expense_groups)
-
         through_model_objects = []
         for expense_group_object in expense_group_objects:
-            expenses = Expense.objects.filter(report_id=expense_group_object.description)
+            report_id = expense_group_object.description['report_id']
+            expenses = Expense.objects.filter(report_id=report_id)
             for expense in expenses:
                 through_model_objects.append(ExpenseGroup.expenses.through(
                     expensegroup_id=expense_group_object.id,
                     expense_id=expense.id
                 ))
         ExpenseGroup.expenses.through.objects.bulk_create(through_model_objects)
+        return expense_group_objects

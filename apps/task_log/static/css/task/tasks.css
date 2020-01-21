@@ -1,3 +1,11 @@
+.material-icons:hover {
+    cursor: pointer;
+}
+
+.material-icons {
+    font-size: 22px;
+}
+
 .modal.right .modal-dialog {
     position: fixed;
     margin: auto;
@@ -43,49 +51,41 @@
     margin-left: 3%;
 }
 
-.expenses-table {
-    width: 75%;
-    margin: 4% auto 0;
-}
-
-.expenses-table td:nth-child(2) {
-    text-align: center;
-}
-
-.employee-email {
+.task-name {
     font-size: 18px;
     font-weight: 400;
 }
 
-.expense-details .employee-email {
+.task-details .task-name {
     margin-left: 37px;
     font-size: 25px;
     font-weight: 400;
 }
 
-.view-invoice, .view-invoice:hover {
+.task-details-table {
+    width: 75%;
+    margin: 4% auto 4%;
+}
+
+.task-details-table td:nth-child(2) {
+    text-align: center;
+}
+
+.task-logs {
+    margin: 0 37px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.task-logs a {
     text-decoration: underline;
     color: #212529;
+    font-size: 18px;
+}
+
+.task-logs a:hover {
     cursor: pointer;
-    margin-bottom: 0;
-}
-
-.no-invoice {
-    margin-bottom: 0;
-}
-
- .resync-btn {
-    width: 10%;
-}
-
-.expenses-link, .expenses-link:hover {
-    color: rgba(0, 0, 0, 0.87);
-}
-
-.expense-groups-table td:hover {
-    cursor: pointer;
-}
-
-.back-btn {
-    vertical-align: middle;
+    text-decoration: underline;
+    color: #212529;
 }
