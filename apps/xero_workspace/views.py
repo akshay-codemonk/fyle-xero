@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
 
+from apps.task_log.models import TaskLog
 from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, ScheduleForm, ProjectMappingForm
 from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
@@ -30,6 +31,12 @@ class WorkspaceView(View):
 
     def get(self, request):
         user_workspaces = Workspace.objects.filter(user=request.user).order_by('-created_at')
+        for workspace in user_workspaces:
+            task_log = TaskLog.objects.filter(workspace=workspace)
+            if task_log.exists():
+                workspace.last_sync = task_log.first().task.stopped
+            else:
+                workspace.last_sync = "-"
         page = request.GET.get('page', 1)
         paginator = Paginator(user_workspaces, 10)
         try:
@@ -284,11 +291,11 @@ class ProjectMappingView(View):
             tracking_category_name = request.POST.get('tracking_category_name')
             tracking_category_option = request.POST.get('tracking_category_option')
             mapping_id = request.POST.get('mapping_id')
-            ProjectMapping.objects.filter(id=mapping_id) \
-                .update(project_name=project_name,
-                        tracking_category_name=tracking_category_name,
-                        tracking_category_option=tracking_category_option,
-                        invalid=False)
+            ProjectMapping.objects.filter(id=mapping_id).update(project_name=project_name,
+                                                                tracking_category_name=tracking_category_name,
+                                                                tracking_category_option=tracking_category_option,
+                                                                invalid=False)
+
         return HttpResponseRedirect(self.request.path_info)
 
     def delete(self, request, workspace_id):

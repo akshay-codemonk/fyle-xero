@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
@@ -50,6 +51,7 @@ class TaskLogView(View):
         value = request.POST.get('submit')
         if value == 'sync':
             create_fetch_expense_task(workspace_id)
+            messages.success(request, 'Sync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -85,7 +87,8 @@ class TaskLogTextView(View):
         task_log_info["workspace_name"] = task_log.workspace.name
         task_log_info["task_id"] = task_log.task.id
         task_log_info["task_name"] = task_log.task.name
-        task_log_info["expense_group_id"] = task_log.expense_group.description.get("report_id")
+        task_log_info["expense_group_id"] = '-' if task_log.expense_group is None else \
+            task_log.expense_group.description.get("report_id")
         task_log_info["invoice_id"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
         task_log_info["task_start_time"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
         task_log_info["task_stop_time"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %-p')

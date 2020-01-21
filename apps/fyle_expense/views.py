@@ -2,6 +2,7 @@ import ast
 import json
 
 from dateutil.parser import parse
+from django.contrib import messages
 from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse, HttpResponseRedirect
@@ -72,6 +73,7 @@ class ExpenseGroupView(View):
         if value == 'resync' and selected_expense_group_id:
             for expense_group_id in selected_expense_group_id:
                 create_invoice_task(expense_group_id)
+            messages.success(request, 'Resync started successfully. Invoice will be created soon!')
         return HttpResponseRedirect(self.request.path_info)
 
 
