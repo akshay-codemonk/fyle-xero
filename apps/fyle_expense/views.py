@@ -11,7 +11,7 @@ from django.views import View
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
 from apps.task_log.tasks import create_invoice_task
-from apps.xero_workspace.models import Workspace, CategoryMapping
+from apps.xero_workspace.models import CategoryMapping
 
 
 class ExpenseGroupView(View):

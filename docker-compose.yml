@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    entrypoint: python /code/manage.py runserver 0.0.0.0:8000
+    container_name: fyle_xero_web_app
+    restart: always
+    volumes:
+    - ./:/code
+    ports:
+    - 8000:8000
+    depends_on:
+    - db
+
+  qcluster:
+    build: .
+    entrypoint: python manage.py qcluster
+    container_name: fyle_xero_qcluster
+    restart: always
+    volumes:
+    - ./:/code
+    depends_on:
+    - db
+    - redis
+
+  db:
+    image: "postgres:12.1-alpine"
+    container_name: fyle_xero_db
+    ports:
+    - "5432:5432"
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+
+  redis:
+    image: "redis:alpine"
+    container_name: fyle_xero_redis
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --save ''"]
+
+
+volumes:
+  postgres_data:
