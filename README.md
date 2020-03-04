@@ -31,13 +31,8 @@ Install docker-compose
 
 1. Rename the file .env.template to .env and set the following defaults
     ```
-    DB_NAME=postgres
-    DB_USER=postgres
-    DB_PASSWORD=
-    DB_HOST=db
-    DB_PORT=5432
-    REDIS_HOST=redis
-    REDIS_PORT=6379
+    DATABASE_URL = postgres://postgres@db:5432/postgres
+    REDIS_URL = redis://redis:6379/0
     ```
     and update the remaining fields accordingly
 
