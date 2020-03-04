@@ -8,7 +8,7 @@ defusedxml==0.6.0
 Django==2.2.8
 django-allauth==0.40.0
 django-picklefield==2.0
-django-q==1.0.2
+django-q==1.2.1
 idna==2.8
 isort==4.3.21
 lazy-object-proxy==1.4.1
@@ -41,3 +41,4 @@ django-tempus-dominus==5.1.2.8
 django-sendgrid-v5==0.8.1
 sendgrid==6.1.0
 xerosdk==0.1.0
+dj-database-url==0.5.0

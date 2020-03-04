@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+import dj_database_url
 from decouple import config
+from django.conf.global_settings import DATABASES
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -94,16 +96,7 @@ WSGI_APPLICATION = 'fyle_xero_integration_web_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME', config('DB_NAME')),
-        'USER': os.environ.get('DB_USER', config('DB_USER')),
-        'PASSWORD': os.environ.get('DB_PASSWORD', config('DB_PASSWORD')),
-        'HOST': os.environ.get('DB_HOST', config('DB_HOST')),
-        'PORT': os.environ.get('DB_PORT', config('DB_PORT')),
-    }
-}
+DATABASES['default'] = dj_database_url.config(default=config('DATABASE_URL'))
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -156,16 +149,7 @@ AUTH_USER_MODEL = 'user.UserProfile'
 
 # Dango-Q settings
 Q_CLUSTER = {
-    'redis': {
-        'host': os.environ.get('REDIS_HOST', config('REDIS_HOST')),
-        'port': os.environ.get('REDIS_PORT', config('REDIS_PORT')),
-        'db': os.environ.get('REDIS_DB', config('REDIS_DB', default=0)),
-        'password': os.environ.get('REDIS_PASSWORD', config('REDIS_PASSWORD', default=None)),
-        'socket_timeout': None,
-        'charset': 'utf-8',
-        'errors': 'strict',
-        'unix_socket_path': None
-    }
+    'redis': os.environ.get('REDIS_URL', config('REDIS_URL'))
 }
 
 # django-allauth settings
