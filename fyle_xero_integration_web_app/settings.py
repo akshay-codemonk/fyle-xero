@@ -187,7 +187,6 @@ XERO_AUTHORIZE_URI = os.environ.get('XERO_AUTHORIZE_URI', config('XERO_AUTHORIZE
 XERO_TOKEN_URI = os.environ.get('XERO_TOKEN_URI', config('XERO_TOKEN_URI'))
 XERO_BASE_URL = os.environ.get('XERO_BASE_URL', config('XERO_BASE_URL'))
 
-#
 MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
@@ -198,3 +197,13 @@ MESSAGE_TAGS = {
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', config('SENDGRID_API_KEY'))
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', config('SENDER_EMAIL'))
+
+# Fyle Provider settings
+SOCIALACCOUNT_PROVIDERS = {
+    'fyle': {
+        'APP': {
+            'client_id': FYLE_CLIENT_ID,
+            'secret': FYLE_CLIENT_SECRET,
+        }
+    }
+}
