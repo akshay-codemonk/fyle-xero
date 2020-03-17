@@ -4,13 +4,14 @@ from dateutil.parser import parse
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views import View
 
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
 from apps.task_log.tasks import create_invoice_task
+from apps.task_log.tasks_test import fetch_expenses_and_create_groups
 from apps.xero_workspace.models import CategoryMapping
 
 
@@ -70,6 +71,19 @@ class ExpenseGroupView(View):
                 create_invoice_task(expense_group_id)
             messages.success(request, 'Resync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
+
+
+class ExpenseGroupTaskView(View):
+    """
+    Expense Group Task view
+    """
+
+    def post(self, request, workspace_id):
+        task_log = TaskLog.objects.get(id=request.data.get('task_log_id'))
+
+        fetch_expenses_and_create_groups(workspace_id, task_log)
+
+        return HttpResponse(status=200)
 
 
 class ExpenseView(View):
