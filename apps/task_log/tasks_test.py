@@ -22,7 +22,7 @@ def schedule_expense_group_creation(workspace_id, user):
 
     print("Triggering job..")
     created_job = jobs.trigger_now(
-        callback_url=f'{settings.API_BASE_URL}/workspace/{workspace_id}/expense_groups/task/',
+        callback_url=f'{settings.API_BASE_URL}/workspace_jobs/{workspace_id}/expense_group/',
         callback_method='POST',
         object_id=task_log.id,
         payload={
