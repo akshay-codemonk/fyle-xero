@@ -36,7 +36,7 @@ class WorkspaceView(View):
         for workspace in user_workspaces:
             task_log = TaskLog.objects.filter(workspace=workspace)
             if task_log.exists():
-                workspace.last_sync = task_log.first().task.stopped
+                workspace.last_sync = '-'
             else:
                 workspace.last_sync = "-"
         page = request.GET.get('page', 1)

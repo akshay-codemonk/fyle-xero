@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'rest_framework',
+    'corsheaders',
     'django_q',
     'allauth',
     'allauth.account',
@@ -211,3 +213,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True

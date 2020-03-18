@@ -42,3 +42,5 @@ django-sendgrid-v5==0.8.1
 sendgrid==6.1.0
 xerosdk==0.1.0
 dj-database-url==0.5.0
+djangorestframework==3.11.0
+django-cors-headers==3.2.1

@@ -4,9 +4,12 @@ from dateutil.parser import parse
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
@@ -73,17 +76,18 @@ class ExpenseGroupView(View):
         return HttpResponseRedirect(self.request.path_info)
 
 
-class ExpenseGroupTaskView(View):
+class ExpenseGroupTaskView(APIView):
     """
     Expense Group Task view
     """
+    http_method_names = ['POST']
 
     def post(self, request, workspace_id):
         task_log = TaskLog.objects.get(id=request.data.get('task_log_id'))
 
         fetch_expenses_and_create_groups(workspace_id, task_log)
 
-        return HttpResponse(status=200)
+        return Response(status=status.HTTP_200_OK)
 
 
 class ExpenseView(View):
@@ -102,7 +106,7 @@ class ExpenseView(View):
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
-        status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
+        task_status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
         expenses = expense_group.expenses.all()
 
         page = request.GET.get('page', 1)
@@ -116,7 +120,7 @@ class ExpenseView(View):
 
         context = {"expense_groups_tab": "active", "expenses": expenses,
                    "report_id": report_id, "expense_group_id": expense_group.id,
-                   "status": status}
+                   "status": task_status}
         return render(request, self.template_name, context)
 
 
