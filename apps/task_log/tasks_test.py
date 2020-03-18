@@ -55,7 +55,13 @@ def schedule_invoice_creation(workspace_id, expense_group_ids, user):
         )
         print("Triggering invoice job..")
         created_job = jobs.trigger_now(
-            callback_url=f'{settings.API_BASE_URL}/workspace_jobs/{workspace_id}/invoice/trigger/',
+            callback_url='{0}{1}'.format(
+                settings.API_BASE_URL,
+                '/workspace_jobs/{0}/expense_group/{1}/invoice/trigger/'.format(
+                    workspace_id,
+                    expense_group.id
+                )
+            ),
             callback_method='POST',
             object_id=task_log.id,
             payload={
