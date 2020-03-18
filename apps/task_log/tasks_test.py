@@ -102,10 +102,9 @@ def async_fetch_expenses_and_create_groups(workspace_id, task_log):
         updated_after = None
         task_log = TaskLog.objects.filter(workspace__id=workspace_id, type='FETCHING EXPENSES',
                                           status='COMPLETED').last()
-        last_sync = task_log.created_at
-        print("Last sync: ", )
-        if last_sync is not None:
-            updated_after = last_sync
+        print("Task log: ", task_log)
+        if task_log is not None:
+            updated_after = task_log.created_at
         expenses = Expense.fetch_paid_expenses(workspace_id, updated_after)
         print("Expenses: ", expenses)
         expense_objects = Expense.create_expense_objects(expenses)
