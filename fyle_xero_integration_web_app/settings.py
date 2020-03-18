@@ -171,6 +171,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+API_BASE_URL = os.environ.get('API_BASE_URL', config('API_BASE_URL'))
+
 # Fyle Workspace OAuth2
 FYLE_AUTHORISE_URI = os.environ.get('FYLE_AUTHORISE_URI', config('FYLE_AUTHORISE_URI'))
 FYLE_CALLBACK_URI = os.environ.get('FYLE_CALLBACK_URI', config('FYLE_CALLBACK_URI'))
@@ -178,6 +180,7 @@ FYLE_TOKEN_URI = os.environ.get('FYLE_TOKEN_URI', config('FYLE_TOKEN_URI'))
 FYLE_CLIENT_ID = os.environ.get('FYLE_CLIENT_ID', config('FYLE_CLIENT_ID'))
 FYLE_CLIENT_SECRET = os.environ.get('FYLE_CLIENT_SECRET', config('FYLE_CLIENT_SECRET'))
 FYLE_BASE_URL = os.environ.get('FYLE_BASE_URL', config('FYLE_BASE_URL'))
+FYLE_JOBS_URL = os.environ.get('FYLE_JOBS_URL', config('FYLE_JOBS_URL'))
 
 # Xero Workspace OAuth2
 XERO_CLIENT_ID = os.environ.get('XERO_CLIENT_ID', config('XERO_CLIENT_ID'))

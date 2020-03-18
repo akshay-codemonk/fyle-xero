@@ -5,12 +5,13 @@ from apps.task_log.models import TaskLog
 from apps.xero_workspace.models import Workspace
 from apps.xero_workspace.utils import connect_to_fyle
 from fyle_jobs import FyleJobsSDK
+from fyle_xero_integration_web_app import settings
 
 
 def schedule_expense_group_creation(workspace_id, user):
     fyle_sdk_connection = connect_to_fyle(workspace_id)
 
-    jobs = FyleJobsSDK("https://jobs.staging.fyle.in/v2/jobs", fyle_sdk_connection)
+    jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
 
     print("Creating task log..")
     task_log = TaskLog.objects.create(
@@ -21,14 +22,13 @@ def schedule_expense_group_creation(workspace_id, user):
 
     print("Triggering job..")
     created_job = jobs.trigger_now(
-        callback_url=f'http://localhost:8000/workspace/{workspace_id}/expense_groups/task/',
+        callback_url=f'{settings.API_BASE_URL}/workspace/{workspace_id}/expense_groups/task/',
         callback_method='POST',
         object_id=task_log.id,
         payload={
             'task_log_id': task_log.id
         },
-        job_description=f'Fetch expenses: Workspace id - {workspace_id}, user - {user}',
-        # job_data_url=f'http://localhost:8000/workspace/{workspace_id}/expense_groups/task/',
+        job_description=f'Fetch expenses: Workspace id - {workspace_id}, user - {user}'
     )
     task_log.task_id = created_job['id']
     task_log.save()
