@@ -2,7 +2,6 @@ import traceback
 
 from apps.fyle_expense.models import Expense, ExpenseGroup
 from apps.task_log.models import TaskLog
-from apps.xero_workspace.models import Workspace
 from apps.xero_workspace.utils import connect_to_fyle
 from fyle_jobs import FyleJobsSDK
 from fyle_xero_integration_web_app import settings
@@ -38,7 +37,8 @@ def fetch_expenses_and_create_groups(workspace_id, task_log):
     """
     Fetch expenses and create expense groups
     """
-    async_fetch_expenses_and_create_groups(workspace_id, task_log)
+    expense_group_ids = async_fetch_expenses_and_create_groups(workspace_id, task_log)
+    print("Expense group ids return: ", expense_group_ids)
     task_log.detail = {
         'message': 'Creating expense groups'
     }
@@ -60,21 +60,30 @@ def async_fetch_expenses_and_create_groups(workspace_id, task_log):
     print('async_fetch_expenses_and_create_groups')
     try:
         updated_after = None
-        workspace = Workspace.objects.get(id=workspace_id)
-        last_sync = workspace.last_sync
+        task_log = TaskLog.objects.filter(workspace__id=workspace_id).last()
+        print("Task log: ", task_log)
+        last_sync = task_log.created_at
+        print("Last sync: ", )
         if last_sync is not None:
             updated_after = last_sync
         expenses = Expense.fetch_paid_expenses(workspace_id, updated_after)
+        print("Expenses: ", expenses)
         expense_objects = Expense.create_expense_objects(expenses)
+        print("Expense objects: ", expense_objects)
         connection = connect_to_fyle(workspace_id)
+        print("Fyle conn: ", connection)
         expense_groups = ExpenseGroup.group_expense_by_report_id(expense_objects, workspace_id, connection)
+        print("Expense groups: ", expense_groups)
         expense_group_objects = ExpenseGroup.create_expense_groups(expense_groups)
+        print("Expense group objects: ", expense_group_objects)
         for expense_group in expense_group_objects:
             expense_group_ids.append(expense_group.id)
+        print("Expense group ids: ", expense_group_ids)
         task_log.status = 'COMPLETE'
         task_log.save()
     except Exception:
         error = traceback.format_exc()
+        print("Error: ", error)
         task_log.detail = {
             'error': error
         }
