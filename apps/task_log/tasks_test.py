@@ -158,25 +158,18 @@ def check_mappings(expense_group):
 
 def async_create_invoice_and_post_to_xero(expense_group, task_log):
     try:
-        print("Checking mappings..")
         check_mappings(expense_group)
         invoice_id = Invoice.create_invoice(expense_group)
-        print("Created invoice: ", invoice_id)
         InvoiceLineItem.create_invoice_line_item(invoice_id, expense_group)
-        print("Created invoice lineitems")
         xero_sdk_connection = connect_to_xero(expense_group.workspace.id)
-        print("Xero conn: ", xero_sdk_connection)
-        invoice = Invoice.objects.get(id=invoice_id)
-        invoice_data = generate_invoice_request_data(invoice)
-        print("Generate invoice data for xero: ", invoice_data)
+        invoice_obj = Invoice.objects.get(id=invoice_id)
+        invoice_data = generate_invoice_request_data(invoice_obj)
         response = post_invoice(invoice_data, xero_sdk_connection)
-        print("Response from posting invoice to xero: ", response)
         for invoice in response["Invoices"]:
-            invoice.invoice_id = invoice["InvoiceID"]
-            invoice.save()
-        print("Updated invoice with ID from xero: ", invoice.invoice_id)
-        task_log.invoice = invoice
-        task_log.detail = 'Invoice created successfully and posted to Xero!'
+            invoice_obj.invoice_id = invoice["InvoiceID"]
+            invoice_obj.save()
+        task_log.invoice = invoice_obj
+        task_log.detail = 'Invoice created successfully!'
         task_log.status = 'COMPLETE'
         task_log.save()
     except Exception:
