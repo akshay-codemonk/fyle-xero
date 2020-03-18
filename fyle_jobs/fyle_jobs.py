@@ -51,7 +51,6 @@ class FyleJobsSDK:
         }
 
         response = post_request(self.jobs_url, self.access_token, body)
-        print("Response: ", response)
         return response
 
     def trigger_interval(self, callback_url: str, callback_method: str,

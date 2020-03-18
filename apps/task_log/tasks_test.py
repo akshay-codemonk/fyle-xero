@@ -16,14 +16,12 @@ def schedule_expense_group_creation(workspace_id, user):
 
     jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
 
-    print("Creating task log..")
     task_log = TaskLog.objects.create(
         workspace_id=workspace_id,
         type="FETCHING EXPENSES",
         status="IN_PROGRESS"
     )
 
-    print("Triggering expense_group job..")
     created_job = jobs.trigger_now(
         callback_url=f'{settings.API_BASE_URL}/workspace_jobs/{workspace_id}/expense_group/trigger/',
         callback_method='POST',
@@ -174,7 +172,6 @@ def async_create_invoice_and_post_to_xero(expense_group, task_log):
         task_log.save()
     except Exception:
         error = traceback.format_exc()
-        print("Error: ", error)
         task_log.detail = {
             'error': error
         }
