@@ -46,7 +46,7 @@ class Expense(models.Model):
         """
         connection = connect_to_fyle(workspace_id)
         if updated_after is None:
-            expenses = connection.Expenses.get(state='PAID')
+            expenses = connection.Expenses.get_all(state='PAID')
         else:
             expenses = connection.Expenses.get(
                 state='PAID',
