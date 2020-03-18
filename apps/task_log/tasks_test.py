@@ -40,20 +40,16 @@ def schedule_expense_group_creation(workspace_id, user):
 def schedule_invoice_creation(workspace_id, expense_group_ids, user):
     expense_groups = ExpenseGroup.objects.filter(
         workspace_id=workspace_id, id__in=expense_group_ids).all()
-    print("Expense groups: ", expense_groups)
     fyle_sdk_connection = connect_to_fyle(workspace_id)
-    print("Fyle conn: ", fyle_sdk_connection)
     jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
 
     for expense_group in expense_groups:
-        print("Creating tasklog..")
         task_log, _ = TaskLog.objects.update_or_create(
             workspace_id=expense_group.workspace.id,
             expense_group=expense_group,
             type='CREATING INVOICE',
             status='IN_PROGRESS'
         )
-        print("Triggering invoice job..")
         created_job = jobs.trigger_now(
             callback_url='{0}{1}'.format(
                 settings.API_BASE_URL,
@@ -65,7 +61,6 @@ def schedule_invoice_creation(workspace_id, expense_group_ids, user):
             callback_method='POST',
             object_id=task_log.id,
             payload={
-                'expense_group_id': expense_group.id,
                 'task_log_id': task_log.id
             },
             job_description=f'Create invoice: Workspace id - {workspace_id}, \
@@ -80,10 +75,8 @@ def fetch_expenses_and_create_groups(workspace_id, task_log, user):
     Fetch expenses and create expense groups
     """
     expense_group_ids = async_fetch_expenses_and_create_groups(workspace_id, task_log)
-    print("Expense group ids return: ", expense_group_ids)
 
     if task_log.status == 'COMPLETE':
-        print('Schedule invoice creation..')
         schedule_invoice_creation(workspace_id, expense_group_ids, user)
 
     return task_log
@@ -97,33 +90,24 @@ def async_fetch_expenses_and_create_groups(workspace_id, task_log):
     :param task_log
     """
     expense_group_ids = []
-    print('async_fetch_expenses_and_create_groups')
     try:
         updated_after = None
         latest_task_log = TaskLog.objects.filter(workspace__id=workspace_id, type='FETCHING EXPENSES',
                                                  status='COMPLETED').last()
-        print("Latest task log: ", task_log)
         if latest_task_log is not None:
             updated_after = latest_task_log.created_at
         expenses = Expense.fetch_paid_expenses(workspace_id, updated_after)
-        print("Expenses: ", expenses)
         expense_objects = Expense.create_expense_objects(expenses)
-        print("Expense objects: ", expense_objects)
         connection = connect_to_fyle(workspace_id)
-        print("Fyle conn: ", connection)
         expense_groups = ExpenseGroup.group_expense_by_report_id(expense_objects, workspace_id, connection)
-        print("Expense groups: ", expense_groups)
         expense_group_objects = ExpenseGroup.create_expense_groups(expense_groups)
-        print("Expense group objects: ", expense_group_objects)
         for expense_group in expense_group_objects:
             expense_group_ids.append(expense_group.id)
-        print("Expense group ids: ", expense_group_ids)
         task_log.status = 'COMPLETE'
         task_log.detail = 'Expense groups created successfully!'
         task_log.save()
     except Exception:
         error = traceback.format_exc()
-        print("Error: ", error)
         task_log.detail = {
             'error': error
         }

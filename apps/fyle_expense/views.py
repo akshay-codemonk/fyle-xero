@@ -177,11 +177,10 @@ class InvoiceTaskView(APIView):
     """
     http_method_names = ['post']
 
-    def post(self, request, workspace_id):
-        expense_group_id = request.data.get('expense_group_id')
+    def post(self, request, workspace_id, group_id):
         task_log_id = request.data.get('task_log_id')
 
-        expense_group = ExpenseGroup.objects.get(id=expense_group_id)
+        expense_group = ExpenseGroup.objects.get(id=group_id)
         task_log = TaskLog.objects.get(id=task_log_id)
 
         async_create_invoice_and_post_to_xero(expense_group, task_log)
