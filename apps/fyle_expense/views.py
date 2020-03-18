@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
 from apps.task_log.tasks import create_invoice_task
-from apps.task_log.tasks_test import fetch_expenses_and_create_groups
+from apps.task_log.tasks_test import fetch_expenses_and_create_groups, async_create_invoice_and_post_to_xero
 from apps.xero_workspace.models import CategoryMapping
 
 
@@ -85,7 +85,7 @@ class ExpenseGroupTaskView(APIView):
     def post(self, request, workspace_id):
         task_log = TaskLog.objects.get(id=request.data.get('task_log_id'))
 
-        fetch_expenses_and_create_groups(workspace_id, task_log)
+        fetch_expenses_and_create_groups(workspace_id, task_log, request.user)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -169,3 +169,21 @@ class InvoiceDetailsView(View):
         for invoice_line_item in invoice.invoice_line_items.all():
             invoice_fields["line_items"].append(model_to_dict(invoice_line_item))
         return JsonResponse(invoice_fields)
+
+
+class InvoiceTaskView(APIView):
+    """
+    Invoice task view
+    """
+    http_method_names = ['post']
+
+    def post(self, request, workspace_id):
+        expense_group_id = request.data.get('expense_group_id')
+        task_log_id = request.data.get('task_log_id')
+
+        expense_group = ExpenseGroup.objects.get(id=expense_group_id)
+        task_log = TaskLog.objects.get(id=task_log_id)
+
+        async_create_invoice_and_post_to_xero(expense_group, task_log)
+
+        return Response(status=status.HTTP_200_OK)
