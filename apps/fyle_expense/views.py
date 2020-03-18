@@ -80,7 +80,7 @@ class ExpenseGroupTaskView(APIView):
     """
     Expense Group Task view
     """
-    http_method_names = ['POST']
+    http_method_names = ['post']
 
     def post(self, request, workspace_id):
         task_log = TaskLog.objects.get(id=request.data.get('task_log_id'))
