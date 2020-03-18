@@ -33,7 +33,7 @@ wcwidth==0.1.7
 wrapt==1.11.2
 django-model-utils==3.2.0
 mock==3.0.5
-fyle-django-allauth==0.1.1
+fyle-django-allauth==0.1.2
 django-decorator-include==2.1
 fylesdk==0.15.0
 openpyxl==2.6.3
