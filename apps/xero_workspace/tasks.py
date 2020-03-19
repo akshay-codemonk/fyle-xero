@@ -1,6 +1,5 @@
-from apps.task_log.tasks import fetch_expenses_and_create_groups
-
 from apps.task_log.models import TaskLog
+from apps.task_log.tasks import fetch_expenses_and_create_groups
 from apps.xero_workspace.utils import connect_to_fyle
 from fyle_jobs import FyleJobsSDK
 from fyle_xero_integration_web_app import settings
@@ -20,7 +19,7 @@ def schedule_sync(workspace_id, schedule, user):
     created_job = jobs.trigger_interval(
         callback_url='{0}{1}'.format(
             settings.API_BASE_URL,
-            '/workspaces/{0}/settings/schedule/trigger/'.format(
+            '/workspace_jobs/{0}/settings/schedule/trigger/'.format(
                 workspace_id
             )
         ),
@@ -30,7 +29,7 @@ def schedule_sync(workspace_id, schedule, user):
             workspace_id, user
         ),
         start_datetime=schedule.start_datetime.strftime('%Y-%m-%d %H:%M:00.00'),
-        hours=schedule.interval_hours
+        hours=int(schedule.interval_hours)
     )
     schedule.fyle_job_id = created_job['id']
     schedule.save()
