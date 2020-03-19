@@ -20,7 +20,7 @@ def schedule_sync(workspace_id, schedule, user):
     created_job = jobs.trigger_interval(
         callback_url='{0}{1}'.format(
             settings.API_BASE_URL,
-            '/workspaces/{0}/settings/schedule/trigger/'.format(
+            '/workspace_jobs/{0}/settings/schedule/trigger/'.format(
                 workspace_id
             )
         ),
