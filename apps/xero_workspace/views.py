@@ -362,9 +362,9 @@ class ScheduleView(View):
         start_datetime = request.POST.get('start_datetime')
         schedule.start_datetime = make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %I:%M %p'))
         schedule.interval_hours = request.POST.get('hours')
-        value = request.POST.get('schedule')
+        enabled = request.POST.get('schedule')
         schedule.enabled = False
-        if value == 'enabled':
+        if enabled == 'true':
             schedule.enabled = True
         schedule.save()
 

@@ -17,12 +17,10 @@
                 <div class="d-flex enable-schedule">
                     <p>Enable</p>
                     {% if enabled == True %}
-                    <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
-                           class="switch-input" checked>
+                    <input type="checkbox" id="schedule-enabled" class="switch-input" checked>
                     <label for="schedule-enabled" class="switch-label"></label>
                     {% else %}
-                        <input type="checkbox" id="schedule-disabled" name="schedule" value="disabled"
-                               class="switch-input">
+                        <input type="checkbox" id="schedule-disabled" class="switch-input">
                         <label for="schedule-disabled" class="switch-label"></label>
                     {% endif %}
                 </div>
@@ -35,9 +33,16 @@
                     {{ form.start_datetime }}
                 </div>
                 <div class="save-schedule">
-                    <button class="main-btn btn save-btn" type="submit">Save Schedule</button>
+                    <button class="main-btn btn save-btn" type="submit" name="schedule">Save Schedule</button>
                 </div>
             </div>
         </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    $('.switch-input').on('change', function() {
+        const enabled = $(this).is(':checked');
+        $('.save-btn').attr('value', enabled);
+    });
 {% endblock %}
