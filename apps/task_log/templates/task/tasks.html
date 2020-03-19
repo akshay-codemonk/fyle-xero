@@ -56,9 +56,9 @@
                             {% for task_log in task_logs %}
                                 <tr class="tasks-table-row" data-url="{{task_log.id}}/details/">
                                     <td>{{task_log.task_id}}</td>
-                                    <td>{{task_log.type}}</td>
                                     <td>{{task_log.updated_at}}</td>
                                     <td>{{task_log.status}}</td>
+                                    <td>{{task_log.type}}</td>
                                     <td class="actions">
                                         <a target="_blank" href="log/?type=task_log&id={{task_log.id}}">
                                             <i id="view-log" class="material-icons view-icon"

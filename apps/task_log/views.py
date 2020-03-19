@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, JsonResponse
@@ -47,9 +48,8 @@ class TaskLogView(View):
         """
         value = request.POST.get('submit')
         if value == 'sync':
-            # create_fetch_expense_task(workspace_id)
             schedule_expense_group_creation(workspace_id, request.user)
-            # messages.success(request, 'Sync started successfully. Expenses will be exported soon!')
+            messages.success(request, 'Sync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
 
