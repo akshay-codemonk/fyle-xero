@@ -15,8 +15,8 @@
             {% csrf_token %}
             <div class="schedule-content">
                 <div class="d-flex enable-schedule">
-                    {% if enabled == True %}
                     <p>Enable</p>
+                    {% if enabled == True %}
                     <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
                            class="switch-input" onchange="document.getElementById('schedule-form').submit()"
                            checked>
