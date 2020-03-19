@@ -147,13 +147,12 @@ class CategoryMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            category_objects = []
             for category, sub_category, account_code in worksheet.iter_rows(min_row=2):
                 sub_category.value = '' if sub_category.value is None else sub_category.value
-                category_objects.append(
-                    CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
-                                    account_code=account_code.value))
-            CategoryMapping.objects.bulk_create(category_objects)
+                CategoryMapping.objects.update_or_create(workspace=workspace, category=category.value,
+                                                         sub_category=sub_category.value,
+                                                         defaults={'account_code': account_code.value})
+                # CategoryMapping.objects.bulk_create(category_objects)
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
