@@ -92,7 +92,7 @@ class ExpenseView(View):
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
-        task_status = TaskLog.objects.filter(expense_group=expense_group).latest().status
+        status = expense_group.status
         expenses = expense_group.expenses.all()
 
         page = request.GET.get('page', 1)
@@ -106,7 +106,7 @@ class ExpenseView(View):
 
         context = {"expense_groups_tab": "active", "expenses": expenses,
                    "report_id": report_id, "expense_group_id": expense_group.id,
-                   "status": task_status}
+                   "status": status}
         return render(request, self.template_name, context)
 
 
