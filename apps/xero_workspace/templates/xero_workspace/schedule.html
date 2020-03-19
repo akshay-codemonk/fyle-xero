@@ -18,12 +18,11 @@
                     <p>Enable</p>
                     {% if enabled == True %}
                     <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
-                           class="switch-input" onchange="document.getElementById('schedule-form').submit()"
-                           checked>
+                           class="switch-input" checked>
                     <label for="schedule-enabled" class="switch-label"></label>
                     {% else %}
                         <input type="checkbox" id="schedule-disabled" name="schedule" value="disabled"
-                               class="switch-input" onchange="document.getElementById('schedule-form').submit()">
+                               class="switch-input">
                         <label for="schedule-disabled" class="switch-label"></label>
                     {% endif %}
                 </div>
