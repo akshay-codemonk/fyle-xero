@@ -45,7 +45,7 @@ class Expense(models.Model):
         Fetch expenses from Fyle API filtered by state and updated_at
         """
         connection = connect_to_fyle(workspace_id)
-        expenses = connection.Expenses.get_all(state='PAID', updated_at=updated_at)
+        expenses = connection.Expenses.get_all(state=['PAID'], updated_at=updated_at)
 
         return expenses
 
