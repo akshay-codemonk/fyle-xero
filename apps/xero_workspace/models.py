@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
@@ -149,7 +152,11 @@ def delete_schedule(instance, **kwargs):
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
 def create_workspace(instance, created, **kwargs):
     if created:
-        WorkspaceSchedule.objects.create(workspace=instance)
+        WorkspaceSchedule.objects.create(
+            workspace=instance,
+            start_datetime=datetime.now(tz=pytz.UTC),
+            interval_hours=1
+        )
 
 
 class Invoice(models.Model):
