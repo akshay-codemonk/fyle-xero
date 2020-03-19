@@ -42,12 +42,13 @@ def schedule_invoice_creation(workspace_id, expense_group_ids, user):
     jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
 
     for expense_group in expense_groups:
-        task_log, _ = TaskLog.objects.update_or_create(
+        task_log = TaskLog.objects.create(
             workspace_id=expense_group.workspace.id,
             expense_group=expense_group,
             type='CREATING INVOICE',
             status='IN_PROGRESS'
         )
+
         created_job = jobs.trigger_now(
             callback_url='{0}{1}'.format(
                 settings.API_BASE_URL,
@@ -166,12 +167,14 @@ def async_create_invoice_and_post_to_xero(expense_group, task_log):
         for invoice in response["Invoices"]:
             invoice_obj.invoice_id = invoice["InvoiceID"]
             invoice_obj.save()
+        expense_group.status = 'Complete'
         task_log.invoice = invoice_obj
         task_log.detail = 'Invoice created successfully!'
         task_log.status = 'COMPLETE'
         task_log.save()
     except Exception:
         error = traceback.format_exc()
+        expense_group.status = 'Failed'
         task_log.detail = {
             'error': error
         }

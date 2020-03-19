@@ -17,10 +17,10 @@ class TaskLogView(View):
     def get(self, request, workspace_id):
         context = {"tasks_tab": "active"}
         if request.GET.get('state') == 'complete':
-            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, task__success=True)
+            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='COMPLETE')
             context["complete"] = "active"
         elif request.GET.get('state') == 'failed':
-            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, task__success=False)
+            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='FATAL')
             context["failed"] = "active"
         else:
             task_logs = TaskLog.objects.filter(workspace__id=workspace_id)

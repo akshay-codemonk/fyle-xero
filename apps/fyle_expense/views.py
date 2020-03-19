@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks import create_invoice_task
-from apps.task_log.tasks_test import fetch_expenses_and_create_groups, async_create_invoice_and_post_to_xero
+from apps.task_log.tasks_test import fetch_expenses_and_create_groups, async_create_invoice_and_post_to_xero, \
+    schedule_invoice_creation
 from apps.xero_workspace.models import CategoryMapping
 
 
@@ -68,10 +68,9 @@ class ExpenseGroupView(View):
 
     def post(self, request, workspace_id):
         value = request.POST.get('submit')
-        selected_expense_group_id = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
-        if value == 'resync' and selected_expense_group_id:
-            for expense_group_id in selected_expense_group_id:
-                create_invoice_task(expense_group_id)
+        expense_group_ids = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
+        if value == 'resync' and expense_group_ids:
+            schedule_invoice_creation(workspace_id, expense_group_ids, request.user)
             messages.success(request, 'Resync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
@@ -106,7 +105,7 @@ class ExpenseView(View):
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
-        task_status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
+        task_status = TaskLog.objects.filter(expense_group=expense_group).latest().status
         expenses = expense_group.expenses.all()
 
         page = request.GET.get('page', 1)
