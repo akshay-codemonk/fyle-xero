@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'rest_framework',
     'corsheaders',
-    'django_q',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -148,11 +147,6 @@ MEDIA_URL = 'media/'
 
 # Set custom user model
 AUTH_USER_MODEL = 'user.UserProfile'
-
-# Dango-Q settings
-Q_CLUSTER = {
-    'redis': os.environ.get('REDIS_URL', config('REDIS_URL'))
-}
 
 # django-allauth settings
 SITE_ID = 1

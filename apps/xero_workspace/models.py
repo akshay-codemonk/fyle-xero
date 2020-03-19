@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytz
 from django.db import models
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.fyle_connect.models import FyleAuth
@@ -138,15 +138,6 @@ class WorkspaceSchedule(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-
-@receiver(pre_delete, sender=WorkspaceSchedule, dispatch_uid='schedule_delete_signal')
-def delete_schedule(instance, **kwargs):
-    """
-    Delete the schedule related to workspace
-    """
-    if instance.schedule is not None:
-        instance.schedule.delete()
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')

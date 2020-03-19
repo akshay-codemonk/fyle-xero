@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views import View
 
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks_test import schedule_expense_group_creation
+from apps.task_log.tasks import schedule_expense_group_creation
 
 
 class TaskLogView(View):
