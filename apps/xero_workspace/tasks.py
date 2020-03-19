@@ -30,7 +30,7 @@ def schedule_sync(workspace_id, schedule, user):
             workspace_id, user
         ),
         start_datetime=schedule.start_datetime.strftime('%Y-%m-%d %H:%M:00.00'),
-        hours=schedule.interval_hours
+        hours=int(schedule.interval_hours)
     )
     schedule.fyle_job_id = created_job['id']
     schedule.save()
