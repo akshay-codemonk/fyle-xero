@@ -152,7 +152,6 @@ class CategoryMappingBulkUploadView(View):
                 CategoryMapping.objects.update_or_create(workspace=workspace, category=category.value,
                                                          sub_category=sub_category.value,
                                                          defaults={'account_code': account_code.value})
-                # CategoryMapping.objects.bulk_create(category_objects)
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
@@ -234,12 +233,9 @@ class EmployeeMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            employee_mapping_objects = []
             for employee_email, contact_name in worksheet.iter_rows(min_row=2):
-                employee_mapping_objects.append(
-                    EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
-                                    contact_name=contact_name.value))
-            EmployeeMapping.objects.bulk_create(employee_mapping_objects)
+                EmployeeMapping.objects.update_or_create(workspace=workspace, employee_email=employee_email.value,
+                                                         defaults={'contact_name': contact_name.value})
         except(ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
@@ -327,13 +323,10 @@ class ProjectMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            project_objects = []
             for project_name, tracking_category_name, tracking_category_option in worksheet.iter_rows(min_row=2):
-                project_objects.append(
-                    ProjectMapping(workspace=workspace, project_name=project_name.value,
-                                   tracking_category_name=tracking_category_name.value,
-                                   tracking_category_option=tracking_category_option.value))
-            ProjectMapping.objects.bulk_create(project_objects)
+                ProjectMapping.objects.update_or_create(workspace=workspace, project_name=project_name.value, defaults={
+                    'tracking_category_name': tracking_category_name.value,
+                    'tracking_category_option': tracking_category_option.value})
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:project_mapping', args=[workspace_id]))
