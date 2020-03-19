@@ -89,12 +89,12 @@ def async_fetch_expenses_and_create_groups(workspace_id, task_log):
     """
     expense_group_ids = []
     try:
-        updated_at = []
+        updated_at = None
         latest_task_log = TaskLog.objects.filter(workspace__id=workspace_id, type='FETCHING EXPENSES',
                                                  status='COMPLETE').latest()
         if latest_task_log is not None:
             last_synced_at = latest_task_log.created_at
-            updated_at.append(f'gte:{last_synced_at.strftime("%Y-%m-%dT%H:%M:%S.%-S.000Z")}')
+            updated_at = f'gte:{last_synced_at.strftime("%Y-%m-%dT%H:%M:%S.%-S.000Z")}'
         expenses = Expense.fetch_paid_expenses(workspace_id, updated_at)
         expense_objects = Expense.create_expense_objects(expenses)
         connection = connect_to_fyle(workspace_id)
