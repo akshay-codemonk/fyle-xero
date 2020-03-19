@@ -168,6 +168,7 @@ def async_create_invoice_and_post_to_xero(expense_group, task_log):
             invoice_obj.invoice_id = invoice["InvoiceID"]
             invoice_obj.save()
         expense_group.status = 'Complete'
+        expense_group.save()
         task_log.invoice = invoice_obj
         task_log.detail = 'Invoice created successfully!'
         task_log.status = 'COMPLETE'
@@ -175,6 +176,7 @@ def async_create_invoice_and_post_to_xero(expense_group, task_log):
     except Exception:
         error = traceback.format_exc()
         expense_group.status = 'Failed'
+        expense_group.save()
         task_log.detail = {
             'error': error
         }
