@@ -19,9 +19,6 @@ def schedule_expense_group_creation(workspace_id, user):
     :param user:
     :return:
     """
-    fyle_sdk_connection = connect_to_fyle(workspace_id)
-
-    jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
 
     task_log = TaskLog.objects.create(
         workspace_id=workspace_id,
@@ -29,22 +26,31 @@ def schedule_expense_group_creation(workspace_id, user):
         status="IN_PROGRESS"
     )
 
-    created_job = jobs.trigger_now(
-        callback_url='{0}{1}'.format(
-            settings.API_BASE_URL,
-            '/workspace_jobs/{0}/expense_group/trigger/'.format(
-                workspace_id
-            )
-        ),
-        callback_method='POST',
-        object_id=task_log.id,
-        payload={
-            'task_log_id': task_log.id
-        },
-        job_description=f'Fetch expenses: Workspace id - {workspace_id}, user - {user}'
-    )
-    task_log.task_id = created_job['id']
-    task_log.save()
+    try:
+        fyle_sdk_connection = connect_to_fyle(workspace_id)
+        jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
+        created_job = jobs.trigger_now(
+            callback_url='{0}{1}'.format(
+                settings.API_BASE_URL,
+                '/workspace_jobs/{0}/expense_group/trigger/'.format(
+                    workspace_id
+                )
+            ),
+            callback_method='POST',
+            object_id=task_log.id,
+            payload={
+                'task_log_id': task_log.id
+            },
+            job_description=f'Fetch expenses: Workspace id - {workspace_id}, user - {user}'
+        )
+        task_log.task_id = created_job['id']
+        task_log.save()
+    except FyleCredential.DoesNotExist:
+        task_log.detail = {
+            'error': 'Please connect your Source (Fyle) Account'
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
 
 
 def schedule_invoice_creation(workspace_id, expense_group_ids, user):
