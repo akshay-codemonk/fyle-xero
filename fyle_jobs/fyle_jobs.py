@@ -54,7 +54,7 @@ class FyleJobsSDK:
         return response
 
     def trigger_interval(self, callback_url: str, callback_method: str,
-                         job_description: str, object_id: str, hours: int,
+                         job_description: str, object_id: str, minutes: int,
                          start_datetime: str, job_data_url: str = None) -> Dict:
         """
         Trigger callback on interval
@@ -85,7 +85,8 @@ class FyleJobsSDK:
             'trigger': {
                 'type': 'interval',
                 'when': {
-                    'hours': hours,
+                    # 'hours': hours,
+                    'minutes': minutes,
                     'start_date': start_datetime
                 }
             },

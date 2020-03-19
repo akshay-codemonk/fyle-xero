@@ -33,8 +33,9 @@ class WorkspaceScheduleAdmin(admin.ModelAdmin):
     """
     Admin options WorkspaceSchedule Model
     """
-    list_display = ('id', 'workspace', 'schedule', 'created_at', 'updated_at')
-    list_filter = ['workspace', 'schedule', 'created_at', 'updated_at']
+    list_display = ('id', 'workspace', 'enabled', 'start_datetime', 'interval_hours', 'fyle_job_id',
+                    'created_at', 'updated_at')
+    list_filter = ['workspace', 'enabled', 'fyle_job_id', 'created_at', 'updated_at']
 
 
 class EmployeeMappingAdmin(admin.ModelAdmin):

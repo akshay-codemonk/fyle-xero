@@ -15,26 +15,25 @@
             {% csrf_token %}
             <div class="schedule-content">
                 <div class="d-flex enable-schedule">
-                    {% if enabled != 0 %}
-                    <p>Enabled</p>
+                    {% if enabled == True %}
+                    <p>Enable</p>
                     <input type="checkbox" id="schedule-enabled" name="schedule" value="enabled"
                            class="switch-input" onchange="document.getElementById('schedule-form').submit()"
                            checked>
                     <label for="schedule-enabled" class="switch-label"></label>
                     {% else %}
-                        <p>Disabled</p>
-                        <input type="checkbox" id="schedule-disabled" name="schedule" value="enabled"
+                        <input type="checkbox" id="schedule-disabled" name="schedule" value="disabled"
                                class="switch-input" onchange="document.getElementById('schedule-form').submit()">
                         <label for="schedule-disabled" class="switch-label"></label>
                     {% endif %}
                 </div>
                 <div class="d-flex repeat-frequency">
                     <p>Repeat Frequency</p>
-                    {{ form.minutes }}
+                    {{ form.hours }}
                 </div>
                 <div class="d-flex datetimepicker">
                     <p>Start date & time(UTC)</p>
-                    {{ form.next_run }}
+                    {{ form.start_datetime }}
                 </div>
                 <div class="save-schedule">
                     <button class="main-btn btn save-btn" type="submit">Save Schedule</button>

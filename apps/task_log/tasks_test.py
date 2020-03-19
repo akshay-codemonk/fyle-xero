@@ -23,7 +23,12 @@ def schedule_expense_group_creation(workspace_id, user):
     )
 
     created_job = jobs.trigger_now(
-        callback_url=f'{settings.API_BASE_URL}/workspace_jobs/{workspace_id}/expense_group/trigger/',
+        callback_url='{0}{1}'.format(
+            settings.API_BASE_URL,
+            '/workspace_jobs/{0}/expense_group/trigger/'.format(
+                workspace_id
+            )
+        ),
         callback_method='POST',
         object_id=task_log.id,
         payload={
@@ -77,8 +82,6 @@ def fetch_expenses_and_create_groups(workspace_id, task_log, user):
 
     if task_log.status == 'COMPLETE':
         schedule_invoice_creation(workspace_id, expense_group_ids, user)
-
-    return task_log
 
 
 def async_fetch_expenses_and_create_groups(workspace_id, task_log):

@@ -9,7 +9,7 @@ from apps.xero_connect.views import XeroTokenView
 from apps.xero_workspace.views import WorkspaceView, EmployeeMappingView, \
     CategoryMappingView, CategoryMappingBulkUploadView, \
     EmployeeMappingBulkUploadView, ScheduleView, ProjectMappingView, \
-    ProjectMappingBulkUploadView
+    ProjectMappingBulkUploadView, ScheduleSyncView
 
 app_name = 'xero_workspace'
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
     path('<int:workspace_id>/settings/source/', include('apps.fyle_connect.urls')),
     path('<int:workspace_id>/settings/destination/', include('apps.xero_connect.urls')),
     path('<int:workspace_id>/settings/schedule/', ScheduleView.as_view(), name="schedule"),
+    path('<int:workspace_id>/settings/schedule/trigger/', ScheduleSyncView.as_view(), name="schedule_trigger"),
     path('<int:workspace_id>/expense_groups/', include('apps.fyle_expense.urls')),
     path('<int:workspace_id>/tasks/', include('apps.task_log.urls')),
 

@@ -1,10 +1,6 @@
-import datetime
-
-import pytz
 from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
-from django_q.models import Schedule
 
 from apps.fyle_connect.models import FyleAuth
 from apps.user.models import UserProfile
@@ -125,12 +121,15 @@ class FyleCredential(models.Model):
 
 class WorkspaceSchedule(models.Model):
     """
-    Schedule for Xero workspace (Intermediate Table)
+    Schedule for Xero workspace
     """
     id = models.AutoField(primary_key=True, )
     workspace = models.OneToOneField(Workspace, on_delete=models.CASCADE,
                                      help_text='FK to Workspace')
-    schedule = models.OneToOneField(Schedule, null=True, on_delete=models.SET_NULL, help_text='FK to Schedule')
+    enabled = models.BooleanField(default=False, help_text="Schedule enabled")
+    start_datetime = models.DateTimeField(null=True, help_text='Datetime for start of schedule')
+    interval_hours = models.IntegerField(null=True, help_text='Interval in hours')
+    fyle_job_id = models.CharField(unique=True, null=True, max_length=255, help_text='Fyle job ID')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
     updated_at = models.DateTimeField(auto_now=True, help_text='Updated at')
 
@@ -148,16 +147,9 @@ def delete_schedule(instance, **kwargs):
 
 
 @receiver(post_save, sender=Workspace, dispatch_uid='workspace_create_signal')
-def create_workspace_(instance, created, **kwargs):
+def create_workspace(instance, created, **kwargs):
     if created:
-        schedule = Schedule.objects.create(func='apps.task_log.tasks.create_fetch_expense_task',
-                                           schedule_type=Schedule.MINUTES,
-                                           repeats=0,
-                                           minutes=5,
-                                           next_run=datetime.datetime.now(tz=pytz.UTC),
-                                           kwargs={"workspace_id": instance.id}
-                                           )
-        WorkspaceSchedule.objects.create(workspace=instance, schedule=schedule)
+        WorkspaceSchedule.objects.create(workspace=instance)
 
 
 class Invoice(models.Model):
