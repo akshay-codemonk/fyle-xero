@@ -16,13 +16,9 @@
             <div class="schedule-content">
                 <div class="d-flex enable-schedule">
                     <p>Enable</p>
-                    {% if enabled == True %}
-                    <input type="checkbox" id="schedule-enabled" class="switch-input" checked>
+                    <input type="checkbox" id="schedule-enabled" class="switch-input"
+                           {% if enabled %} checked{% endif %}>
                     <label for="schedule-enabled" class="switch-label"></label>
-                    {% else %}
-                        <input type="checkbox" id="schedule-disabled" class="switch-input">
-                        <label for="schedule-disabled" class="switch-label"></label>
-                    {% endif %}
                 </div>
                 <div class="d-flex repeat-frequency">
                     <p>Repeat Frequency</p>
@@ -41,8 +37,10 @@
 {% endblock %}
 
 {% block script %}
-    $('.switch-input').on('change', function() {
-        const enabled = $(this).is(':checked');
-        $('.save-btn').attr('value', enabled);
+    const schedule_enabled = $('#schedule-enabled').prop('checked');
+    $('.save-btn').attr('value', schedule_enabled);
+    $('#schedule-enabled').on('change', function() {
+        const schedule_enabled = $(this).is(':checked');
+        $('.save-btn').attr('value', schedule_enabled);
     });
 {% endblock %}
