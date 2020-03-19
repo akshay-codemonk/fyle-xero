@@ -50,7 +50,7 @@ class Expense(models.Model):
         else:
             expenses = connection.Expenses.get(
                 state='PAID',
-                updated_at=f'gte:{updated_at.strftime("%Y-%m-%dT%H:%M:%S.%-S.000Z")}'
+                updated_at=f'gte:{updated_at.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}'
             )
         return expenses
 
