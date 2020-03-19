@@ -40,18 +40,13 @@ class Expense(models.Model):
         get_latest_by = "created_at"
 
     @staticmethod
-    def fetch_paid_expenses(workspace_id, updated_after=None):
+    def fetch_paid_expenses(workspace_id, updated_at):
         """
         Fetch expenses from Fyle API filtered by state and updated_at
         """
         connection = connect_to_fyle(workspace_id)
-        if updated_after is None:
-            expenses = connection.Expenses.get_all(state='PAID')
-        else:
-            expenses = connection.Expenses.get(
-                state='PAID',
-                updated_at=f'gt:{updated_after.strftime("%Y-%m-%dT%H:%M:%S.%-SZ")}'
-            )
+        expenses = connection.Expenses.get_all(state='PAID', updated_at=updated_at)
+
         return expenses
 
     @staticmethod
