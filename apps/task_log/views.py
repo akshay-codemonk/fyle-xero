@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views import View
 
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks import create_fetch_expense_task
+from apps.task_log.tasks import schedule_expense_group_creation
 
 
 class TaskLogView(View):
@@ -18,10 +18,10 @@ class TaskLogView(View):
     def get(self, request, workspace_id):
         context = {"tasks_tab": "active"}
         if request.GET.get('state') == 'complete':
-            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, task__success=True)
+            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='COMPLETE')
             context["complete"] = "active"
         elif request.GET.get('state') == 'failed':
-            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, task__success=False)
+            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='FATAL')
             context["failed"] = "active"
         else:
             task_logs = TaskLog.objects.filter(workspace__id=workspace_id)
@@ -48,7 +48,7 @@ class TaskLogView(View):
         """
         value = request.POST.get('submit')
         if value == 'sync':
-            create_fetch_expense_task(workspace_id)
+            schedule_expense_group_creation(workspace_id, request.user)
             messages.success(request, 'Sync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
@@ -62,10 +62,11 @@ class TaskLogDetailsView(View):
     def get(request, workspace_id, task_log_id):
         task_log = TaskLog.objects.get(id=task_log_id)
         task_log_fields = model_to_dict(task_log)
-        task_log_fields["task_name"] = task_log.task.name
-        task_log_fields["status"] = 'Complete' if task_log.task.success else 'Failed'
-        task_log_fields["started_at"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
-        task_log_fields["stopped_at"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %p')
+        task_log_fields["task_id"] = task_log.task_id
+        task_log_fields["type"] = task_log.type
+        task_log_fields["status"] = task_log.status
+        task_log_fields["started_at"] = task_log.created_at.strftime('%b. %d, %Y, %-I:%M %-p')
+        task_log_fields["stopped_at"] = task_log.updated_at.strftime('%b. %d, %Y, %-I:%M %p')
         task_log_fields["invoice"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
         task_log_fields["expense_group"] = '-' if task_log.expense_group is None else task_log.expense_group. \
             description.get('report_id')
@@ -89,13 +90,13 @@ class TaskLogTextView(View):
             task_log = TaskLog.objects.filter(expense_group__id=expense_group_id).latest()
 
         task_log_info["workspace_name"] = task_log.workspace.name
-        task_log_info["task_id"] = task_log.task.id
-        task_log_info["task_name"] = task_log.task.name
+        task_log_info["task_id"] = task_log.task_id
+        task_log_info["type"] = task_log.type
         task_log_info["expense_group_id"] = '-' if task_log.expense_group is None else \
             task_log.expense_group.description.get("report_id")
         task_log_info["invoice_id"] = '-' if task_log.invoice is None else task_log.invoice.invoice_id
-        task_log_info["task_start_time"] = task_log.task.started.strftime('%b. %d, %Y, %-I:%M %-p')
-        task_log_info["task_stop_time"] = task_log.task.stopped.strftime('%b. %d, %Y, %-I:%M %-p')
-        task_log_info["Success"] = task_log.task.success
+        task_log_info["task_start_time"] = task_log.created_at.strftime('%b. %d, %Y, %-I:%M %-p')
+        task_log_info["task_stop_time"] = task_log.updated_at.strftime('%b. %d, %Y, %-I:%M %-p')
+        task_log_info["status"] = task_log.status
         task_log_info["Task Result"] = task_log.detail
         return JsonResponse(task_log_info)

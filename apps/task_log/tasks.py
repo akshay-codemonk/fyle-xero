@@ -1,11 +1,141 @@
+import traceback
+
 import psycopg2
 from django.db import IntegrityError
-from django_q.models import Task
-from django_q.tasks import async_task
 
 from apps.fyle_expense.models import Expense, ExpenseGroup
-from apps.xero_workspace.models import Invoice, InvoiceLineItem, EmployeeMapping, CategoryMapping, ProjectMapping
+from apps.task_log.models import TaskLog
+from apps.xero_workspace.models import EmployeeMapping, CategoryMapping, ProjectMapping, Invoice, InvoiceLineItem, \
+    FyleCredential, XeroCredential
 from apps.xero_workspace.utils import connect_to_fyle, connect_to_xero
+from fyle_jobs import FyleJobsSDK
+from fyle_xero_integration_web_app import settings
+
+
+def schedule_expense_group_creation(workspace_id, user):
+    """
+    Schedule Expense Group creation
+    :param workspace_id:
+    :param user:
+    :return:
+    """
+
+    task_log = TaskLog.objects.create(
+        workspace_id=workspace_id,
+        type="FETCHING EXPENSES",
+        status="IN_PROGRESS"
+    )
+
+    try:
+        fyle_sdk_connection = connect_to_fyle(workspace_id)
+        jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
+        created_job = jobs.trigger_now(
+            callback_url='{0}{1}'.format(
+                settings.API_BASE_URL,
+                '/workspace_jobs/{0}/expense_group/trigger/'.format(
+                    workspace_id
+                )
+            ),
+            callback_method='POST',
+            object_id=task_log.id,
+            payload={
+                'task_log_id': task_log.id
+            },
+            job_description=f'Fetch expenses: Workspace id - {workspace_id}, user - {user}'
+        )
+        task_log.task_id = created_job['id']
+        task_log.save()
+    except FyleCredential.DoesNotExist:
+        task_log.detail = {
+            'error': 'Please connect your Source (Fyle) Account'
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
+
+
+def schedule_invoice_creation(workspace_id, expense_group_ids, user):
+    """
+    Schedule Invoice creation
+    :param workspace_id:
+    :param expense_group_ids:
+    :param user:
+    :return:
+    """
+    expense_groups = ExpenseGroup.objects.filter(
+        workspace_id=workspace_id, id__in=expense_group_ids).all()
+    fyle_sdk_connection = connect_to_fyle(workspace_id)
+    jobs = FyleJobsSDK(settings.FYLE_JOBS_URL, fyle_sdk_connection)
+
+    for expense_group in expense_groups:
+        task_log = TaskLog.objects.create(
+            workspace_id=expense_group.workspace.id,
+            expense_group=expense_group,
+            type='CREATING INVOICE',
+            status='IN_PROGRESS'
+        )
+
+        created_job = jobs.trigger_now(
+            callback_url='{0}{1}'.format(
+                settings.API_BASE_URL,
+                '/workspace_jobs/{0}/expense_group/{1}/invoice/trigger/'.format(
+                    workspace_id,
+                    expense_group.id
+                )
+            ),
+            callback_method='POST',
+            object_id=task_log.id,
+            payload={
+                'task_log_id': task_log.id
+            },
+            job_description=f'Create invoice: Workspace id - {workspace_id}, \
+            user - {user}, expense group id - {expense_group.id}'
+        )
+        task_log.task_id = created_job['id']
+        task_log.save()
+
+
+def fetch_expenses_and_create_groups(workspace_id, task_log, user):
+    """
+    Fetch expenses and create expense groups
+    :param workspace_id
+    :param task_log
+    :param user
+    """
+    expense_group_ids = []
+    try:
+        updated_at = None
+        task_logs = TaskLog.objects.filter(workspace__id=workspace_id, type='FETCHING EXPENSES',
+                                           status='COMPLETE')
+        if task_logs:
+            updated_at = task_logs.latest().created_at
+        expenses = Expense.fetch_paid_expenses(workspace_id, updated_at)
+        expense_objects = Expense.create_expense_objects(expenses)
+        connection = connect_to_fyle(workspace_id)
+        expense_groups = ExpenseGroup.group_expense_by_report_id(expense_objects, workspace_id, connection)
+        expense_group_objects = ExpenseGroup.create_expense_groups(expense_groups)
+        for expense_group in expense_group_objects:
+            expense_group_ids.append(expense_group.id)
+        task_log.status = 'COMPLETE'
+        task_log.detail = 'Expense groups created successfully!'
+        task_log.save()
+        schedule_invoice_creation(workspace_id, expense_group_ids, user)
+
+    except FyleCredential.DoesNotExist:
+        task_log.detail = {
+            'error': 'Please connect your Source (Fyle) Account'
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
+
+    except Exception:
+        error = traceback.format_exc()
+        task_log.detail = {
+            'error': error
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
+
+    return expense_group_ids
 
 
 def check_mappings(expense_group):
@@ -48,81 +178,58 @@ def check_mappings(expense_group):
         raise Exception(mappings_error)
 
 
-def create_fetch_expense_task(workspace_id):
+def create_invoice_and_post_to_xero(expense_group, task_log):
     """
-    Create django Q task to pull expenses and sync to Xero
-    :param workspace_id
-    """
-    kwargs = {"workspace_id": workspace_id}
-    async_task(fetch_expenses_and_create_groups, **kwargs,
-               q_options={"task_name": "Fetching Expenses",
-                          "hook": "apps.task_log.hooks.update_fetch_expense_task",
-                          }
-               )
-
-
-def create_invoice_task(expense_group_id):
-    """
-    Create django Q task to generate invoice and sync to Xero
-    :param expense_group_id
-    """
-    kwargs = {"expense_group_id": expense_group_id}
-    async_task(sync_to_xero, **kwargs,
-               q_options={"task_name": "Creating Invoice",
-                          "hook": "apps.task_log.hooks.update_create_invoice_task"
-                          }
-               )
-
-
-def fetch_expenses_and_create_groups(workspace_id):
-    """
-    Fetch expenses, create expense groups and run an async
-    task to sync with Xero
-    :param workspace_id
-    """
-    updated_after = None
-    latest_task = Task.objects.filter(tasklog__workspace__id=workspace_id, name="Fetching Expenses",
-                                      success=True).last()
-    if latest_task is not None:
-        updated_after = latest_task.started
-    expenses = Expense.fetch_paid_expenses(workspace_id, updated_after)
-    expense_objects = Expense.create_expense_objects(expenses)
-    connection = connect_to_fyle(workspace_id)
-    expense_groups = ExpenseGroup.group_expense_by_report_id(expense_objects, workspace_id, connection)
-    expense_group_objects = ExpenseGroup.create_expense_groups(expense_groups)
-    for expense_group in expense_group_objects:
-        create_invoice_task(expense_group.id)
-    return workspace_id
-
-
-def sync_to_xero(expense_group_id):
-    """
-    Generate invoice, invoice line items and post to Xero
-    :param expense_group_id:
+    Creates an Xero Invoice
+    :param expense_group:
+    :param task_log:
     :return:
     """
-    expense_group = ExpenseGroup.objects.get(id=expense_group_id)
-    check_mappings(expense_group)
-    invoice_id = Invoice.create_invoice(expense_group)
-    InvoiceLineItem.create_invoice_line_item(invoice_id, expense_group)
-    xero = connect_to_xero(expense_group.workspace.id)
-    invoice_data = generate_invoice_request_data(invoice_id)
-    response = post_to_xero(invoice_data, xero)
-    for invoice in response["Invoices"]:
-        invoice_object = Invoice.objects.get(invoice_number=invoice["InvoiceNumber"])
-        invoice_object.invoice_id = invoice["InvoiceID"]
-        invoice_object.save()
-    return expense_group_id
+    try:
+        check_mappings(expense_group)
+        invoice_id = Invoice.create_invoice(expense_group)
+        InvoiceLineItem.create_invoice_line_item(invoice_id, expense_group)
+        xero_sdk_connection = connect_to_xero(expense_group.workspace.id)
+        invoice_obj = Invoice.objects.get(id=invoice_id)
+        invoice_data = generate_invoice_request_data(invoice_obj)
+        response = post_invoice(invoice_data, xero_sdk_connection)
+        for invoice in response["Invoices"]:
+            invoice_obj.invoice_id = invoice["InvoiceID"]
+            invoice_obj.save()
+        expense_group.status = 'Complete'
+        expense_group.save()
+        task_log.invoice = invoice_obj
+        task_log.detail = 'Invoice created successfully!'
+        task_log.status = 'COMPLETE'
+        task_log.save()
+
+    except XeroCredential.DoesNotExist:
+        expense_group.status = 'Failed'
+        expense_group.save()
+        task_log.detail = {
+            'error': 'Please connect your Destination (Xero) Account'
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
+
+    except Exception:
+        error = traceback.format_exc()
+        expense_group.status = 'Failed'
+        expense_group.save()
+        task_log.detail = {
+            'error': error
+        }
+        task_log.status = 'FATAL'
+        task_log.save()
 
 
-def generate_invoice_request_data(invoice_id):
+def generate_invoice_request_data(invoice):
     """
     Generate invoice request data as defined by Xero
-    :param invoice_id
+    :param invoice
     :return: request_data
     """
 
-    invoice = Invoice.objects.get(id=invoice_id)
     request_data = {
         "Type": "ACCPAY",
         "Contact": {
@@ -149,7 +256,7 @@ def generate_invoice_request_data(invoice_id):
     return request_data
 
 
-def post_to_xero(data, xero):
+def post_invoice(data, xero):
     """ Makes an API call to create invoices in Xero
     :param data: Request data for the invoice API
     :param xero: Xero connection object

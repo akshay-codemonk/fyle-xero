@@ -7,10 +7,15 @@ from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.fyle_expense.models import ExpenseGroup, Expense
 from apps.task_log.models import TaskLog
-from apps.task_log.tasks import create_invoice_task
+from apps.task_log.tasks import create_invoice_and_post_to_xero, \
+    schedule_invoice_creation
+from apps.task_log.tasks import fetch_expenses_and_create_groups
 from apps.xero_workspace.models import CategoryMapping
 
 
@@ -64,10 +69,9 @@ class ExpenseGroupView(View):
 
     def post(self, request, workspace_id):
         value = request.POST.get('submit')
-        selected_expense_group_id = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
-        if value == 'resync' and selected_expense_group_id:
-            for expense_group_id in selected_expense_group_id:
-                create_invoice_task(expense_group_id)
+        expense_group_ids = [ast.literal_eval(x) for x in request.POST.getlist('expense_group_ids')]
+        if value == 'resync' and expense_group_ids:
+            schedule_invoice_creation(workspace_id, expense_group_ids, request.user)
             messages.success(request, 'Resync started successfully. Expenses will be exported soon!')
         return HttpResponseRedirect(self.request.path_info)
 
@@ -88,7 +92,7 @@ class ExpenseView(View):
         """
         expense_group = ExpenseGroup.objects.get(id=group_id)
         report_id = expense_group.description["report_id"]
-        status = TaskLog.objects.filter(expense_group=expense_group).first().task.success
+        status = expense_group.status
         expenses = expense_group.expenses.all()
 
         page = request.GET.get('page', 1)
@@ -151,3 +155,34 @@ class InvoiceDetailsView(View):
         for invoice_line_item in invoice.invoice_line_items.all():
             invoice_fields["line_items"].append(model_to_dict(invoice_line_item))
         return JsonResponse(invoice_fields)
+
+
+class ExpenseGroupTriggerView(APIView):
+    """
+    Expense Group creation job trigger view
+    """
+    http_method_names = ['post']
+
+    def post(self, request, workspace_id):
+        task_log = TaskLog.objects.get(id=request.data.get('task_log_id'))
+
+        fetch_expenses_and_create_groups(workspace_id, task_log, request.user)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class InvoiceTriggerView(APIView):
+    """
+    Invoice creation job trigger view
+    """
+    http_method_names = ['post']
+
+    def post(self, request, workspace_id, group_id):
+        task_log_id = request.data.get('task_log_id')
+
+        expense_group = ExpenseGroup.objects.get(id=group_id)
+        task_log = TaskLog.objects.get(id=task_log_id)
+
+        create_invoice_and_post_to_xero(expense_group, task_log)
+
+        return Response(status=status.HTTP_200_OK)

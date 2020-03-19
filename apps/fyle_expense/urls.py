@@ -10,5 +10,5 @@ urlpatterns = [
     path('<int:group_id>/expenses/', ExpenseView.as_view(), name='expenses'),
     path('<int:group_id>/expenses/<int:expense_id>/details/', ExpenseDetailsView.as_view(),
          name='expenses_details'),
-    path('<int:group_id>/invoice/', InvoiceDetailsView.as_view(), name='invoice'),
+    path('<int:group_id>/invoice/', InvoiceDetailsView.as_view(), name='invoice')
 ]

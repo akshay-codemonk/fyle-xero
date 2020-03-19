@@ -80,7 +80,7 @@ label {
   display: none;
 }
 
-#id_minutes {
+#id_hours {
   width: 15%;
 }
 
@@ -96,6 +96,7 @@ label {
 
 input {
     margin: 0;
+    width: 0
 }
 
 .input-group {

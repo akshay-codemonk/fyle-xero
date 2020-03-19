@@ -12,11 +12,15 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.views import View
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.task_log.models import TaskLog
 from apps.xero_workspace.forms import CategoryMappingForm, EmployeeMappingForm, ScheduleForm, ProjectMappingForm
 from apps.xero_workspace.models import Workspace, CategoryMapping, EmployeeMapping, \
     WorkspaceSchedule, ProjectMapping
+from apps.xero_workspace.tasks import schedule_sync, run_sync_schedule
 
 
 class WorkspaceView(View):
@@ -35,8 +39,8 @@ class WorkspaceView(View):
         user_workspaces = Workspace.objects.filter(user=request.user).order_by('-created_at')
         for workspace in user_workspaces:
             task_log = TaskLog.objects.filter(workspace=workspace)
-            if task_log.exists():
-                workspace.last_sync = task_log.first().task.stopped
+            if task_log:
+                workspace.last_sync = task_log.latest().created_at
             else:
                 workspace.last_sync = "-"
         page = request.GET.get('page', 1)
@@ -143,13 +147,11 @@ class CategoryMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            category_objects = []
             for category, sub_category, account_code in worksheet.iter_rows(min_row=2):
                 sub_category.value = '' if sub_category.value is None else sub_category.value
-                category_objects.append(
-                    CategoryMapping(workspace=workspace, category=category.value, sub_category=sub_category.value,
-                                    account_code=account_code.value))
-            CategoryMapping.objects.bulk_create(category_objects)
+                CategoryMapping.objects.update_or_create(workspace=workspace, category=category.value,
+                                                         sub_category=sub_category.value,
+                                                         defaults={'account_code': account_code.value})
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:category_mapping', args=[workspace_id]))
@@ -231,12 +233,9 @@ class EmployeeMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            employee_mapping_objects = []
             for employee_email, contact_name in worksheet.iter_rows(min_row=2):
-                employee_mapping_objects.append(
-                    EmployeeMapping(workspace=workspace, employee_email=employee_email.value,
-                                    contact_name=contact_name.value))
-            EmployeeMapping.objects.bulk_create(employee_mapping_objects)
+                EmployeeMapping.objects.update_or_create(workspace=workspace, employee_email=employee_email.value,
+                                                         defaults={'contact_name': contact_name.value})
         except(ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:employee_mapping', args=[workspace_id]))
@@ -324,13 +323,10 @@ class ProjectMappingBulkUploadView(View):
         try:
             work_book = openpyxl.load_workbook(file)
             worksheet = work_book.active
-            project_objects = []
             for project_name, tracking_category_name, tracking_category_option in worksheet.iter_rows(min_row=2):
-                project_objects.append(
-                    ProjectMapping(workspace=workspace, project_name=project_name.value,
-                                   tracking_category_name=tracking_category_name.value,
-                                   tracking_category_option=tracking_category_option.value))
-            ProjectMapping.objects.bulk_create(project_objects)
+                ProjectMapping.objects.update_or_create(workspace=workspace, project_name=project_name.value, defaults={
+                    'tracking_category_name': tracking_category_name.value,
+                    'tracking_category_option': tracking_category_option.value})
         except (ValueError, BadZipFile, KeyError):
             messages.error(request, 'The uploaded file has invalid column(s): Please upload again')
         return HttpResponseRedirect(reverse('xero_workspace:project_mapping', args=[workspace_id]))
@@ -344,27 +340,42 @@ class ScheduleView(View):
 
     def get(self, request, workspace_id):
         workspace = Workspace.objects.get(id=workspace_id)
-        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
-        form = ScheduleForm(initial={'minutes': schedule.minutes})
-        form.fields['next_run'].widget.js_options['defaultDate'] = schedule.next_run.strftime(
+        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id)
+        form = ScheduleForm(initial={'hours': schedule.interval_hours})
+        form.fields['start_datetime'].widget.js_options['defaultDate'] = schedule.start_datetime.strftime(
             '%Y-%m-%d %I:%M %p')
         context = {"schedule": "active", "workspace_id": workspace_id,
                    "workspace_name": workspace.name, "form": form,
-                   "enabled": schedule.repeats, "settings_tab": "active"}
+                   "enabled": schedule.enabled, "settings_tab": "active"}
         return render(request, self.template_name, context)
 
     def post(self, request, workspace_id):
-        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id).schedule
-        datetime_str = request.POST.get('next_run')
-        datetime_object = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
-        minutes = request.POST.get('minutes')
-        value = request.POST.get('schedule')
-        schedule_enabled = 0
-        if value == 'enabled':
-            schedule_enabled = -1
-        schedule.minutes = minutes
-        schedule.next_run = make_aware(datetime_object)
-        schedule.repeats = schedule_enabled
+        schedule = WorkspaceSchedule.objects.get(workspace__id=workspace_id)
+        start_datetime = request.POST.get('start_datetime')
+        schedule.start_datetime = make_aware(datetime.strptime(start_datetime, '%Y-%m-%d %I:%M %p'))
+        schedule.interval_hours = request.POST.get('hours')
+        enabled = request.POST.get('schedule')
+        schedule.enabled = False
+        if enabled == 'true':
+            schedule.enabled = True
         schedule.save()
 
+        if schedule.enabled:
+            schedule_sync(
+                workspace_id=workspace_id,
+                schedule=schedule,
+                user=request.user
+            )
+
         return HttpResponseRedirect(self.request.path_info)
+
+
+class ScheduleSyncView(APIView):
+    """
+    Schedule task view
+    """
+
+    def post(self, request, workspace_id):
+        run_sync_schedule(workspace_id, request.user)
+
+        return Response(status=status.HTTP_200_OK)
