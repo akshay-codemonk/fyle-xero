@@ -29,4 +29,5 @@ urlpatterns = [path('admin/', admin.site.urls),
                path('workspace/',
                     decorator_include([login_required, is_workspace_user],
                                       ('apps.xero_workspace.urls', 'xero_workspace'))),
+               path('workspace_jobs/', include('apps.xero_workspace.job_urls'))
                ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

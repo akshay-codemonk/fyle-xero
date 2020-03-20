@@ -55,14 +55,10 @@
                         <tbody>
                             {% for task_log in task_logs %}
                                 <tr class="tasks-table-row" data-url="{{task_log.id}}/details/">
-                                    <td>{{task_log.task.name}}</td>
+                                    <td>{{task_log.task_id}}</td>
                                     <td>{{task_log.updated_at}}</td>
-                                    {% if task_log.task.success %}
-                                        <td>Complete</td>
-                                    {% else %}
-                                        <td>Failed</td>
-                                    {% endif %}
-                                    <td>{{task_log.level}}</td>
+                                    <td>{{task_log.status}}</td>
+                                    <td>{{task_log.type}}</td>
                                     <td class="actions">
                                         <a target="_blank" href="log/?type=task_log&id={{task_log.id}}">
                                             <i id="view-log" class="material-icons view-icon"
@@ -177,14 +173,14 @@
                 $("#taskModal").modal("show");
             },
             success: function(data) {
-                $('#task-name').html(data.task_name);
-                $("#task-id").html(data.task);
+                $('#task-name').html(data.type);
+                $("#task-id").html(data.task_id);
                 $("#expense-group-id").html(data.expense_group || '-');
                 $("#invoice-id").html(data.invoice || '-');
                 $("#started-at").html(data.started_at);
                 $("#stopped-at").html(data.stopped_at);
                 $("#status").html(data.status);
-                $("#level").html(data.level || '-');
+<!--                $("#level").html(data.level || '-');-->
             }
         })
     });

@@ -24,9 +24,14 @@
             {% csrf_token %}
             <div class="d-flex content-header">
                 <p class="employee-email">Report ID: {{report_id}}</p>
-                <button class="view-invoice-modal ml-auto btn main-btn" type="button"
-                        data-url="{% url 'xero_workspace:invoice' workspace_id expense_group_id %}"
-                        {% if not status %} disabled{% endif %}>View Invoice
+                {% if status == 'Complete' %}
+                    <button class="view-invoice-modal ml-auto btn main-btn" type="button"
+                            data-url="{% url 'xero_workspace:invoice' workspace_id expense_group_id %}">View Invoice
+                {% else %}
+                    <button class="view-invoice-modal ml-auto btn main-btn" type="button"
+                            data-url="{% url 'xero_workspace:invoice' workspace_id expense_group_id %}"
+                            disabled>View Invoice
+                {% endif %}
                 </button>
             </div>
             <div class="table-layout">

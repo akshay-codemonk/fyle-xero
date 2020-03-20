@@ -56,7 +56,7 @@ class ScheduleForm(forms.Form):
     Form to get schedule data
     """
 
-    next_run = forms.DateTimeField(widget=DateTimePicker(
+    start_datetime = forms.DateTimeField(widget=DateTimePicker(
         options={
             'useCurrent': True,
             'format': 'YYYY-MM-DD hh:mm a',
@@ -66,6 +66,6 @@ class ScheduleForm(forms.Form):
         }
     ))
 
-    minutes = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
-        'placeholder': 'in minutes'
+    hours = forms.IntegerField(initial='3', widget=forms.NumberInput(attrs={
+        'placeholder': 'in hours'
     }))
