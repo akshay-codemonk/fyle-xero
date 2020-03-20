@@ -14,16 +14,6 @@ This repository is home to the **Fyle Xero Integration Web App**.
 4. Run ```python manage.py createsuperuser``` and follow the instructions to create an superuser 
 5. Run ```python manage.py runserver``` to start the server on localhost
 
-##### For Synchronization
-To perform synchronization [Redis](https://redis.io/) is required
-
-1. Start a Redis server by downloading and running it as mentioned [here](https://redis.io/topics/quickstart)
- or use the docker run command 
-```Docker run -p 6379:6379 --name=redis redis```
-
-2. Once Redis is up and running, start a Django Q cluster by running ```
-python manage.py qcluster```
-
 #### b) Using docker-compose
 
 Install docker-compose
@@ -32,7 +22,6 @@ Install docker-compose
 1. Rename the file .env.template to .env and set the following defaults
     ```
     DATABASE_URL = postgres://postgres@db:5432/postgres
-    REDIS_URL = redis://redis:6379/0
     ```
     and update the remaining fields accordingly
 
@@ -44,13 +33,6 @@ Install docker-compose
 6. Access the application at [http://localhost:8000](http://localhost:8000)
 7. To stop the containers do ```docker-compose down```
 
-### Configure Fyle OAuth2.0
-1. Open django-admin by visiting [http://localhost:8000/admin](http://localhost:8000/admin) and login using the superuser credentials 
-2. First go to the **Sites** portion and set the domain name to ```localhost``` 
-3. Setup Fyle allauth provider 
-    1. Create a new record under **Social Applications**
-    2. Select Fyle as provider and enter the your Fyle OAuth2.0 client_secret and client_id 
-    3. Add your site to the Chosen sites on the bottom and click save.
 
 Visit [http://localhost:8000](http://localhost:8000) to access the application
 
