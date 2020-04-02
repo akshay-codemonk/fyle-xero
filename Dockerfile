@@ -29,4 +29,4 @@ RUN pylint --load-plugins pylint_django apps/**/
 EXPOSE 8000
 
 # Migrate and start server in dev mode on port 8000
-CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+CMD bash run.sh
