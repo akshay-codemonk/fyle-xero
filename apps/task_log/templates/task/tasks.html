@@ -48,7 +48,7 @@
                                 <th style="width: 30%">Name</th>
                                 <th>Updated At</th>
                                 <th>Status</th>
-                                <th>Level</th>
+                                <th>Type</th>
                                 <th class="actions">Logs</th>
                             </tr>
                         </thead>
@@ -150,8 +150,8 @@
                                     <td id="status"></td>
                                 </tr>
                                 <tr>
-                                    <td>Level</td>
-                                    <td id="level"></td>
+                                    <td>Type</td>
+                                    <td id="type"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -173,14 +173,13 @@
                 $("#taskModal").modal("show");
             },
             success: function(data) {
-                $('#task-name').html(data.type);
-                $("#task-id").html(data.task_id);
+                $("#task-id").html(data.task_id || 'None');
                 $("#expense-group-id").html(data.expense_group || '-');
                 $("#invoice-id").html(data.invoice || '-');
                 $("#started-at").html(data.started_at);
                 $("#stopped-at").html(data.stopped_at);
                 $("#status").html(data.status);
-<!--                $("#level").html(data.level || '-');-->
+                $("#type").html(data.type || '-');
             }
         })
     });
