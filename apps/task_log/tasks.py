@@ -246,7 +246,7 @@ def generate_invoice_request_data(invoice):
             "Description": line_item.description,
             "Quantity": "1",
             "UnitAmount": str(line_item.amount),
-            "AccountCode": str(line_item.account_code),
+            "AccountCode": line_item.account_code,
             "Tracking": [{
                 "Name": line_item.tracking_category_name,
                 "Option": line_item.tracking_category_option,
