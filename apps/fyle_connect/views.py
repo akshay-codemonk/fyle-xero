@@ -29,7 +29,6 @@ class FyleConnectView(View):
 
     @staticmethod
     def post(request, workspace_id):
-        print(workspace_id)
         fyle_oauth = FyleOAuth2()
         return redirect(fyle_oauth.authorise(str(workspace_id)))
 
