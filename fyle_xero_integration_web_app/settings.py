@@ -216,19 +216,14 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler'
-        },
         'file': {
             'class': 'logging.FileHandler',
             'filename': 'fyle_xero.log'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console', 'file'],
-            'level': 'ERROR',
-            'propagate': False,
         },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'ERROR',
+        'propagate': True
     },
 }
