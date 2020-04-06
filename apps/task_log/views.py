@@ -21,7 +21,7 @@ class TaskLogView(View):
             task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='COMPLETE')
             context["complete"] = "active"
         elif request.GET.get('state') == 'failed':
-            task_logs = TaskLog.objects.filter(workspace__id=workspace_id, status='FATAL')
+            task_logs = TaskLog.objects.filter(workspace__id=workspace_id).exclude(status='COMPLETE')
             context["failed"] = "active"
         else:
             task_logs = TaskLog.objects.filter(workspace__id=workspace_id)

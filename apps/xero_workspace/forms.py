@@ -12,8 +12,8 @@ class CategoryMappingForm(forms.Form):
     sub_category = forms.CharField(max_length=64, label='Subcategory', help_text=None, required=False,
                                    widget=forms.TextInput(attrs={'placeholder': ' ',
                                                                  'autocomplete': 'off'}))
-    account_code = forms.IntegerField(label='Account Code*', help_text=None,
-                                      widget=forms.NumberInput(attrs={'placeholder': ' '}))
+    account_code = forms.CharField(max_length=32, label='Account Code*', help_text=None,
+                                   widget=forms.NumberInput(attrs={'placeholder': ' '}))
     bulk_upload_file = forms.FileField(label='', help_text=None,
                                        widget=forms.FileInput(attrs={'accept': '.xlsx'}))
 

@@ -56,7 +56,7 @@ class CategoryMapping(models.Model):
     category = models.CharField(max_length=64, help_text='Fyle Expense Category')
     sub_category = models.CharField(max_length=64, null=True, default='Unspecified',
                                     help_text='Fyle Expense Sub-Category')
-    account_code = models.IntegerField(null=True, blank=True, help_text='Xero Account code')
+    account_code = models.CharField(max_length=32, null=True, blank=True, help_text='Xero Account code')
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, help_text='Workspace this mapping belongs to')
     invalid = models.BooleanField(default=False, help_text='Indicates if this mapping is invalid')
     created_at = models.DateTimeField(auto_now_add=True, help_text='Created at')
@@ -208,7 +208,7 @@ class InvoiceLineItem(models.Model):
     id = models.AutoField(primary_key=True)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE,
                                 related_name="invoice_line_items", help_text="FK to Invoice")
-    account_code = models.IntegerField(help_text="Account Code")
+    account_code = models.CharField(max_length=32, help_text="Account Code")
     account_name = models.CharField(max_length=64, help_text="Account name")
     description = models.CharField(max_length=64, help_text="Description")
     amount = models.FloatField(help_text="Invoice line item amount")
