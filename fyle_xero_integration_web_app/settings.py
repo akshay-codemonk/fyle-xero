@@ -210,3 +210,20 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'fyle_xero.log'
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'ERROR',
+        'propagate': True
+    },
+}
