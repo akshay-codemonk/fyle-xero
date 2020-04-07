@@ -135,9 +135,9 @@ def fetch_expenses_and_create_groups(workspace_id, task_log, user):
 
     except Exception:
         error = traceback.format_exc()
-        LOGGER.exception(error)
+        LOGGER.exception(f'Error: Workspace id - {workspace_id}\n{error}')
         task_log.detail = {
-            'error': error
+            'error': 'Please contact system administrator.'
         }
         task_log.status = 'FATAL'
         task_log.save()
@@ -232,11 +232,11 @@ def create_invoice_and_post_to_xero(expense_group, task_log):
 
     except Exception:
         error = traceback.format_exc()
-        LOGGER.exception(error)
+        LOGGER.exception(f'Error: Workspace id - {task_log.workspace.id}\n{error}')
         expense_group.status = 'Failed'
         expense_group.save()
         task_log.detail = {
-            'error': error
+            'error': 'Please contact system administrator.'
         }
         task_log.status = 'FATAL'
         task_log.save()
